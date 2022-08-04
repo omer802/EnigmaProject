@@ -1,12 +1,12 @@
-package EngineMachine;
+package engima;
 
 import java.util.List;
 
 public class RotatingRotor extends Rotor {
-    private int notch;
+    protected int notch;
 
-    public RotatingRotor(int notch, int startingPosition, String id, List<pairOfData> setPairArray) {
-        super(startingPosition, id, setPairArray);
+    public RotatingRotor(int notch, String id, List<pairOfData> setPairArray) {
+        super( id, setPairArray);
         this.notch = notch;
     }
     public void rotate() {

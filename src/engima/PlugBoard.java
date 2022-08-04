@@ -1,4 +1,4 @@
-package EngineMachine;
+package engima;
 
 import java.util.HashMap;
 import java.util.Map;

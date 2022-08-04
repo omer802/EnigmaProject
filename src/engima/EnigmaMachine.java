@@ -1,38 +1,50 @@
-package EngineMachine;
+package engima;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Machine {
+public class EnigmaMachine {
+
+    // TODO: 8/2/2022 change name of enum
+    public enum ReflectorEnum {
+        I, II, III, IV,V }
     private List<RotatingRotor> rotors;
     //בוחרים reflector אחד
     // private List<reflector> reflectors;
-    private Reflector reflector;
+    private List<Reflector> reflectors;
+    private int chosenReflector;
     private PlugBoard plugBoard;
     private Map<Character,Integer> ABCToIndex;
     private Map<Integer,Character> IndexToABC;
     private String alphabet;
     private boolean havePlugBoard;
 
-    public Machine(String alphabetInput, List<RotatingRotor> rotorsInput, Reflector reflectorInput, PlugBoard plugBoardInput) {
+    private final int rotorsCount;
+
+    public EnigmaMachine(String alphabetInput, List<RotatingRotor> rotorsInput, List<Reflector> reflectorsInput) {
+        rotorsCount = rotorsInput.size();
         alphabet = alphabetInput;
         rotors = rotorsInput;
-        reflector = reflectorInput;
+        reflectors = reflectorsInput;
         BuildDictionaries();
-        if(plugBoardInput.pairsInPlug > 0) {
-            addPlugBoard(plugBoardInput);
-            havePlugBoard = true;
-        }
-        else
-            havePlugBoard = false;
     }
 
     private void addPlugBoard(PlugBoard plugBoardInput) {
         plugBoard = plugBoardInput;
     }
 
+    // TODO: 8/2/2022 change to better translate
+    public void SetChosenReflector(ReflectorEnum chosenReflector) {
+        switch(chosenReflector){
+            case I: this.chosenReflector = 0;
+            case II: this.chosenReflector = 1;
+            case III: this.chosenReflector = 2;
+            case IV: this.chosenReflector = 3;
+            case V: this.chosenReflector = 4;
+        }
+    }
 
     private int convertAbcToIndex(Character charInput){
         return ABCToIndex.get(charInput);
@@ -79,7 +91,7 @@ public class Machine {
         // send to rotors the inedx
         rightToLeftRes = TransferRightToLeft(indexToMap);
         //reflector
-        resultReflector = reflector.reflect(rightToLeftRes);
+        resultReflector = reflectors.get(chosenReflector).reflect(rightToLeftRes);
 
         leftToRight = TransferLeftToRight(resultReflector);
 

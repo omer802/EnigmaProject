@@ -1,12 +1,20 @@
-package EngineMachine;
+package engima;
 
-import java.util.ArrayList;
-import java.util.List;
+import engine.LoadData.LoadData;
+import engine.LoadData.LoadDataFromXml;
 
 public class main {
     //public machine(String alphabetInput, List<RotatingRotor> rotorsInput, Reflector reflectorInput, PlugBoard plugBoardInput)
     public static void main(String[] args) {
-        ///*** alphabet
+      String path = "src/resources/ex1-sanity-small (1).xml";
+        // TODO: 8/2/2022  change loadData to static 
+      LoadData load = new LoadDataFromXml();
+      EnigmaMachine enigmaMachine = load.loadDataFromInput(path);
+
+    }
+
+
+    /* ///*** alphabet
         String alphabet = "abcdef";
         List<RotatingRotor> rotors = makeRotors();
         char ca = (char) ('0');
@@ -27,12 +35,9 @@ public class main {
         PlugBoard plugConnections = new PlugBoard(connections);
         PlugBoard plug = new PlugBoard();
         Machine enigmaMechine = new Machine(alphabet, rotors, toReflect, plugConnections);
-        String str = enigmaMechine.encodeString("abcdeabcde");
-        System.out.println(str);
-
-    }
-
-    static List<RotatingRotor> makeRotors() {
+        String str = enigmaMechine.encodeString("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        System.out.println(str);*/
+    /*static List<RotatingRotor> makeRotors() {
         List<RotatingRotor> rotorsToReturn = new ArrayList<>();
         List<pairOfData> pairsrotors = new ArrayList<>();
         List<pairOfData> pairsrotors2 = new ArrayList<>();
@@ -62,7 +67,7 @@ public class main {
         RotatingRotor rotor2 = new RotatingRotor(0, 2, "4", pairsrotors2);
         rotorsToReturn.add(rotor2);
         return rotorsToReturn;
-    }
+    }*/
 }
 
 
