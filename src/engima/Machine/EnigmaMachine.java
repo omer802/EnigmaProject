@@ -1,5 +1,9 @@
-package engima;
+package engima.Machine;
 
+
+import engima.PlugBoard.PlugBoard;
+import engima.reflector.Reflector;
+import engima.rotors.RotatingRotor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +19,7 @@ public class EnigmaMachine {
     // private List<reflector> reflectors;
     private List<Reflector> reflectors;
     private int chosenReflector;
+
     private PlugBoard plugBoard;
     private Map<Character,Integer> ABCToIndex;
     private Map<Integer,Character> IndexToABC;
@@ -38,11 +43,21 @@ public class EnigmaMachine {
     // TODO: 8/2/2022 change to better translate
     public void SetChosenReflector(ReflectorEnum chosenReflector) {
         switch(chosenReflector){
-            case I: this.chosenReflector = 0;
-            case II: this.chosenReflector = 1;
-            case III: this.chosenReflector = 2;
-            case IV: this.chosenReflector = 3;
-            case V: this.chosenReflector = 4;
+            case I:
+                this.chosenReflector = 0;
+                break;
+            case II:
+                this.chosenReflector = 1;
+                break;
+            case III:
+                this.chosenReflector = 2;
+                break;
+            case IV:
+                this.chosenReflector = 3;
+                break;
+            case V:
+                this.chosenReflector = 4;
+                break;
         }
     }
 
@@ -115,21 +130,19 @@ public class EnigmaMachine {
     }
     private void rotateRotors()
     {
-        rotors.get(0).rotate();
-        for (int i = 0; i < rotors.size() -1 ; i++) {
-            if(rotors.get(i).checkNotch())
-                rotors.get(i+1).rotate();
-            else//לבדוק אם לעשות break
-                break;
-
-
-
-        }
-
-
-
+        rotors.get(0).advanceNextRotor();
     }
 
-
+    public void setPlugBoard(PlugBoard plugBoard) {
+        this.plugBoard = plugBoard;
+        this.havePlugBoard = true;
+    }
+    public void RemovePlugBoard(){
+        this.plugBoard = null;
+        this.havePlugBoard = false;
+    }
+    public PlugBoard getPlugBoard() {
+        return plugBoard;
+    }
 
 }

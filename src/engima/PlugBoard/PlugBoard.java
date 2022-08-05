@@ -1,4 +1,4 @@
-package engima;
+package engima.PlugBoard;
 
 import java.util.HashMap;
 import java.util.Map;

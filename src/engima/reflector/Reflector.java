@@ -1,6 +1,6 @@
-package engima;
+package engima.reflector;
 
-import com.sun.xml.internal.bind.v2.TODO;
+import engima.reflector.inputOutputPair;
 
 import java.util.*;
 
@@ -8,7 +8,7 @@ public class Reflector {
     Map<Integer,Integer> mapInputOutput;
     // TODO: 8/2/2022  change id from string to enum
     String id;
-    public Reflector(String id, List <pairOfData> setPairs){
+    public Reflector(String id, List <inputOutputPair> setPairs){
         if(setPairs.size()<1)
             throw new ExceptionInInitializerError("A reflector cannot contain zero pairs");
         else {
@@ -17,11 +17,11 @@ public class Reflector {
         }
 
     }
-    private void setDictionary(List <pairOfData> setPairs) {
+    private void setDictionary(List <inputOutputPair> setPairs) {
         mapInputOutput = new HashMap<>();
-        for (pairOfData pair : setPairs) {
-            int input = Integer.parseInt((String.valueOf(pair.getRight())));
-            int output = Integer.parseInt((String.valueOf(pair.getLeft())));
+        for (inputOutputPair pair : setPairs) {
+            int input = pair.getInput();
+            int output = pair.getOutput();
             mapInputOutput.put(input, output);
             mapInputOutput.put(output, input);
         }

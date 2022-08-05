@@ -1,4 +1,6 @@
-package engima;
+package engima.rotors;
+
+import engima.pairOfData;
 
 import java.util.List;
 
@@ -6,8 +8,10 @@ public class Rotor {
 
      // לשנות כאשר זה יהיה מערך של רוטורים תוכל לדעת בלי לבדוק אם זה אחרון
      protected final String id;
+
      protected int position;
      protected List<pairOfData> PairOfDataArray;
+
 
      public Rotor( String id, List<pairOfData> setPairArray) {
 
@@ -23,10 +27,9 @@ public class Rotor {
      public int convertRightToLeft(int index) {
           int indexWithPosition = (index + position) % PairOfDataArray.size();
           Character inputChar = PairOfDataArray.get(indexWithPosition).getRight();
-          for (int nextIndex =0; nextIndex<PairOfDataArray.size();nextIndex++) {
-               int currentPosition = (nextIndex + position)  % PairOfDataArray.size();
-               if (PairOfDataArray.get(currentPosition).getLeft() == inputChar)
-                    return nextIndex;
+          for (int leftIndex =0; leftIndex<PairOfDataArray.size();leftIndex++) {
+               if (PairOfDataArray.get(leftIndex).getLeft() == inputChar)
+                    return (leftIndex - position + PairOfDataArray.size()) % PairOfDataArray.size();
           }
           return -1;
      }
@@ -34,12 +37,18 @@ public class Rotor {
      public int convertLeftToRight(int index) {
           int indexWithPosition = (index + position) % PairOfDataArray.size();
           Character inputChar = PairOfDataArray.get(indexWithPosition).getLeft();
-          for (int nextIndex = 0; nextIndex < PairOfDataArray.size(); nextIndex++) {
-               int currentPosition = (nextIndex + position)  % PairOfDataArray.size();
-               if (PairOfDataArray.get(currentPosition).getRight() == inputChar)
-                    return nextIndex;
+          for (int rightIndex = 0; rightIndex < PairOfDataArray.size(); rightIndex++) {
+               if (PairOfDataArray.get(rightIndex).getRight() == inputChar)
+                    return (rightIndex - position + PairOfDataArray.size()) % PairOfDataArray.size();
           }
           return -1;
 
+     }
+     public void setPairOfDataArray(List<pairOfData> pairOfDataArray) {
+          PairOfDataArray = pairOfDataArray;
+     }
+
+     public int getPosition() {
+          return position;
      }
 }

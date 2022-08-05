@@ -1,10 +1,11 @@
 package engine.LoadData;
 
-import engima.Reflector;
-import engima.RotatingRotor;
-import engima.pairOfData;
+import engima.*;
+import engima.Machine.EnigmaMachine;
+import engima.reflector.Reflector;
+import engima.reflector.inputOutputPair;
+import engima.rotors.RotatingRotor;
 import engine.LoadData.jaxb.schema.generated.*;
-import engima.EnigmaMachine;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -53,16 +54,16 @@ public class LoadDataFromXml implements LoadData {
     }
     private Reflector translateReflectorInput(CTEReflector inputReflector){
         String id = inputReflector.getId();
-        List<pairOfData> pairs = getPairsInputOutput(inputReflector.getCTEReflect());
+        List<inputOutputPair> pairs = getPairsInputOutput(inputReflector.getCTEReflect());
         return new Reflector(id,pairs);
     }
-    private List<pairOfData> getPairsInputOutput(List<CTEReflect> inputReflector){
-        List<pairOfData> pairOfData = new ArrayList<>();
+    private List<inputOutputPair> getPairsInputOutput(List<CTEReflect> inputReflector){
+        List<inputOutputPair> pairOfData = new ArrayList<>();
         for (int i = 0; i <inputReflector.size() ; i++) {
             // TODO: 8/2/2022 change to normal casting
-            char right = (char) (inputReflector.get(i).getInput()+ '0');
-            char left = (char) (inputReflector.get(i).getOutput() + '0');
-            pairOfData.add(new pairOfData(right,left));
+            int input = inputReflector.get(i).getInput() -1;
+            int output = inputReflector.get(i).getOutput() -1;
+            pairOfData.add(new inputOutputPair(input,output));
         }
         return pairOfData;
 
@@ -73,10 +74,21 @@ public class LoadDataFromXml implements LoadData {
             RotatingRotor rotor = translateRotorInput(inputRotor);
             rotorsToReturn.add(rotor);
         }
+        setRotorsChain(rotorsToReturn);
         return rotorsToReturn;
     }
+
+    // TODO: 8/4/2022  return it to private method
+    public static void setRotorsChain(List<RotatingRotor> rotors){
+        for (int i = 0; i < rotors.size()-1; i++) {
+            rotors.get(i).setNextRotor(rotors.get(i+1));
+            rotors.get(i).setIslastRotor(false);
+        }
+        rotors.get(rotors.size()-1).setNextRotor(null);
+        rotors.get(rotors.size()-1).setIslastRotor(true);
+    }
     private RotatingRotor translateRotorInput(CTERotor inputRotor){
-        int notch = inputRotor.getNotch();
+        int notch = inputRotor.getNotch() -1;
         int tempId = inputRotor.getId();
         String id = String.valueOf(tempId);
         List<CTEPositioning> inputPosition = inputRotor.getCTEPositioning();
