@@ -6,6 +6,10 @@ import java.util.List;
 
 public class Rotor {
 
+
+
+
+
      // לשנות כאשר זה יהיה מערך של רוטורים תוכל לדעת בלי לבדוק אם זה אחרון
      protected final String id;
 
@@ -50,5 +54,8 @@ public class Rotor {
 
      public int getPosition() {
           return position;
+     }
+     public String getId() {
+          return id;
      }
 }

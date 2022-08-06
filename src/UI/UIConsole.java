@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class UIConsole implements UI {
     public static void main(String[] args) {
+
+
         ReadFromMenu();
         ApiEnigma api =  new ApiEnigmaImp();
         boolean ExitWasPressed = false;
@@ -27,22 +29,32 @@ public class UIConsole implements UI {
                     break;
                 case "2":
                     showData(api,readInput);
+                    break;
+                case "3":
+                    selectInitialCodeConfiguration(api,readInput);
             }
 
         }
     }
     public static void readData(ApiEnigma api, Scanner readInput){
         System.out.println("please enter a file path");
-        String res = readInput.nextLine();
-        api.readData(res);
+        String pathString = readInput.nextLine();
+        api.readData(pathString);
 
 
+    }
+    public static void selectInitialCodeConfiguration(ApiEnigma api, Scanner readInput){
+        System.out.println("please enter an initial code configuration");
+        String Configuration = readInput.nextLine();
+        api.selectInitialCodeConfiguration(Configuration);
     }
     public static void showData(ApiEnigma api, Scanner readInput) {
 
     }
 
         public static void menu(){
+
         System.out.println("press 1 ");
     }
 }
+

@@ -8,11 +8,21 @@ public class Reflectors {
     public enum ReflectorEnum {
         I, II, III, IV,V }
     private int chosenReflector;
-
+    private final static int didntchooseReflector= -1;
     private List<Reflector> reflectors;
     private int reflectorsAmount;
     private int reflectorsAmountInUse;
 
+    public Reflectors(List<Reflector> reflectors ){
+        chosenReflector = didntchooseReflector;
+        this.reflectors = reflectors;
+    }
+    public Reflector getReflectorInUse(){
+        return reflectors.get(chosenReflector);
+    }
+    public int ToReflect(int index){
+        return getReflectorInUse().reflect(index);
+    }
     public List<Reflector> getReflectors() {
         return reflectors;
     }

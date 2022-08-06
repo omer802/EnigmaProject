@@ -10,13 +10,12 @@ import engine.LoadData.LoadDataFromXml;
 import java.util.ArrayList;
 import java.util.List;
 
-import static engima.Machine.EnigmaMachine.ReflectorEnum;
 
 public class main1 {
     public static void main(String[] args) {
         ///*** alphabet
         String alphabet = "abcdef";
-        List<RotatingRotor> rotors = makeRotors();
+       /* List<RotatingRotor> rotors = makeRotors();
         char ca = (char) ('0');
         char cb = (char) ('1');
         char cc = (char) ('2');
@@ -39,7 +38,7 @@ public class main1 {
         enigmaMechine.setPlugBoard(plugConnections);
         enigmaMechine.SetChosenReflector(ReflectorEnum.I);
         String str = enigmaMechine.encodeString("cdacdacdacdacda");
-        System.out.println(str);
+        System.out.println(str);*/
     }
 
     static List<RotatingRotor> makeRotors() {
