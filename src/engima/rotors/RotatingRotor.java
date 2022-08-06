@@ -12,6 +12,7 @@ public class RotatingRotor extends Rotor implements advanceRotor {
     private boolean lastRotor;
 
 
+    // TODO: 8/6/2022 check notch ok with set pair array size  
     public RotatingRotor(int notch, String id, List<pairOfData> setPairArray) {
         super( id, setPairArray);
         this.notch = notch;

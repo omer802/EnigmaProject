@@ -2,14 +2,13 @@ package engima.Machine;
 
 
 import engima.PlugBoard.PlugBoard;
+import engima.keyboard.Keyboard;
 import engima.reflector.Reflector;
 import engima.reflector.Reflectors;
 import engima.rotors.RotatingRotor;
 import engima.rotors.RotatingRotors;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EnigmaMachine {
 
@@ -19,27 +18,20 @@ public class EnigmaMachine {
     /*public enum //ReflectorEnum {
         I, II, III, IV,V }*/
     private RotatingRotors rotors;
-
-    //בוחרים reflector אחד
-    // private List<reflector> reflectors;
     private Reflectors reflectors;
     private PlugBoard plugBoard;
-    private Map<Character,Integer> ABCToIndex;
-    private Map<Integer,Character> IndexToABC;
-    private String alphabet;
     private boolean havePlugBoard;
+    private Keyboard keyboard;
 
 
-    public EnigmaMachine(String alphabetInput, List<RotatingRotor> rotorsInput, List<Reflector> reflectorsInput) {
-        alphabet = alphabetInput;
+    public EnigmaMachine(Keyboard keyboardInput, List<RotatingRotor> rotorsInput, List<Reflector> reflectorsInput) {
+        keyboard = keyboardInput;
         rotors = new RotatingRotors(rotorsInput);
         reflectors = new Reflectors(reflectorsInput);
-        BuildDictionaries();
+        havePlugBoard = false;
     }
 
-    private void addPlugBoard(PlugBoard plugBoardInput) {
-        plugBoard = plugBoardInput;
-    }
+
 
     // TODO: 8/2/2022 change to better translate
     /*public void SetChosenReflector(ReflectorEnum chosenReflector) {
@@ -61,21 +53,6 @@ public class EnigmaMachine {
                 break;
         }
     }*/
-
-    private int convertAbcToIndex(Character charInput){
-        return ABCToIndex.get(charInput);
-    }
-    private char convertIndexToABC(Integer intInput){
-        return IndexToABC.get(intInput);
-    }
-    protected void BuildDictionaries(){
-        IndexToABC = new HashMap<>();
-        ABCToIndex = new HashMap<>();
-        for (int i = 0; i < alphabet.length(); i++) {
-            IndexToABC.put(i,alphabet.charAt(i));
-            ABCToIndex.put(alphabet.charAt(i),i);
-        }
-    }
     public String encodeString(String toEncode){
         String encodeResult = new String();
         for (int i = 0; i <toEncode.length() ; i++) {
@@ -89,9 +66,9 @@ public class EnigmaMachine {
             if (plugBoard.isPluged(currentCharToEncode))
                 currentCharToEncode = plugBoard.getPlugedValue(currentCharToEncode);
         }
-        int indexToMap = ABCToIndex.get(currentCharToEncode);
+        int indexToMap = keyboard.convertAbcToIndex(currentCharToEncode);
         int returnedIndex = encodingUsingRotors(indexToMap);
-        char toReturnChar = convertIndexToABC(returnedIndex);
+        char toReturnChar = keyboard.convertIndexToABC(returnedIndex);
         if(havePlugBoard) {
             if (plugBoard.isPluged(toReturnChar))
                 toReturnChar = plugBoard.getPlugedValue(toReturnChar);
@@ -99,7 +76,7 @@ public class EnigmaMachine {
         return toReturnChar;
     }
     private int encodingUsingRotors(int indexToMap){
-        rotateRotors();
+        rotors.advanceRotorsInChain();
         int result;
         int rightToLeftRes;
         int leftToRight;
@@ -110,33 +87,30 @@ public class EnigmaMachine {
         resultReflector = reflectors.ToReflect(rightToLeftRes);
 
         leftToRight = TransferLeftToRight(resultReflector);
-
         //rotors
         return  leftToRight;
-
     }
     private int TransferRightToLeft(int index){
         int indexResRotor = index;
         for(int i = 0;i<rotors.getRotorsAmountInUse();i++) {
-            indexResRotor = rotors.getRotors().get(i).convertRightToLeft(indexResRotor);
+            indexResRotor = rotors.getChosenRotors().get(i).convertRightToLeft(indexResRotor);
         }
         return indexResRotor;
     }
     private int TransferLeftToRight(int index){
         int indexResRotor = index;
         for(int i = rotors.getRotorsAmountInUse()-1;i>=0;i--){
-            indexResRotor =rotors.getRotors().get(i).convertLeftToRight(indexResRotor);
+            indexResRotor =rotors.getChosenRotors().get(i).convertLeftToRight(indexResRotor);
         }
         return indexResRotor;
-    }
-    private void rotateRotors()
-    {
-        rotors.getRotors().get(0).advanceNextRotor();
     }
 
     public void setPlugBoard(PlugBoard plugBoard) {
         this.plugBoard = plugBoard;
         this.havePlugBoard = true;
+    }
+    public void setPlugBoard(String connections){
+       setPlugBoard(new PlugBoard(connections));
     }
     public void RemovePlugBoard(){
         this.plugBoard = null;
@@ -145,7 +119,6 @@ public class EnigmaMachine {
     public PlugBoard getPlugBoard() {
         return plugBoard;
     }
-
     public RotatingRotors getRotors() {
         return rotors;
     }

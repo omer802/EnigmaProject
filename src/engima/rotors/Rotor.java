@@ -1,5 +1,6 @@
 package engima.rotors;
 
+import engima.keyboard.Keyboard;
 import engima.pairOfData;
 
 import java.util.List;
@@ -15,16 +16,20 @@ public class Rotor {
 
      protected int position;
      protected List<pairOfData> PairOfDataArray;
-
-
      public Rotor( String id, List<pairOfData> setPairArray) {
 
           this.id = id;
           PairOfDataArray = setPairArray;
      }
 
-     public void setPosition(int position) {
-          this.position = position;
+     public void setPosition(char charToPosition) {
+          if(!Keyboard.isCharacterInRange(charToPosition))
+               throw new IllegalArgumentException("You are trying to enter a character that does not exist on the keyboard");
+
+          for (int i = 0; i < PairOfDataArray.size() ; i++) {
+               if(PairOfDataArray.get(i).getRight()== charToPosition)
+                    this.position = i;
+          }
      }
 
      //לאחד לפונקציה אחת את ימים ושמאל ולמנוע שכפול קוד

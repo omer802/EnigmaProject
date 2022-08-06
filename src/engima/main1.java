@@ -60,7 +60,7 @@ public class main1 {
         pairsrotors.add(new pairOfData(ce, cb));
         pairsrotors.add(new pairOfData(cf, ca));
         RotatingRotor rotor = new RotatingRotor(3, "2", pairsrotors);
-        rotor.setPosition(2);
+        //rotor.setPosition(2);
         rotorsToReturn.add(rotor);
         //rotor 2
         pairsrotors2.add(new pairOfData(ca, ce));
@@ -70,9 +70,9 @@ public class main1 {
         pairsrotors2.add(new pairOfData(ce, cc));
         pairsrotors2.add(new pairOfData(cf, ca));
         RotatingRotor rotor2 = new RotatingRotor(0, "2", pairsrotors2);
-        rotor2.setPosition(2);
+        //rotor2.setPosition(2);
         rotorsToReturn.add(rotor2);
-        LoadDataFromXml.setRotorsChain(rotorsToReturn);
+        //LoadDataFromXml.setRotorsChain(rotorsToReturn);
         return rotorsToReturn;
 
 

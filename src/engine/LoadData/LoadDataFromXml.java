@@ -2,6 +2,7 @@ package engine.LoadData;
 
 import engima.*;
 import engima.Machine.EnigmaMachine;
+import engima.keyboard.Keyboard;
 import engima.reflector.Reflector;
 import engima.reflector.inputOutputPair;
 import engima.rotors.RotatingRotor;
@@ -38,11 +39,12 @@ public class LoadDataFromXml implements LoadData {
         String ABC = MachineInput.getABC();
         ABC = ABC.replace("\t","");
         ABC =ABC.replace("\n","");
+        Keyboard keyboard = new Keyboard(ABC);
         List<CTERotor> rotorsToTransfer =  MachineInput.getCTERotors().getCTERotor();
         List<RotatingRotor> rotors = getRotorsFromInput(rotorsToTransfer);
         List<CTEReflector> reflectorsToTransfer = MachineInput.getCTEReflectors().getCTEReflector();
         List<Reflector> reflectors = getReflectorsFromInput(reflectorsToTransfer);
-        return new EnigmaMachine(ABC, rotors, reflectors);
+        return new EnigmaMachine(keyboard, rotors, reflectors);
     }
     private List<Reflector> getReflectorsFromInput(List<CTEReflector> reflectorsInput){
         List<Reflector> reflectorsToReturn = new ArrayList<>();
@@ -74,19 +76,19 @@ public class LoadDataFromXml implements LoadData {
             RotatingRotor rotor = translateRotorInput(inputRotor);
             rotorsToReturn.add(rotor);
         }
-        setRotorsChain(rotorsToReturn);
+       // setRotorsChain(rotorsToReturn);
         return rotorsToReturn;
     }
 
     // TODO: 8/4/2022  return it to private method
-    public static void setRotorsChain(List<RotatingRotor> rotors){
+   /* public static void setRotorsChain(List<RotatingRotor> rotors){
         for (int i = 0; i < rotors.size()-1; i++) {
             rotors.get(i).setNextRotor(rotors.get(i+1));
             rotors.get(i).setIslastRotor(false);
         }
         rotors.get(rotors.size()-1).setNextRotor(null);
         rotors.get(rotors.size()-1).setIslastRotor(true);
-    }
+    }*/
     private RotatingRotor translateRotorInput(CTERotor inputRotor){
         int notch = inputRotor.getNotch() -1;
         int tempId = inputRotor.getId();
