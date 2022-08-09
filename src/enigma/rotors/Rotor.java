@@ -1,35 +1,41 @@
-package engima.rotors;
+package enigma.rotors;
 
-import engima.keyboard.Keyboard;
-import engima.pairOfData;
+import enigma.keyboard.Keyboard;
+import enigma.pairOfData;
 
 import java.util.List;
 
 public class Rotor {
-
-
-
-
-
-     // לשנות כאשר זה יהיה מערך של רוטורים תוכל לדעת בלי לבדוק אם זה אחרון
      protected final String id;
-
+     public char startingPositionCharacter;
      protected int position;
+     // TODO: 8/7/2022 replace position index to method
+     public int startingPositionIndex;
      protected List<pairOfData> PairOfDataArray;
      public Rotor( String id, List<pairOfData> setPairArray) {
-
           this.id = id;
-          PairOfDataArray = setPairArray;
+          setPairOfDataArray(setPairArray);
      }
 
-     public void setPosition(char charToPosition) {
+     public void SetStartingPosition(char charToPosition) {
+          this.startingPositionCharacter = charToPosition;
+          setPosition(charToPosition);
+
+     }
+     public void setPosition(char charToPosition){
           if(!Keyboard.isCharacterInRange(charToPosition))
                throw new IllegalArgumentException("You are trying to enter a character that does not exist on the keyboard");
 
           for (int i = 0; i < PairOfDataArray.size() ; i++) {
-               if(PairOfDataArray.get(i).getRight()== charToPosition)
+               if (PairOfDataArray.get(i).getRight() == charToPosition) {
                     this.position = i;
+                    this.startingPositionIndex = i;
+               }
           }
+     }
+     public int getStartingPositionIndex()
+     {
+          return startingPositionIndex;
      }
 
      //לאחד לפונקציה אחת את ימים ושמאל ולמנוע שכפול קוד
@@ -54,7 +60,7 @@ public class Rotor {
 
      }
      public void setPairOfDataArray(List<pairOfData> pairOfDataArray) {
-          PairOfDataArray = pairOfDataArray;
+          this.PairOfDataArray = pairOfDataArray;
      }
 
      public int getPosition() {
@@ -62,5 +68,12 @@ public class Rotor {
      }
      public String getId() {
           return id;
+     }
+
+     @Override
+     public String toString() {
+          return id;
+
+
      }
 }

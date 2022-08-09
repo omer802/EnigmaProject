@@ -1,9 +1,4 @@
-package engima;
-
-import engima.Machine.EnigmaMachine;
-import engima.PlugBoard.PlugBoard;
-import engine.LoadData.LoadData;
-import engine.LoadData.LoadDataFromXml;
+package enigma;
 
 public class main2 {
     public static void main(String[] args) {

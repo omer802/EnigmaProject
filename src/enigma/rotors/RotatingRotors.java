@@ -1,4 +1,4 @@
-package engima.rotors;
+package enigma.rotors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ public class RotatingRotors {
     public RotatingRotors(List<RotatingRotor> rotors){
         setRotors(rotors);
         setRotorsAmount(rotors.size());
-        rotorsAmountInUse = 0;
     }
     public void setRotors(List<RotatingRotor> rotors) {this.rotors = rotors;
     }
@@ -27,7 +26,7 @@ public class RotatingRotors {
     }
 
     public void setRotorsAmount(int rotorsAmount) {
-        rotorsAmount = rotorsAmount;
+        this.rotorsAmount = rotorsAmount;
     }
 
 
@@ -64,7 +63,7 @@ public class RotatingRotors {
         for (int i = 0; i <positions.length() ; i++){
            // The positions of the rotors were determined from right to left, although the data is typed from left to right
             char charPositionEndToBegin = positions.charAt(positions.length() - i -1);
-            getChosenRotors().get(i).setPosition(charPositionEndToBegin);
+            getChosenRotors().get(i).SetStartingPosition(charPositionEndToBegin);
     }
     }
     public void advanceRotorsInChain()
@@ -80,5 +79,17 @@ public class RotatingRotors {
         chosenRotorsArray.get(chosenRotorsArray.size()-1).setIslastRotor(true);
     }
 
-
+    @Override
+    public String toString() {
+        String toStringArrayChosen = new String();
+        for (int i = getChosenRotors().size() -1; i >=0 ; i--) {
+            toStringArrayChosen+= getChosenRotors().get(i).toString();
+            if(i>0)
+            toStringArrayChosen+=",";
+        }
+        return toStringArrayChosen;
+    }
+    public void returnRotorsToStartingPositions(){
+        this.getChosenRotors().stream().forEach(RotatingRotor::returnToStartingPosition);
+    }
 }

@@ -1,11 +1,6 @@
-package engima;
+package enigma;
 
-import engima.Machine.EnigmaMachine;
-import engima.PlugBoard.PlugBoard;
-import engima.reflector.Reflector;
-import engima.reflector.inputOutputPair;
-import engima.rotors.RotatingRotor;
-import engine.LoadData.LoadDataFromXml;
+import enigma.rotors.RotatingRotor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package engima;
+package enigma;
 
 public class pairOfData {
 

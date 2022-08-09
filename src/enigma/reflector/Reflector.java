@@ -1,6 +1,4 @@
-package engima.reflector;
-
-import engima.reflector.inputOutputPair;
+package enigma.reflector;
 
 import java.util.*;
 

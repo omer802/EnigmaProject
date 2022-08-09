@@ -1,11 +1,11 @@
 package engine.LoadData;
 
-import engima.*;
-import engima.Machine.EnigmaMachine;
-import engima.keyboard.Keyboard;
-import engima.reflector.Reflector;
-import engima.reflector.inputOutputPair;
-import engima.rotors.RotatingRotor;
+import enigma.*;
+import enigma.Machine.EnigmaMachine;
+import enigma.keyboard.Keyboard;
+import enigma.reflector.Reflector;
+import enigma.reflector.inputOutputPair;
+import enigma.rotors.RotatingRotor;
 import engine.LoadData.jaxb.schema.generated.*;
 
 import javax.xml.bind.JAXBContext;
@@ -37,8 +37,10 @@ public class LoadDataFromXml implements LoadData {
     }
     private EnigmaMachine deserializeMachineInput(CTEMachine MachineInput){
         String ABC = MachineInput.getABC();
-        ABC = ABC.replace("\t","");
-        ABC =ABC.replace("\n","");
+        ABC = ABC.replaceAll("[^\\x00-\\x7F]", "");
+        ABC =ABC.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
+        ABC = ABC.replaceAll("\\p{C}", "");
+        ABC = ABC.trim();
         Keyboard keyboard = new Keyboard(ABC);
         List<CTERotor> rotorsToTransfer =  MachineInput.getCTERotors().getCTERotor();
         List<RotatingRotor> rotors = getRotorsFromInput(rotorsToTransfer);
@@ -79,16 +81,6 @@ public class LoadDataFromXml implements LoadData {
        // setRotorsChain(rotorsToReturn);
         return rotorsToReturn;
     }
-
-    // TODO: 8/4/2022  return it to private method
-   /* public static void setRotorsChain(List<RotatingRotor> rotors){
-        for (int i = 0; i < rotors.size()-1; i++) {
-            rotors.get(i).setNextRotor(rotors.get(i+1));
-            rotors.get(i).setIslastRotor(false);
-        }
-        rotors.get(rotors.size()-1).setNextRotor(null);
-        rotors.get(rotors.size()-1).setIslastRotor(true);
-    }*/
     private RotatingRotor translateRotorInput(CTERotor inputRotor){
         int notch = inputRotor.getNotch() -1;
         int tempId = inputRotor.getId();

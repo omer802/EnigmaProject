@@ -1,12 +1,12 @@
-package engima.Machine;
+package enigma.Machine;
 
 
-import engima.PlugBoard.PlugBoard;
-import engima.keyboard.Keyboard;
-import engima.reflector.Reflector;
-import engima.reflector.Reflectors;
-import engima.rotors.RotatingRotor;
-import engima.rotors.RotatingRotors;
+import enigma.PlugBoard.PlugBoard;
+import enigma.keyboard.Keyboard;
+import enigma.reflector.Reflector;
+import enigma.reflector.Reflectors;
+import enigma.rotors.RotatingRotor;
+import enigma.rotors.RotatingRotors;
 
 import java.util.List;
 
@@ -23,12 +23,26 @@ public class EnigmaMachine {
     private boolean havePlugBoard;
     private Keyboard keyboard;
 
+    public static int theNumberOfStringsEncrypted;
+
+    public boolean isConfigFromUser() {
+        return ConfigFromUser;
+    }
+
+    public void setConfigFromUser() {
+        this.ConfigFromUser = true;
+    }
+
+    private boolean ConfigFromUser;
+
 
     public EnigmaMachine(Keyboard keyboardInput, List<RotatingRotor> rotorsInput, List<Reflector> reflectorsInput) {
         keyboard = keyboardInput;
         rotors = new RotatingRotors(rotorsInput);
         reflectors = new Reflectors(reflectorsInput);
         havePlugBoard = false;
+        theNumberOfStringsEncrypted = 0;
+        ConfigFromUser = false;
     }
 
 
@@ -53,7 +67,11 @@ public class EnigmaMachine {
                 break;
         }
     }*/
+    private static void addOneToCountOfDataEncrypted(){
+        theNumberOfStringsEncrypted++;
+    }
     public String encodeString(String toEncode){
+        addOneToCountOfDataEncrypted();
         String encodeResult = new String();
         for (int i = 0; i <toEncode.length() ; i++) {
             encodeResult += encodeChar(toEncode.charAt(i));
@@ -62,6 +80,7 @@ public class EnigmaMachine {
     }
     public Character encodeChar(char charToEncode){
         char currentCharToEncode = charToEncode;
+        // TODO: 8/7/2022 change to optianl 
         if(havePlugBoard) {
             if (plugBoard.isPluged(currentCharToEncode))
                 currentCharToEncode = plugBoard.getPlugedValue(currentCharToEncode);
@@ -116,10 +135,13 @@ public class EnigmaMachine {
         this.plugBoard = null;
         this.havePlugBoard = false;
     }
+    public boolean isPluged(){
+        return havePlugBoard;
+    }
     public PlugBoard getPlugBoard() {
         return plugBoard;
     }
-    public RotatingRotors getRotors() {
+    public RotatingRotors getRotorsObject() {
         return rotors;
     }
     public Reflectors getReflectors() {

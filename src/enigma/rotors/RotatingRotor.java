@@ -1,6 +1,6 @@
-package engima.rotors;
+package enigma.rotors;
 
-import engima.pairOfData;
+import enigma.pairOfData;
 
 import java.util.List;
 
@@ -48,6 +48,15 @@ public class RotatingRotor extends Rotor implements advanceRotor {
     public void setIslastRotor(boolean islastRotor) {
         this.lastRotor = islastRotor;
     }
+    public int getNotch() {
+        return notch;
+    }
 
-
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+    public void returnToStartingPosition(){
+        this.position = this.startingPositionIndex;
+    }
 }

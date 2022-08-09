@@ -1,7 +1,8 @@
 package engine.api;
 
-import engima.Machine.EnigmaMachine;
-import engima.reflector.Reflectors;
+import DTOS.MachineSpecification;
+import enigma.Machine.EnigmaMachine;
+import enigma.reflector.Reflectors;
 import engine.LoadData.LoadData;
 import engine.LoadData.LoadDataFromXml;
 
@@ -27,12 +28,16 @@ public class ApiEnigmaImp implements ApiEnigma {
            throw new IllegalArgumentException("Please insert .xml files only");
         }
     }
-
-    public void showData(){
-
+    public MachineSpecification showData(){
+        MachineSpecification Machinespecification = new MachineSpecification(enigmaMachine);
+        return Machinespecification;
 
     }
+
+    // TODO: 8/7/2022 change to working with dto object
+    // TODO: 8/7/2022 think of get all the steres to method in enigmaMachine and not in the api
     public void selectInitialCodeConfiguration(String configuration){
+        enigmaMachine.setConfigFromUser();
         List<String> configurationList = getDataArrayInput(configuration);
         setRotors(configurationList.get(0));
         setPositonsOfRotors(configurationList.get(1));
@@ -50,13 +55,13 @@ public class ApiEnigmaImp implements ApiEnigma {
         List<String> chosenRotors = Arrays.stream(chosenRotorsInput.split(","))
                 .collect(Collectors.toList());
         Collections.reverse(chosenRotors);
-        enigmaMachine.getRotors().setChosenRotorToUse(chosenRotors);
+        enigmaMachine.getRotorsObject().setChosenRotorToUse(chosenRotors);
     }
 
     // TODO: 8/5/2022 check if number of position is the same as we need 
     // TODO: 8/5/2022 try to split with stream
     private void setPositonsOfRotors(String positonsArray){
-        enigmaMachine.getRotors().setPositions(positonsArray);
+        enigmaMachine.getRotorsObject().setPositions(positonsArray);
 
     }
     private List<String> getDataArrayInput(String configuration){
@@ -75,5 +80,11 @@ public class ApiEnigmaImp implements ApiEnigma {
         String encryptedInformation = enigmaMachine.encodeString(data);
         return encryptedInformation;
     }
+    public void systemReset(){
+        enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
+    }
 
+    public void AutomaticallyInitialCodeConfiguration(){
+
+    }
 }

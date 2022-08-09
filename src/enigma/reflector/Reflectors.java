@@ -1,6 +1,4 @@
-package engima.reflector;
-
-import engima.rotors.RotatingRotor;
+package enigma.reflector;
 
 import java.util.List;
 
@@ -11,11 +9,11 @@ public class Reflectors {
     private final static int didntchooseReflector= -1;
     private List<Reflector> reflectors;
     private int reflectorsAmount;
-    private int reflectorsAmountInUse;
 
     public Reflectors(List<Reflector> reflectors ){
         chosenReflector = didntchooseReflector;
         this.reflectors = reflectors;
+        this.reflectorsAmount = reflectors.size();
     }
     public Reflector getReflectorInUse(){
         return reflectors.get(chosenReflector);
@@ -35,17 +33,8 @@ public class Reflectors {
         return reflectorsAmount;
     }
 
-    public void setReflectorsAmount(int reflectorsAmount) {
-        this.reflectorsAmount = reflectorsAmount;
-    }
 
-    public void setReflectorsAmountInUse(int reflectorsAmountInUse) {
-        this.reflectorsAmountInUse = reflectorsAmountInUse;
-    }
 
-    public int getReflectorsAmountInUse() {
-        return reflectorsAmountInUse;
-    }
     public void SetChosenReflector(ReflectorEnum chosenReflector) {
         switch (chosenReflector) {
             case I:
@@ -64,5 +53,26 @@ public class Reflectors {
                 this.chosenReflector = 4;
                 break;
         }
+    }
+    public ReflectorEnum getChosenReflectorByRomeNumerals() {
+        ReflectorEnum ReflectorToReturn = null;
+        switch (this.chosenReflector) {
+            case 0:
+                ReflectorToReturn =  ReflectorEnum.I;
+                break;
+            case 1:
+                ReflectorToReturn = ReflectorEnum.II;
+                break;
+            case 2:
+                ReflectorToReturn = ReflectorEnum.III;
+                break;
+            case 3:
+                ReflectorToReturn = ReflectorEnum.IV;
+                break;
+            case 4:
+                ReflectorToReturn = ReflectorEnum.V;
+                break;
+        }
+        return ReflectorToReturn;
     }
 }
