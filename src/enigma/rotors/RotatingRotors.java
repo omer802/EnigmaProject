@@ -34,7 +34,7 @@ public class RotatingRotors {
         return rotorsAmountInUse;
     }
 
-    private void setRotorsAmountInUse() {this.rotorsAmountInUse = chosenRotorsArray.size();
+    public void setRotorsAmountInUse(int rotorsAmount) {this.rotorsAmountInUse = rotorsAmount;
     }
 
     public List<RotatingRotor> getChosenRotors() {
@@ -53,18 +53,17 @@ public class RotatingRotors {
             }
         }
         chosenRotorsArray = chosenRotorsToUpdate;
-        setRotorsAmountInUse();
         setRotorsChain();
     }
 
     // TODO: 8/6/2022 think about what exption i need here. like if the position is not in the scoop in every rotor
     public void setPositions(String positions)
     {
-        for (int i = 0; i <positions.length() ; i++){
-           // The positions of the rotors were determined from right to left, although the data is typed from left to right
-            char charPositionEndToBegin = positions.charAt(positions.length() - i -1);
+        for (int i = 0; i <positions.length() ; i++) {
+            // The positions of the rotors were determined from right to left, although the data is typed from left to right
+            char charPositionEndToBegin = positions.charAt(positions.length() - i - 1);
             getChosenRotors().get(i).SetStartingPosition(charPositionEndToBegin);
-    }
+        }
     }
     public void advanceRotorsInChain()
     {
@@ -81,14 +80,28 @@ public class RotatingRotors {
 
     @Override
     public String toString() {
-        String toStringArrayChosen = new String();
-        for (int i = getChosenRotors().size() -1; i >=0 ; i--) {
-            toStringArrayChosen+= getChosenRotors().get(i).toString();
-            if(i>0)
-            toStringArrayChosen+=",";
+        String toStringArray = new String();
+        for (int i = getRotors().size() -1; i >=0 ; i--) {
+            toStringArray+= getRotors().get(i).toString();
         }
-        return toStringArrayChosen;
+        return toStringArray;
     }
+    public List<String> getChosenRotorsString(){
+        List<String> chosenRotors = new ArrayList<>();
+        for (int i = getChosenRotors().size() -1; i >=0 ; i--) {
+            chosenRotors.add(getChosenRotors().get(i).toString());
+        }
+        return chosenRotors;
+    }
+
+    // TODO: 8/11/2022 make above and under a single function 
+    public List<String> getAllRotorsAsStringList(){
+        List<String> chosenRotors = new ArrayList<>();
+        for (int i = rotors.size()-1; i >=0 ; i--) {
+            chosenRotors.add(getRotors().get(i).toString());
+        }
+        return chosenRotors;
+    } 
     public void returnRotorsToStartingPositions(){
         this.getChosenRotors().stream().forEach(RotatingRotor::returnToStartingPosition);
     }

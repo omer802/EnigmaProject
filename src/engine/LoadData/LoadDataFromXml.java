@@ -8,6 +8,7 @@ import enigma.reflector.inputOutputPair;
 import enigma.rotors.RotatingRotor;
 import engine.LoadData.jaxb.schema.generated.*;
 
+import javax.crypto.Mac;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -44,9 +45,10 @@ public class LoadDataFromXml implements LoadData {
         Keyboard keyboard = new Keyboard(ABC);
         List<CTERotor> rotorsToTransfer =  MachineInput.getCTERotors().getCTERotor();
         List<RotatingRotor> rotors = getRotorsFromInput(rotorsToTransfer);
+        int amoutOfRotorsToUse = MachineInput.getRotorsCount();
         List<CTEReflector> reflectorsToTransfer = MachineInput.getCTEReflectors().getCTEReflector();
         List<Reflector> reflectors = getReflectorsFromInput(reflectorsToTransfer);
-        return new EnigmaMachine(keyboard, rotors, reflectors);
+        return new EnigmaMachine(keyboard, rotors,amoutOfRotorsToUse, reflectors);
     }
     private List<Reflector> getReflectorsFromInput(List<CTEReflector> reflectorsInput){
         List<Reflector> reflectorsToReturn = new ArrayList<>();

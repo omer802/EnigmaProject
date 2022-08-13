@@ -2,7 +2,7 @@ package enigma.PlugBoard;
 
 import java.util.*;
 
-public class PlugBoard {
+public class PlugBoard  {
     private Map<Character, Character> mapInputOutput;
     public int pairsInPlug;
     public String connections;
@@ -20,11 +20,11 @@ public class PlugBoard {
     // TODO: 8/7/2022 changing to without , and |
     private void initialPlugBoard(String connections) {
         mapInputOutput = new HashMap<>();
-        String[] characterPairs = connections.split(",");
         this.connections = connections;
-        for (int i = 0; i < characterPairs.length; i++) {
-            Character c1 = (Character)characterPairs[i].charAt(0);
-            Character c2 = (Character)characterPairs[i].charAt(2);// skip on |
+        //taking pair of plugs
+        for (int i = 0; i < connections.length()/2; i+=2) {
+            Character c1 = (Character)connections.charAt(i);
+            Character c2 = (Character)connections.charAt(i+1);
             mapInputOutput.put(c1, c2);
             mapInputOutput.put(c2, c1);
         }

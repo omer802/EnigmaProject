@@ -18,9 +18,7 @@ public class PairOfNotchAndRotorId {
 
     @Override
     public String toString() {
-        return
-                "[rotorId='" + rotorId + '\'' +
-                ", rotorNotch=" + rotorNotch +
-                ']';
+        return rotorId + '(' + rotorNotch + ')';
+
     }
 }

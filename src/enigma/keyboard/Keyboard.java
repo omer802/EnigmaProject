@@ -30,5 +30,13 @@ public class Keyboard {
         }
     }
     public static boolean isCharacterInRange(char ch){ return alphabet.contains(Character.toString(ch));}
+
+    public static boolean isStringInRange(String str){
+        for (int i = 0; i <str.length() ; i++) {
+            if(!isCharacterInRange(str.charAt(i)))
+                return false;
+        }
+        return true;
+    }
     
 }

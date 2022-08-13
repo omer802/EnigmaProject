@@ -4,8 +4,9 @@ import java.util.*;
 
 public class Reflector {
     Map<Integer,Integer> mapInputOutput;
+
     // TODO: 8/2/2022  change id from string to enum
-    String id;
+    private String id;
     public Reflector(String id, List <inputOutputPair> setPairs){
         if(setPairs.size()<1)
             throw new ExceptionInInitializerError("A reflector cannot contain zero pairs");
@@ -33,5 +34,8 @@ public class Reflector {
         return "reflector{" +
                 "mapInputOutput=" + mapInputOutput +
                 '}';
+    }
+    public String getId() {
+        return id;
     }
 }

@@ -1,12 +1,14 @@
 package enigma.reflector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Reflectors {
     public enum ReflectorEnum {
         I, II, III, IV,V }
     private int chosenReflector;
-    private final static int didntchooseReflector= -1;
+    private final static int didntchooseReflector = -1;
     private List<Reflector> reflectors;
     private int reflectorsAmount;
 
@@ -23,6 +25,13 @@ public class Reflectors {
     }
     public List<Reflector> getReflectors() {
         return reflectors;
+    }
+    public List<String> getPossibleReflectors(){
+        List<String> possiblesReflectors = new ArrayList<>();
+        for (Reflector possibleReflector: reflectors) {
+            possiblesReflectors.add(possibleReflector.getId());
+        }
+        return possiblesReflectors;
     }
 
     public void setReflectors(List<Reflector> reflectors) {
@@ -75,4 +84,47 @@ public class Reflectors {
         }
         return ReflectorToReturn;
     }
+   /* public static int ReflectorEnumToInteger(ReflectorEnum ReflectorEnum){
+        int integerFromEnum = 0;
+        switch (ReflectorEnum) {
+            case I:
+                integerFromEnum =  1;
+                break;
+            case II:
+                integerFromEnum = 2;
+                break;
+            case III:
+                integerFromEnum = 3;
+                break;
+            case IV:
+                integerFromEnum = 4;
+                break;
+            case V:
+                integerFromEnum = 5;
+                break;
+        }
+        return integerFromEnum;
+    }*/
+    public static String IntegerToReflectorString(int reflectorId){
+        String intToString = new String();
+        switch (reflectorId) {
+            case 1:
+                intToString = "I";
+                break;
+            case 2:
+                intToString = "II";
+                break;
+            case 3:
+                intToString = "III";
+                break;
+            case 4:
+                intToString = "IV";
+                break;
+            case 5:
+                intToString = "V";
+                break;
+        }
+        return intToString;
+    }
+
 }
