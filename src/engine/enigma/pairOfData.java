@@ -1,5 +1,6 @@
-package enigma;
+package engine.enigma;
 
+// TODO: 8/15/2022 change to pair  
 public class pairOfData {
 
     private final Character right;
@@ -13,8 +14,7 @@ public class pairOfData {
     public Character getRight() {
         return right;
     }
-    public Character getLeft() {
-        return left;
+    public Character getLeft() {return left;
     }
 
     @Override

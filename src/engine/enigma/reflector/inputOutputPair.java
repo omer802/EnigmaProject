@@ -1,4 +1,4 @@
-package enigma.reflector;
+package engine.enigma.reflector;
 
 public class inputOutputPair {
     private final int output;

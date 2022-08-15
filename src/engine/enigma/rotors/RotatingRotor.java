@@ -1,6 +1,6 @@
-package enigma.rotors;
+package engine.enigma.rotors;
 
-import enigma.pairOfData;
+import engine.enigma.pairOfData;
 
 import java.util.List;
 

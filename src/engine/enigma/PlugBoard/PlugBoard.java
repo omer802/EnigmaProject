@@ -1,8 +1,9 @@
-package enigma.PlugBoard;
+package engine.enigma.PlugBoard;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class PlugBoard  {
+public class PlugBoard implements Serializable {
     private Map<Character, Character> mapInputOutput;
     public int pairsInPlug;
     public String connections;

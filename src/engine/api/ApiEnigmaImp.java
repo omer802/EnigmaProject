@@ -1,17 +1,15 @@
 package engine.api;
 
-import DTOS.MachineSpecificationFromFile;
-import DTOS.MachineSpecificationFromUser;
-import enigma.Machine.EnigmaMachine;
-import enigma.keyboard.Keyboard;
-import enigma.reflector.Reflector;
-import enigma.reflector.Reflectors;
+import DTOS.FileConfigurationDTO;
+import DTOS.UserConfigurationDTO;
+import DTOS.MachineStatisticsDTO;
+import engine.enigma.Machine.EnigmaMachine;
+import engine.enigma.keyboard.Keyboard;
+import engine.enigma.reflector.Reflectors;
 import engine.LoadData.LoadData;
 import engine.LoadData.LoadDataFromXml;
-import sun.misc.ExtensionInstallationException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ApiEnigmaImp implements ApiEnigma {
 
@@ -25,7 +23,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         readDataFromFile(filePath);
     }
 
-    // TODO: 8/13/2022 change the possible reflector to method of enigma and not api 
+    // TODO: 8/13/2022 change the possible reflector to method of engine.enigma and not api
     private void readDataFromFile(String filePath){
 
         if(filePath.endsWith(".xml")){
@@ -48,18 +46,18 @@ public class ApiEnigmaImp implements ApiEnigma {
         int chosenReflectorInteger = Integer.parseInt(chosenReflector);
         return getPossibleReflectors().contains(Reflectors.IntegerToReflectorString(chosenReflectorInteger));
     }
-    public MachineSpecificationFromFile showDataReceivedFromFile(){
-        MachineSpecificationFromFile Machinespecification = new MachineSpecificationFromFile(enigmaMachine);
+    public FileConfigurationDTO showDataReceivedFromFile(){
+        FileConfigurationDTO Machinespecification = new FileConfigurationDTO(enigmaMachine);
         return Machinespecification;
     }
-    public MachineSpecificationFromUser showDataReceivedFromUser(){
-        MachineSpecificationFromUser Machinespecification =  new MachineSpecificationFromUser(enigmaMachine);
+    public UserConfigurationDTO showDataReceivedFromUser(){
+        UserConfigurationDTO Machinespecification =  new UserConfigurationDTO(enigmaMachine);
         return Machinespecification;
     }
 
     // TODO: 8/7/2022 change to working with dto object
     // TODO: 8/7/2022 think of get all the steres to method in enigmaMachine and not in the api
-    public void selectInitialCodeConfiguration(MachineSpecificationFromUser configuration){
+    public void selectInitialCodeConfiguration(UserConfigurationDTO configuration){
         // TODO: 8/9/2022 here we add check if we have a machine and configuration from file
         enigmaMachine.selectInitialCodeConfiguration(configuration);
         //enigmaMachine.setConfigFromUser();
@@ -102,8 +100,8 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     // TODO: 8/6/2022 change to DTOS object
     public String dataEncryption(String data){
-        String encryptedInformation = enigmaMachine.encodeString(data);
-        return encryptedInformation;
+        String encodeInformation = enigmaMachine.encodeString(data);
+        return encodeInformation;
     }
 
     // TODO: 8/11/2022 convert to enigmaMachine
@@ -111,7 +109,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
     }
 
-    public MachineSpecificationFromUser AutomaticallyInitialCodeConfiguration(){
+    public UserConfigurationDTO AutomaticallyInitialCodeConfiguration(){
         enigmaMachine.automaticInitialCodeConfiguration();
          return showDataReceivedFromUser();
     }
@@ -154,8 +152,17 @@ public class ApiEnigmaImp implements ApiEnigma {
     public boolean alreadyEncryptedMessages(){
         return EnigmaMachine.theNumberOfStringsEncrypted>0;
     }
-    public MachineSpecificationFromUser getFirstConfig(){
-        return enigmaMachine.getFirstConfiguration();
+    public UserConfigurationDTO getCurrentConfiguration(){
+        return enigmaMachine.getCurrentConfiguration();
     }
 
+    public MachineStatisticsDTO getStatistics(){
+        return enigmaMachine.getStatistics();
+    }
+    public boolean haveConfigFromUser(){
+        return enigmaMachine.isConfigFromUser();
+    }
+    public boolean haveConfigFromFile(){
+        return enigmaMachine.isConfigFromFile();
+    }
 }

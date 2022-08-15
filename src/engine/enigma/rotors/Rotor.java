@@ -1,7 +1,7 @@
-package enigma.rotors;
+package engine.enigma.rotors;
 
-import enigma.keyboard.Keyboard;
-import enigma.pairOfData;
+import engine.enigma.keyboard.Keyboard;
+import engine.enigma.pairOfData;
 
 import java.util.List;
 

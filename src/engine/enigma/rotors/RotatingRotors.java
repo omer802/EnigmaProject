@@ -1,4 +1,4 @@
-package enigma.rotors;
+package engine.enigma.rotors;
 
 import java.util.ArrayList;
 import java.util.List;

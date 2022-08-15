@@ -1,4 +1,4 @@
-package enigma.keyboard;
+package engine.enigma.keyboard;
 
 import java.util.HashMap;
 import java.util.Map;

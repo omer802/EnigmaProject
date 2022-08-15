@@ -1,8 +1,7 @@
-package enigma.reflector;
+package engine.enigma.reflector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Reflectors {
     public enum ReflectorEnum {

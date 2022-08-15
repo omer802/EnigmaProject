@@ -1,6 +1,8 @@
-package DTOS;
+package engine.enigma.Machine;
 
-public class PairOfNotchAndRotorId {
+import java.io.Serializable;
+
+public class PairOfNotchAndRotorId implements Serializable {
     private final String rotorId;
     private final int rotorNotch;
 

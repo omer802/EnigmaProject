@@ -1,13 +1,15 @@
 package DTOS;
 
-import enigma.Machine.EnigmaMachine;
-import enigma.PlugBoard.PlugBoard;
-import enigma.reflector.Reflectors;
-import enigma.rotors.RotatingRotor;
+import engine.enigma.Machine.EnigmaMachine;
+import engine.enigma.Machine.PairOfNotchAndRotorId;
+import engine.enigma.PlugBoard.PlugBoard;
+import engine.enigma.reflector.Reflectors;
+import engine.enigma.rotors.RotatingRotor;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MachineSpecificationFromUser {
+public class UserConfigurationDTO implements Serializable {
     private int CountOfRotorsInUse;
     private int numberOfMessageEncrypted;
     private List<String> chosenRotorsWithOrder;
@@ -21,7 +23,7 @@ public class MachineSpecificationFromUser {
     private List<PairOfNotchAndRotorId> NotchAndIds;
 
     //constructor for transferring data from ui to engine
-    public MachineSpecificationFromUser(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector){
+    public UserConfigurationDTO(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector){
         this.chosenRotorsWithOrder = chosenRotors;
         this.RotorsStartingPosition = rotorsStartingPosition;
         this.chosenReflector = Reflectors.ReflectorEnum.valueOf(chosenReflector);
@@ -29,7 +31,7 @@ public class MachineSpecificationFromUser {
     }
 
     //constructor for answer of the engine to ui
-    public MachineSpecificationFromUser(final EnigmaMachine machineInput){
+    public UserConfigurationDTO(final EnigmaMachine machineInput){
         setPairOfNotchAndRotorId(machineInput.getPairOfNotchAndRotorId());
         this.CountOfRotorsInUse = machineInput.getRotorsObject().getRotorsAmountInUse();
         this.numberOfMessageEncrypted = machineInput.theNumberOfStringsEncrypted;

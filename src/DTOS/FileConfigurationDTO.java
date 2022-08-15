@@ -1,14 +1,9 @@
 package DTOS;
 
-import enigma.Machine.EnigmaMachine;
-import enigma.keyboard.Keyboard;
-import enigma.rotors.RotatingRotor;
-
-import java.util.ArrayList;
-import java.util.List;
+import engine.enigma.Machine.EnigmaMachine;
 
 // TODO: 8/5/2022  menu 2
-public class MachineSpecificationFromFile {
+public class FileConfigurationDTO {
 
     // TODO: 8/9/2022 think if divers it to 2 files 
     private final int countOfRotors;
@@ -27,7 +22,7 @@ public class MachineSpecificationFromFile {
     // TODO: 8/13/2022 every rotor have notch in range  
     // TODO: 8/13/2022 if file not correct give a exeption with what went wrong 
     // TODO: 8/13/2022 check if when we upload again file the last one destroy
-    public MachineSpecificationFromFile(final EnigmaMachine machineInput) {
+    public FileConfigurationDTO(final EnigmaMachine machineInput) {
         //setPairOfNotchAndRotorId(machineInput);
         this.countOfRotors = machineInput.getRotorsObject().getRotorsAmount();
         this.countOfRotorsInUse = machineInput.getRotorsAmountInUse();

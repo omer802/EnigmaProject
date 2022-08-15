@@ -1,18 +1,17 @@
-package enigma.Machine;
+package engine.enigma.Machine;
 
 
-import DTOS.MachineSpecificationFromUser;
-import DTOS.PairOfNotchAndRotorId;
-import enigma.PlugBoard.PlugBoard;
-import enigma.keyboard.Keyboard;
-import enigma.reflector.Reflector;
-import enigma.reflector.Reflectors;
-import enigma.rotors.RotatingRotor;
-import enigma.rotors.RotatingRotors;
-import enigma.rotors.Rotor;
+import DTOS.UserConfigurationDTO;
+import DTOS.MachineStatisticsDTO;
+import engine.enigma.PlugBoard.PlugBoard;
+import engine.enigma.keyboard.Keyboard;
+import engine.enigma.reflector.Reflector;
+import engine.enigma.reflector.Reflectors;
+import engine.enigma.rotors.RotatingRotor;
+import engine.enigma.rotors.RotatingRotors;
+import engine.enigma.statistics.Statistics;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EnigmaMachine {
     private RotatingRotors rotors;
@@ -22,11 +21,25 @@ public class EnigmaMachine {
     private Keyboard keyboard;
 
     public static int theNumberOfStringsEncrypted;
+
+    public static int numOfConfiguration;
     private static int numOfConfigFromUser = 0;
 
-    private MachineSpecificationFromUser firstConfiguration;
+    //private UserConfigurationDTO firstConfiguration;
     protected final int amountOfRotors;
+    private Statistics statistics;
 
+    public static boolean isConfigFromFile() {
+        return ConfigFromFile;
+    }
+
+    static private boolean ConfigFromFile = false;
+
+    public static boolean isConfigFromUser() {
+        return isConfigFromUser;
+    }
+
+    static private boolean isConfigFromUser = false;
 
     public EnigmaMachine(Keyboard keyboardInput, List<RotatingRotor> rotorsInput,int amountOfRotorsToUse, List<Reflector> reflectorsInput) {
         this.keyboard = keyboardInput;
@@ -36,6 +49,9 @@ public class EnigmaMachine {
         this.reflectors = new Reflectors(reflectorsInput);
         this.havePlugBoard = false;
         this.theNumberOfStringsEncrypted = 0;
+        this.statistics = new Statistics();
+        ConfigFromFile = true;
+        isConfigFromUser = false;
     }
 
     private static void addOneToCountOfDataEncrypted() {
@@ -43,11 +59,14 @@ public class EnigmaMachine {
     }
 
     public String encodeString(String toEncode) {
+        long startTime = System.nanoTime();
         addOneToCountOfDataEncrypted();
         String encodeResult = new String();
         for (int i = 0; i < toEncode.length(); i++) {
             encodeResult += encodeChar(toEncode.charAt(i));
         }
+        long timeToEncode = System.nanoTime() - startTime;
+        statistics.addEncryptionToStatistics(toEncode,encodeResult,timeToEncode);
         return encodeResult;
     }
 
@@ -137,7 +156,7 @@ public class EnigmaMachine {
         List<String> chosenRotors = generateRotorsConfigurationRandomly();
         String chosenPositions =  generatePositionsConfigurationRandomly();
         String chosenReflector = generateChosenReflectorConfigurationRandomly();
-        MachineSpecificationFromUser configuration = new MachineSpecificationFromUser(chosenRotors,chosenPositions,chosenReflector);
+        UserConfigurationDTO configuration = new UserConfigurationDTO(chosenRotors,chosenPositions,chosenReflector);
         Random rd = new Random();
         int isPlug = generateRandomIndexInList(2);
         if(isPlug==1){
@@ -207,18 +226,20 @@ public class EnigmaMachine {
         return chosenRotors;
     }
 
-    public void selectInitialCodeConfiguration(MachineSpecificationFromUser specification) {
+    public void selectInitialCodeConfiguration(UserConfigurationDTO specification) {
         getRotorsObject().setChosenRotorToUse(specification.getChosenRotorsWithOrder());
         getRotorsObject().setPositions(specification.getRotorsStartingPosition());
         getReflectorsObject().SetChosenReflector(specification.getChosenReflector());
         specification.setPairOfNotchAndRotorId(getPairOfNotchAndRotorId());
         if (specification.isPlugged())
             setPlugBoard(specification.getPlugBoard());
-        saveFirstConfiguration();
+        addConfiguration();
+        isConfigFromUser = true;
     }
     //public MachineSpecificationFromUser(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector)
-    private void saveFirstConfiguration(){
-        this.firstConfiguration = new MachineSpecificationFromUser(this);
+    private void addConfiguration(){
+        UserConfigurationDTO config = new UserConfigurationDTO(this);
+        statistics.addConfiguration(config);
     }
 
 
@@ -252,13 +273,10 @@ public class EnigmaMachine {
          Collections.reverse(pairs);
         return pairs;
     }
-    public static int getNumOfConfigFromUser() {
-        return numOfConfigFromUser;
+    public UserConfigurationDTO getCurrentConfiguration() {
+        return statistics.getCurrentConfiguration();
     }
-    public static boolean isFirstConfig(){
-        return numOfConfigFromUser == 0;
-    }
-    public MachineSpecificationFromUser getFirstConfiguration() {
-        return firstConfiguration;
+    public MachineStatisticsDTO getStatistics() {
+        return new MachineStatisticsDTO(statistics);
     }
 }

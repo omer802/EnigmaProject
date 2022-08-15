@@ -1,6 +1,6 @@
-package enigma;
+package engine.enigma;
 
-import enigma.Machine.EnigmaMachine;
+import engine.enigma.Machine.EnigmaMachine;
 
 // TODO: 8/8/2022 make it a warp class to machine 
 public class enigma {

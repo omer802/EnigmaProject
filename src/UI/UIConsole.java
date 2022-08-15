@@ -1,16 +1,18 @@
 package UI;
 
-import DTOS.MachineSpecificationFromFile;
-import DTOS.MachineSpecificationFromUser;
-import DTOS.PairOfNotchAndRotorId;
-import com.sun.javafx.binding.StringFormatter;
+import DTOS.FileConfigurationDTO;
+import DTOS.UserConfigurationDTO;
+import DTOS.MachineStatisticsDTO;
+import engine.enigma.Machine.PairOfNotchAndRotorId;
 import engine.api.ApiEnigma;
 import engine.api.ApiEnigmaImp;
-import enigma.keyboard.Keyboard;
-import enigma.reflector.Reflectors;
+import engine.enigma.keyboard.Keyboard;
+import engine.enigma.reflector.Reflectors;
+import engine.enigma.statistics.ConfigurationAndEncryption;
+import engine.enigma.statistics.EncryptionData;
 
+import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 // TODO: 8/13/2022 figuer out how to cancle so much reverse 
 public class UIConsole implements UI {
@@ -40,11 +42,11 @@ public class UIConsole implements UI {
     }
 
     public static void choseOption(ApiEnigma api, Scanner readInput, String select) {
+
         switch (select) {
             case "1":
                 // TODO: 8/12/2022 change the number to enum 
                 readData(api, readInput);
-
                 break;
             case "2":
                 showData(api, readInput);
@@ -78,12 +80,47 @@ public class UIConsole implements UI {
                 systemReset(api, readInput);
                 break;
             case "7":
-                //;
+                showStatistics(api, readInput);
                 break;
             case "8":
                 ExitWasPressed = true;
                 break;
         }
+    }
+    public static void showStatistics(ApiEnigma api, Scanner readInput) {
+        if (!configFromFile)
+            System.out.println("Statistics cannot be displayed when there is no machine in the system");
+        else if (!configByUser)
+            System.out.println("Statistics cannot be displayed when there is no configuration of the machine");
+        else
+            PrintStatistic(api, readInput);
+    }
+    public static void PrintStatistic(ApiEnigma api, Scanner readInput) {
+
+        String pattern = "###,###,###";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern);
+        MachineStatisticsDTO statisticsToShow = api.getStatistics();
+        StringBuilder sb = new StringBuilder();
+        sb.append("History and statistics:\n");
+        sb.append("the code configurations performed in the system:\n");
+        for (ConfigurationAndEncryption configuration: statisticsToShow.getConfigurations())
+            sb.append("\t"+getStringDataReceiveFromUser(configuration.getConfiguration())+"\n");
+       sb.append("\n");
+       if(statisticsToShow.haveEncoded()) {
+           sb.append("Configurations used by the machine and the encrypted messages in each configuration:\n");
+           for (ConfigurationAndEncryption configuration : statisticsToShow.getConfigurationsInUse()) {
+               UserConfigurationDTO config = configuration.getConfiguration();
+               sb.append("In configuration:" + getStringDataReceiveFromUser(config) + " The following messages have been encrypted:\n");
+
+               for (EncryptionData data : configuration.getEncryptionDataList()) {
+                   String Format = decimalFormat.format(data.getProcessingTime());
+                   sb.append("\t#.<" + data.getInput() + ">" + "--> " + "<" + data.getOutput() + ">" + "Encryption time: " + Format + "\n");
+               }
+           }
+       }
+       else
+           sb.append("The machine has not yet encrypted messages");
+        System.out.println(sb);
     }
 
     public static void systemReset(ApiEnigma api, Scanner readInput) {
@@ -94,9 +131,36 @@ public class UIConsole implements UI {
     public static void dataEncryption(ApiEnigma api, Scanner readInput) {
         System.out.println("Enter information you want to encrypt");
         String stringToEncrypt = readInput.nextLine();
-        String encryptedString = api.dataEncryption(stringToEncrypt);
-        System.out.println("data have encripted. the string result is: " + encryptedString);
+        String encryptedString;
+        boolean goodInput = Keyboard.isStringInRange(stringToEncrypt);
+        boolean exitWasPressed = false;
+        String select = new String();
+        while((!goodInput) && (!exitWasPressed)) {
+            select = encryptionBadInput(readInput);
+            switch (select) {
+                case "1":
+                    encryptedString = api.dataEncryption(stringToEncrypt);
+                    goodInput = Keyboard.isStringInRange(stringToEncrypt);
+                    break;
+                case "2":
+                    exitWasPressed = true;
+                    break;
+                default:
+                    System.out.println("Incorrect input. Please select an option from the menu");
+            }
+        }
+            if(!exitWasPressed){
+                encryptedString = api.dataEncryption(stringToEncrypt);
+                System.out.println("data have encripted. the string result is: " + encryptedString);
+            }
+        }
 
+    public static String encryptionBadInput(Scanner readInput){
+        System.out.println("Invalid input. Letters that are not in the alphabet were entered");
+        System.out.println("1) Try again");
+        System.out.println("2) Return to menu");
+        String input =  readInput.nextLine();
+        return input;
     }
 
     public static void readData(ApiEnigma api, Scanner readInput) {
@@ -111,7 +175,7 @@ public class UIConsole implements UI {
     public static void selectInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
         if (configFromFile) {
             System.out.println("set initial configuration");
-            MachineSpecificationFromUser specification = getDTOConfigurationFromUser(api, readInput);
+            UserConfigurationDTO specification = getDTOConfigurationFromUser(api, readInput);
             api.selectInitialCodeConfiguration(specification);
             System.out.println("Your configuration has been successfully saved in the system");
             configByUser = true;
@@ -120,11 +184,11 @@ public class UIConsole implements UI {
     }
 
     // TODO: 8/13/2022 add option to exit every time we want to
-    public static MachineSpecificationFromUser getDTOConfigurationFromUser(ApiEnigma api, Scanner readInput) {
+    public static UserConfigurationDTO getDTOConfigurationFromUser(ApiEnigma api, Scanner readInput) {
         List<String> chosenRotors = chosenRotorsFromUser(api, readInput);
         String chosenPositions = getRotorsStartingPosition(api, readInput, chosenRotors.size());
         String chosenReflector = getReflector(api, readInput);
-        MachineSpecificationFromUser Specification = new MachineSpecificationFromUser(chosenRotors, chosenPositions, chosenReflector);
+        UserConfigurationDTO Specification = new UserConfigurationDTO(chosenRotors, chosenPositions, chosenReflector);
         boolean isPlugged = isPluged(api, readInput);
         if (isPlugged) {
             String plug = getPlug(api, readInput);
@@ -238,8 +302,8 @@ public class UIConsole implements UI {
 
     public static void AutomaticallyInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
         if (configFromFile) {
-            MachineSpecificationFromUser machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
-            ShowDataReceiveFromUser(machineConfigUser);
+            UserConfigurationDTO machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
+            System.out.println(getStringDataReceiveFromUser(machineConfigUser));
         } else {
             System.out.println("It is not possible to create a machine configuration " +
                     "without a machine in the system. Please insert a file that produces the machine");
@@ -250,8 +314,8 @@ public class UIConsole implements UI {
     // TODO: 8/7/2022  use stringBuilder and add <> in the end
     // TODO: 8/12/2022 לשנות את מיקומי הזיזים ככה שהם המיקום היחסי כרגע  
     public static void showData(ApiEnigma api, Scanner readInput) {
-        MachineSpecificationFromFile machineConfigFile = api.showDataReceivedFromFile();
-        MachineSpecificationFromUser machineConfigUser = api.showDataReceivedFromUser();
+        FileConfigurationDTO machineConfigFile = api.showDataReceivedFromFile();
+        UserConfigurationDTO machineConfigUser = api.showDataReceivedFromUser();
         System.out.println("The possible number of rotors/the number of rotors in use is: "
                 + machineConfigFile.getCountOfRotors() + "/" + machineConfigFile.getCountOfRotorsInUse());
         System.out.println("Number of reflectors:" + machineConfigFile.getCountOfReflectors());
@@ -259,9 +323,9 @@ public class UIConsole implements UI {
         if (machineConfigUser.isHaveConfigFromUser()) {
             if (api.isConfigFromUser()) {
                 System.out.println("original configuration: ");
-                ShowDataReceiveFromUser(api.getFirstConfig());
+                System.out.println(getStringDataReceiveFromUser(api.getCurrentConfiguration()));
                 System.out.println("Current configuration: ");
-                ShowDataReceiveFromUser(machineConfigUser);
+                System.out.println(getStringDataReceiveFromUser(machineConfigUser));
             }
 
         }
@@ -270,7 +334,7 @@ public class UIConsole implements UI {
 
 
     // TODO: 8/13/2022 add firstConfiguration and now configuration 
-    public static void ShowDataReceiveFromUser(MachineSpecificationFromUser machineConfigUser){
+    public static StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
         StringBuilder stringBuilder = new StringBuilder();
         List<PairOfNotchAndRotorId> chosenRotors = machineConfigUser.getNotchAndIds();
         getChosenRotorForBuilder(chosenRotors, stringBuilder);
@@ -280,7 +344,7 @@ public class UIConsole implements UI {
         stringBuilder.append("<"+machineConfigUser.getChosenReflector()+">");
         if(machineConfigUser.isPlugged())
             stringBuilder.append("<" + machineConfigUser.getPlugBoardConnectionsWithFormat()+ ">");
-        System.out.println(stringBuilder);
+        return stringBuilder;
     }
     public static void getChosenRotorForBuilder(List<PairOfNotchAndRotorId> chosenRotors,StringBuilder stringBuilderInput){
         //reverse the order of rotors beacuse in the machine we work from right to left and the ui show from left to right
@@ -295,15 +359,6 @@ public class UIConsole implements UI {
         }
         stringBuilderInput.append( ">");
     }
-
-  /*  public static void showConfigurationFromUser(MachineSpecificationFromUser machineSpecification) {
-        System.out.println("The configuration received from the user:");
-        System.out.println("Rotors in the order they were chosen: " + machineSpecification.getChosenRotorsWithOrder());
-        System.out.println("Rotors starting positions: " + machineSpecification.getRotorsStartingPosition());
-        System.out.println("selected reflector: " + machineSpecification.getChosenReflector());
-        if (machineSpecification.isPlugged())
-        System.out.println("plugs: " + machineSpecification.getPlugBoard());
-    }*/
 
     // TODO: 8/6/2022 thinking on what to show when the machine is not initalize
     public static void menu(boolean configByUser) {
