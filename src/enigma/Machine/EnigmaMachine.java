@@ -11,10 +11,7 @@ import enigma.rotors.RotatingRotor;
 import enigma.rotors.RotatingRotors;
 import enigma.rotors.Rotor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EnigmaMachine {
@@ -133,10 +130,81 @@ public class EnigmaMachine {
         return reflectors;
     }
 
+    /*here we create dto object and send it to the method selectInitialCodeConfiguration
+     in the machine*/
+    //הגרלת רשימת סטרינגים של
     public void automaticInitialCodeConfiguration() {
+        List<String> chosenRotors = generateRotorsConfigurationRandomly();
+        String chosenPositions =  generatePositionsConfigurationRandomly();
+        String chosenReflector = generateChosenReflectorConfigurationRandomly();
+        MachineSpecificationFromUser configuration = new MachineSpecificationFromUser(chosenRotors,chosenPositions,chosenReflector);
+        Random rd = new Random();
+        int isPlug = generateRandomIndexInList(2);
+        if(isPlug==1){
+            String plug = generatePlugBoardConnectionsRandomly();
+            configuration.setPlugBoardConnections(plug);
+        }
+        selectInitialCodeConfiguration(configuration);
+    }
 
-        List<String> rotorsId = rotors.getRotors().stream().map(Rotor::toString).collect(Collectors.toList());
-        //stream().forEach(RotatingRotor::returnToStartingPosition)
+    private String generatePlugBoardConnectionsRandomly(){
+        //first getting the size of the plugBoard
+        int keyboardSize = Keyboard.alphabet.length();
+        int RandomSize = generateRandomIndexInList(keyboardSize/2);
+        while(RandomSize < 1 )
+            RandomSize = generateRandomIndexInList(keyboardSize/2);
+        int counter = 0;
+        Set<Character> allreadyExistChar = new HashSet<>();
+        String plugBoardConnections = new String();
+
+        while(counter<RandomSize){
+            Character indexChar1 = Keyboard.alphabet.charAt(generateRandomIndexInList(keyboardSize));
+            Character indexChar2 = Keyboard.alphabet.charAt(generateRandomIndexInList(keyboardSize));
+            if((!allreadyExistChar.contains(indexChar1))&&(!allreadyExistChar.contains(indexChar2))
+                && indexChar1 !=indexChar2){
+                plugBoardConnections+= indexChar1;
+                plugBoardConnections+= indexChar2;
+                allreadyExistChar.add(indexChar1);
+                allreadyExistChar.add(indexChar2);
+                counter++;
+            }
+        }
+        return plugBoardConnections;
+    }
+
+    private String generateChosenReflectorConfigurationRandomly() {
+        int randomIndex = generateRandomIndexInList(getPossibleReflectors().size());
+        String chosenReflector = getPossibleReflectors().get(randomIndex);
+        return chosenReflector;
+    }
+    private String generatePositionsConfigurationRandomly() {
+        String chosenPositions = new String();
+        for (int i = 0; i < getRotorsAmountInUse(); i++) {
+            int randomIndex = generateRandomIndexInList(Keyboard.alphabet.length());
+            //take random character from alphabet and add to position
+            Character randomPosition = Keyboard.alphabet.charAt(randomIndex);
+            chosenPositions+= randomPosition;
+        }
+        return chosenPositions;
+    }
+    private int generateRandomIndexInList(int range){
+        Random r = new Random();
+        int RandomItem = r.nextInt(range);
+        return RandomItem;
+    }
+
+    private List<String> generateRotorsConfigurationRandomly(){
+        List<String> chosenRotors = new ArrayList<>();
+        int counter = 0;
+        while(counter < getRotorsAmountInUse()) {
+            int randomIndex = generateRandomIndexInList(this.getAmountOfRotors());
+            String randomRotor = getPossibleRotors().get(randomIndex);
+            if(!chosenRotors.contains(randomRotor)){
+                chosenRotors.add(randomRotor);
+                counter++;
+            }
+        }
+        return chosenRotors;
     }
 
     public void selectInitialCodeConfiguration(MachineSpecificationFromUser specification) {
@@ -146,10 +214,7 @@ public class EnigmaMachine {
         specification.setPairOfNotchAndRotorId(getPairOfNotchAndRotorId());
         if (specification.isPlugged())
             setPlugBoard(specification.getPlugBoard());
-        if (this.numOfConfigFromUser == 0) {
-            saveFirstConfiguration();
-        }
-        numOfConfigFromUser++;
+        saveFirstConfiguration();
     }
     //public MachineSpecificationFromUser(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector)
     private void saveFirstConfiguration(){
@@ -163,7 +228,7 @@ public class EnigmaMachine {
     public List<String> getPossibleRotors() {
         return getRotorsObject().getAllRotorsAsStringList();
     }
-    public int getAmountPossibleRotors(){
+    public int getRotorsAmountInUse(){
         return rotors.getRotorsAmountInUse();
     }
     public int getAmountOfRotors(){

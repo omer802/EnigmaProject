@@ -22,7 +22,7 @@ public class UIConsole implements UI {
     // TODO: 8/12/2022 think about change to only get file and the show to menu
     public static Boolean configByUser;
     public static Boolean ExitWasPressed;
-
+    public static Boolean configFromFile;
     public static void ReadFromMenu() {
         ApiEnigma api = new ApiEnigmaImp();
         ExitWasPressed = new Boolean(false);
@@ -44,6 +44,7 @@ public class UIConsole implements UI {
             case "1":
                 // TODO: 8/12/2022 change the number to enum 
                 readData(api, readInput);
+
                 break;
             case "2":
                 showData(api, readInput);
@@ -104,10 +105,11 @@ public class UIConsole implements UI {
         api.readData(pathString);
         System.out.println("The information was read successfully");
         configByUser = false;
+        configFromFile = true;
     }
 
     public static void selectInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
-        if (api.isConfigFromUser()) {
+        if (configFromFile) {
             System.out.println("set initial configuration");
             MachineSpecificationFromUser specification = getDTOConfigurationFromUser(api, readInput);
             api.selectInitialCodeConfiguration(specification);
@@ -235,8 +237,15 @@ public class UIConsole implements UI {
     }
 
     public static void AutomaticallyInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
-
+        if (configFromFile) {
+            MachineSpecificationFromUser machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
+            ShowDataReceiveFromUser(machineConfigUser);
+        } else {
+            System.out.println("It is not possible to create a machine configuration " +
+                    "without a machine in the system. Please insert a file that produces the machine");
+        }
     }
+
 
     // TODO: 8/7/2022  use stringBuilder and add <> in the end
     // TODO: 8/12/2022 לשנות את מיקומי הזיזים ככה שהם המיקום היחסי כרגע  
@@ -248,9 +257,13 @@ public class UIConsole implements UI {
         System.out.println("Number of reflectors:" + machineConfigFile.getCountOfReflectors());
         System.out.println("Number of messages encrypted by the machine: " + machineConfigUser.getNumberOfMessageEncrypted());
         if (machineConfigUser.isHaveConfigFromUser()) {
-            if (api.alreadyEncryptedMessages())
+            if (api.isConfigFromUser()) {
+                System.out.println("original configuration: ");
                 ShowDataReceiveFromUser(api.getFirstConfig());
-            ShowDataReceiveFromUser(machineConfigUser);
+                System.out.println("Current configuration: ");
+                ShowDataReceiveFromUser(machineConfigUser);
+            }
+
         }
 
     }

@@ -8,7 +8,7 @@ public class PlugBoard  {
     public String connections;
     public PlugBoard(String connections) {
         this.connections = connections;
-        pairsInPlug = connections.length();
+        pairsInPlug = connections.length()/2;
         initialPlugBoard(connections);
     }
     public PlugBoard()
@@ -20,7 +20,6 @@ public class PlugBoard  {
     // TODO: 8/7/2022 changing to without , and |
     private void initialPlugBoard(String connections) {
         mapInputOutput = new HashMap<>();
-        this.connections = connections;
         //taking pair of plugs
         for (int i = 0; i < connections.length()/2; i+=2) {
             Character c1 = (Character)connections.charAt(i);
@@ -32,22 +31,24 @@ public class PlugBoard  {
 
     @Override
     public String toString() {
-        List<String> lstStringOfConnections = new ArrayList<>();
+        boolean isFirst = true;
         String stringOfConnections = new String();
         Set<Character> alreadyAdded = new HashSet<>();
         for (int i = 0; i < mapInputOutput.size(); i++) {
             Character pluggedChar = connections.charAt(i);
             if (!alreadyAdded.contains(pluggedChar)) {
+                if(!isFirst){
+                    stringOfConnections+=",";
+                }
                 stringOfConnections += pluggedChar;
                 stringOfConnections += "|";
                 stringOfConnections += mapInputOutput.get(connections.charAt(i));
-                lstStringOfConnections.add(stringOfConnections);
                 alreadyAdded.add(pluggedChar);
                 alreadyAdded.add(mapInputOutput.get(pluggedChar));
+                isFirst = false;
             }
         }
-        String res = String.join(",",lstStringOfConnections);
-        return res;
+        return stringOfConnections;
     }
     public boolean isPluged(Character checkIfPluged)
     {

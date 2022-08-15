@@ -32,4 +32,6 @@ public interface ApiEnigma {
     public boolean alreadyEncryptedMessages();
 
     public MachineSpecificationFromUser getFirstConfig();
+
+    public MachineSpecificationFromUser AutomaticallyInitialCodeConfiguration();
     }

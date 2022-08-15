@@ -30,7 +30,7 @@ public class MachineSpecificationFromFile {
     public MachineSpecificationFromFile(final EnigmaMachine machineInput) {
         //setPairOfNotchAndRotorId(machineInput);
         this.countOfRotors = machineInput.getRotorsObject().getRotorsAmount();
-        this.countOfRotorsInUse = machineInput.getAmountPossibleRotors();
+        this.countOfRotorsInUse = machineInput.getRotorsAmountInUse();
         this.countOfReflectors = machineInput.getReflectorsObject().getReflectorsAmount();
 
     }

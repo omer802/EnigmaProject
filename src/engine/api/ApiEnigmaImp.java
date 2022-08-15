@@ -111,8 +111,9 @@ public class ApiEnigmaImp implements ApiEnigma {
         enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
     }
 
-    public void AutomaticallyInitialCodeConfiguration(){
-
+    public MachineSpecificationFromUser AutomaticallyInitialCodeConfiguration(){
+        enigmaMachine.automaticInitialCodeConfiguration();
+         return showDataReceivedFromUser();
     }
 
     // TODO: 8/11/2022 convert to enigmamachine
@@ -120,7 +121,7 @@ public class ApiEnigmaImp implements ApiEnigma {
        return enigmaMachine.getPossibleRotors();
     }
     public int getAmountOfRotors(){
-        return enigmaMachine.getAmountPossibleRotors();
+        return enigmaMachine.getRotorsAmountInUse();
     }
     public boolean isLegalRotors(String chosenRotorsInputStr)  {
         List<String> chosenRotorsList = cleanStringAndReturnList(chosenRotorsInputStr);
