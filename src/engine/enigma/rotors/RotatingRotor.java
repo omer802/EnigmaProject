@@ -59,4 +59,8 @@ public class RotatingRotor extends Rotor implements advanceRotor {
     public void returnToStartingPosition(){
         this.position = this.startingPositionIndex;
     }
+    public char getCurrentPositionCharacter(){
+        int indexOfPosition =  this.position;
+        return this.PairOfDataArray.get(indexOfPosition).getRight();
+    }
 }

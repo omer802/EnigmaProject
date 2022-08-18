@@ -1,5 +1,6 @@
 package engine.LoadData;
 
+import DTOS.Validators.xmlFileValidatorDTO;
 import engine.enigma.*;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
@@ -21,34 +22,51 @@ import java.util.List;
 public class LoadDataFromXml implements LoadData {
     // TODO: 8/2/2022  change the input to object
     private final static String JAXB_XML_PACKAGE_NAME = "engine.LoadData.jaxb.schema.generated";
-    public EnigmaMachine loadDataFromInput(String FilePath){
-        return loadDataFromXml(FilePath);
+    public EnigmaMachine loadDataFromInput(String FilePath, xmlFileValidatorDTO validator){
+
+        return loadDataFromXml(FilePath,validator);
 
     }
-    private EnigmaMachine loadDataFromXml(String FilePath) {
+    private EnigmaMachine loadDataFromXml(String FilePath, xmlFileValidatorDTO validator) {
         CTEEnigma anigma;
         try {
             InputStream inputStream = new FileInputStream(new File(FilePath));
             anigma = deserializeFrom(inputStream);
-        } catch (JAXBException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return deserializeMachineInput(anigma.getCTEMachine());
+        } catch (JAXBException e) {
+            validator.addException(new RuntimeException("Error: invalid file were entered"));
+            return null;
+        } catch(FileNotFoundException e){
+                validator.addException(new RuntimeException("Error: invalid file path were entered"));
+                return null;
+            }
+        validator.setMachine(anigma.getCTEMachine());
+        validator.isValidMachineInputFromFile();
+        if(validator.getListOfExceptions().size()== 0)
+            return deserializeMachineInput(anigma.getCTEMachine());
+        else
+            return null;
+
     }
+
+    // TODO: 8/17/2022 make every method equal with sanding parameter
     private EnigmaMachine deserializeMachineInput(CTEMachine MachineInput){
-        String ABC = MachineInput.getABC();
-        ABC = ABC.replaceAll("[^\\x00-\\x7F]", "");
-        ABC =ABC.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
-        ABC = ABC.replaceAll("\\p{C}", "");
-        ABC = ABC.trim();
-        Keyboard keyboard = new Keyboard(ABC);
-        List<CTERotor> rotorsToTransfer =  MachineInput.getCTERotors().getCTERotor();
-        List<RotatingRotor> rotors = getRotorsFromInput(rotorsToTransfer);
+        Keyboard keyboard = getKeyBoard(MachineInput);
+        List<RotatingRotor> rotors = getRotorsFromInput(MachineInput);
         int amoutOfRotorsToUse = MachineInput.getRotorsCount();
         List<CTEReflector> reflectorsToTransfer = MachineInput.getCTEReflectors().getCTEReflector();
         List<Reflector> reflectors = getReflectorsFromInput(reflectorsToTransfer);
         return new EnigmaMachine(keyboard, rotors,amoutOfRotorsToUse, reflectors);
     }
+    private Keyboard getKeyBoard(CTEMachine MachineInput){
+        String ABC = MachineInput.getABC();
+        ABC = xmlFileValidatorDTO.getCleanAlphabet(ABC);
+        return new Keyboard(ABC);
+    }
+
+    // TODO: 8/17/2022 check if not to much cut for charcter
+    // TODO: 8/17/2022 change it to validator
+
+
     private List<Reflector> getReflectorsFromInput(List<CTEReflector> reflectorsInput){
         List<Reflector> reflectorsToReturn = new ArrayList<>();
         for(CTEReflector inputReflector: reflectorsInput){
@@ -73,13 +91,13 @@ public class LoadDataFromXml implements LoadData {
         return pairOfData;
 
     }
-    private List<RotatingRotor> getRotorsFromInput(List<CTERotor> rotorsInput){
+    private List<RotatingRotor> getRotorsFromInput(CTEMachine MachineInput){
+        List<CTERotor> rotorsInput =  MachineInput.getCTERotors().getCTERotor();
         List<RotatingRotor> rotorsToReturn = new ArrayList<RotatingRotor>();
         for (CTERotor inputRotor: rotorsInput) {
             RotatingRotor rotor = translateRotorInput(inputRotor);
             rotorsToReturn.add(rotor);
         }
-       // setRotorsChain(rotorsToReturn);
         return rotorsToReturn;
     }
     private RotatingRotor translateRotorInput(CTERotor inputRotor){

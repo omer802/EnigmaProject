@@ -36,10 +36,10 @@ public class EnigmaMachine {
     static private boolean ConfigFromFile = false;
 
     public static boolean isConfigFromUser() {
-        return isConfigFromUser;
+        return ConfigFromUser;
     }
 
-    static private boolean isConfigFromUser = false;
+    static private boolean ConfigFromUser = false;
 
     public EnigmaMachine(Keyboard keyboardInput, List<RotatingRotor> rotorsInput,int amountOfRotorsToUse, List<Reflector> reflectorsInput) {
         this.keyboard = keyboardInput;
@@ -51,7 +51,7 @@ public class EnigmaMachine {
         this.theNumberOfStringsEncrypted = 0;
         this.statistics = new Statistics();
         ConfigFromFile = true;
-        isConfigFromUser = false;
+        ConfigFromUser = false;
     }
 
     private static void addOneToCountOfDataEncrypted() {
@@ -234,7 +234,7 @@ public class EnigmaMachine {
         if (specification.isPlugged())
             setPlugBoard(specification.getPlugBoard());
         addConfiguration();
-        isConfigFromUser = true;
+        ConfigFromUser = true;
     }
     //public MachineSpecificationFromUser(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector)
     private void addConfiguration(){

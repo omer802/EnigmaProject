@@ -3,6 +3,7 @@ package engine.api;
 import DTOS.FileConfigurationDTO;
 import DTOS.UserConfigurationDTO;
 import DTOS.MachineStatisticsDTO;
+import DTOS.Validators.xmlFileValidatorDTO;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
@@ -19,21 +20,23 @@ public class ApiEnigmaImp implements ApiEnigma {
 
 
     private boolean haveConfigurationFromFile;
-    public void readData(String filePath){
-        readDataFromFile(filePath);
+    public xmlFileValidatorDTO readData(String filePath){
+        return readDataFromFile(filePath);
     }
 
     // TODO: 8/13/2022 change the possible reflector to method of engine.enigma and not api
-    private void readDataFromFile(String filePath){
-
-        if(filePath.endsWith(".xml")){
+    // TODO: 8/17/2022 change change the validator to work from here and not from the load data
+    private xmlFileValidatorDTO readDataFromFile(String filePath){
+        xmlFileValidatorDTO validator = new xmlFileValidatorDTO(filePath);
+        if(validator.getListOfExceptions().size()==0){
             LoadData dataFromXml = new LoadDataFromXml();
-            enigmaMachine = dataFromXml.loadDataFromInput(filePath);
-            haveConfigurationFromFile = true;
+            EnigmaMachine tempEnigmaMachine = dataFromXml.loadDataFromInput(filePath,validator);
+            if(validator.getListOfExceptions().size()== 0 && tempEnigmaMachine!=null) {
+                haveConfigurationFromFile = true;
+                this.enigmaMachine = tempEnigmaMachine;
+            }
         }
-       else{
-           throw new IllegalArgumentException("Please insert .xml files only");
-        }
+       return validator;
     }
 
     public List<String> getPossibleReflectors(){

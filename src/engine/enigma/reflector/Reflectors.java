@@ -5,7 +5,8 @@ import java.util.List;
 
 public class Reflectors {
     public enum ReflectorEnum {
-        I, II, III, IV,V }
+        I, II, III, IV,V
+    }
     private int chosenReflector;
     private final static int didntchooseReflector = -1;
     private List<Reflector> reflectors;
@@ -124,6 +125,14 @@ public class Reflectors {
                 break;
         }
         return intToString;
+    }
+    public static boolean isReflectorInRange(String reflectorString){
+        ReflectorEnum[] reflectors = ReflectorEnum.values();
+        for(ReflectorEnum reflector: reflectors ){
+            if(reflector.toString().equals(reflectorString))
+                return true;
+        }
+        return false;
     }
 
 }

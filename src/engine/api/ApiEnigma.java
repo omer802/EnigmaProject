@@ -4,12 +4,13 @@ package engine.api;
 import DTOS.FileConfigurationDTO;
 import DTOS.UserConfigurationDTO;
 import DTOS.MachineStatisticsDTO;
+import DTOS.Validators.xmlFileValidatorDTO;
 
 import java.util.List;
 
 public interface ApiEnigma {
     //here we will put all the implement for the machine
-    public void readData(String str);
+    public xmlFileValidatorDTO readData(String filePath);
     public void selectInitialCodeConfiguration(UserConfigurationDTO configuration);
     public String dataEncryption(String data);
 

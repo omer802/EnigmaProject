@@ -66,7 +66,7 @@ public class UserConfigurationDTO implements Serializable {
         String rotorsStartingPositions = new String();
         // To display the rotors in a way that matches the way the rotors appear we need to reverse the order of the starting positions
         for (int i = rotors.size() -1; i >=0 ; i--) {
-            char position = rotors.get(i).startingPositionCharacter;
+            char position = rotors.get(i).getCurrentPositionCharacter();
             rotorsStartingPositions = rotorsStartingPositions + position;
         }
         this.RotorsStartingPosition = rotorsStartingPositions;

@@ -3,6 +3,7 @@ package UI;
 import DTOS.FileConfigurationDTO;
 import DTOS.UserConfigurationDTO;
 import DTOS.MachineStatisticsDTO;
+import DTOS.Validators.xmlFileValidatorDTO;
 import engine.enigma.Machine.PairOfNotchAndRotorId;
 import engine.api.ApiEnigma;
 import engine.api.ApiEnigmaImp;
@@ -10,9 +11,11 @@ import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
 import engine.enigma.statistics.ConfigurationAndEncryption;
 import engine.enigma.statistics.EncryptionData;
+import sun.misc.ExtensionInstallationException;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 // TODO: 8/13/2022 figuer out how to cancle so much reverse 
 public class UIConsole implements UI {
@@ -25,27 +28,49 @@ public class UIConsole implements UI {
     public static Boolean configByUser;
     public static Boolean ExitWasPressed;
     public static Boolean configFromFile;
+    public static Boolean haveFirstConfig;
     public static void ReadFromMenu() {
         ApiEnigma api = new ApiEnigmaImp();
         ExitWasPressed = new Boolean(false);
         configByUser = new Boolean(false);
+        haveFirstConfig = new Boolean(false);
         Scanner readInput = new Scanner(System.in);
         while (!ExitWasPressed) {
             menu(configByUser);
             String select = readInput.nextLine();
             if (!select.matches("\\D*\\d\\D*"))
-                System.out.println("Wrong input! Only numbers between 1-8 can be entered");
+                System.out.println("Wrong input! Only options from the menu can be entered");
             else
                 choseOption(api, readInput, select);
 
         }
     }
 
-    public static void choseOption(ApiEnigma api, Scanner readInput, String select) {
 
+    public static void choseOption(ApiEnigma api, Scanner readInput, String select) {
+        if (!haveFirstConfig) {
+            switch (select) {
+                case "1":
+                    // TODO: 8/12/2022 change the number to enum
+                    readData(api, readInput);
+                    break;
+                case "2":
+                    ExitWasPressed = true;
+                    break;
+                default:
+                        System.out.println("wrong input! You didn't choose an option from the displayed menu");
+
+            }
+        }
+        else{
+            choseOptionAfterFirstConfig(api, readInput, select);
+        }
+
+    }
+    public static void choseOptionAfterFirstConfig(ApiEnigma api, Scanner readInput, String select){
         switch (select) {
             case "1":
-                // TODO: 8/12/2022 change the number to enum 
+                // TODO: 8/12/2022 change the number to enum
                 readData(api, readInput);
                 break;
             case "2":
@@ -129,53 +154,82 @@ public class UIConsole implements UI {
     }
 
     public static void dataEncryption(ApiEnigma api, Scanner readInput) {
-        System.out.println("Enter information you want to encrypt");
-        String stringToEncrypt = readInput.nextLine();
         String encryptedString;
-        boolean goodInput = Keyboard.isStringInRange(stringToEncrypt);
-        boolean exitWasPressed = false;
-        String select = new String();
-        while((!goodInput) && (!exitWasPressed)) {
-            select = encryptionBadInput(readInput);
+        boolean goodInput = false;
+        boolean tryAgain = true;
+        while (!goodInput && tryAgain) {
+            System.out.println("Enter massage you want to encrypt");
+            String toEncrypt = readInput.nextLine();
+            goodInput = validateStringToEncrypt(toEncrypt);
+            if (!goodInput) {
+                String message = "Some of the letters you entered are not from the alphabet. Please enter a valid string from the alphabet";
+                tryAgain = wrongInputMenu(message, readInput);
+            } else {
+                encryptedString = api.dataEncryption(toEncrypt);
+                System.out.println("Message have encrypted. The encryption result is: " + encryptedString);
+            }
+
+        }
+    }
+    //if return true continue else go back to main menu
+    public static boolean wrongInputMenu(String wrongInputmessage,Scanner readInput) {
+        boolean goodInput = false;
+        boolean toReturn = false;
+        System.out.println();
+        System.out.println("Invalid input. " + wrongInputmessage);
+        while (!goodInput) {
+            System.out.println("1) Try again");
+            System.out.println("2) Return to menu");
+            String select = readInput.nextLine();
             switch (select) {
                 case "1":
-                    encryptedString = api.dataEncryption(stringToEncrypt);
-                    goodInput = Keyboard.isStringInRange(stringToEncrypt);
+                    toReturn = true;
+                    goodInput = true;
                     break;
                 case "2":
-                    exitWasPressed = true;
+                    toReturn = false;
+                    goodInput = true;
                     break;
                 default:
                     System.out.println("Incorrect input. Please select an option from the menu");
             }
         }
-            if(!exitWasPressed){
-                encryptedString = api.dataEncryption(stringToEncrypt);
-                System.out.println("data have encripted. the string result is: " + encryptedString);
-            }
-        }
-
-    public static String encryptionBadInput(Scanner readInput){
-        System.out.println("Invalid input. Letters that are not in the alphabet were entered");
-        System.out.println("1) Try again");
-        System.out.println("2) Return to menu");
-        String input =  readInput.nextLine();
-        return input;
+        return toReturn;
     }
+    public static boolean validateStringToEncrypt(String stringToEncrypt) {
+    return Keyboard.isStringInRange(stringToEncrypt);
 
+
+    }
     public static void readData(ApiEnigma api, Scanner readInput) {
         System.out.println("Please enter the file's full path:");
         String pathString = readInput.nextLine();
-        api.readData(pathString);
-        System.out.println("The information was read successfully");
-        configByUser = false;
-        configFromFile = true;
+        xmlFileValidatorDTO validator = api.readData(pathString);
+        if (validator.getListOfExceptions().size() > 0) {
+            System.out.println("The following errors occurred while reading the file:\n");
+            for (Exception e : validator.getListOfExceptions()) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("");
+        } else {
+            System.out.println("The information was read successfully");
+            configByUser = false;
+            configFromFile = true;
+            haveFirstConfig = true;
+        }
     }
 
     public static void selectInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
         if (configFromFile) {
+            UserConfigurationDTO specification;
             System.out.println("set initial configuration");
-            UserConfigurationDTO specification = getDTOConfigurationFromUser(api, readInput);
+            try {
+                 specification = getDTOConfigurationFromUser(api, readInput);
+            }
+            catch (RuntimeException e){
+                System.out.println(e.getMessage());
+                return;
+            }
             api.selectInitialCodeConfiguration(specification);
             System.out.println("Your configuration has been successfully saved in the system");
             configByUser = true;
@@ -202,18 +256,25 @@ public class UIConsole implements UI {
         boolean toReturn = false;
         System.out.println("Want to connect a plug board? press y/n");
         while (wrongInput) {
-            String isPluged = readInput.nextLine();
-            if (isPluged.equals("y")) {
-                toReturn = true;
-                wrongInput = false;
-            } else if (!isPluged.equals("n")) {
-                System.out.println("invalid input. please press y/n");
-            } else if (isPluged.equals("n")) {
-                toReturn = false;
-                wrongInput = false;
+            String select = readInput.nextLine();
+            switch (select){
+                case "y":
+                    toReturn = true;
+                    wrongInput = false;
+                    break;
+                case "n":
+                    return false;
+
+                default:
+                    //boolean continueGetPlug = wrongInputMenu("No y or n was Pressed",readInput);
+                    //if(!continueGetPlug)
+                      //  throw new RuntimeException("The configuration was not saved");
             }
         }
-        return toReturn;
+        return false;
+    }
+    public void menuForInitalConfiguration(Scanner readInput){
+
     }
 
     public static String getPlug(ApiEnigma api, Scanner readInput) {
@@ -299,7 +360,6 @@ public class UIConsole implements UI {
         Collections.reverse(chosenRotors);
         return chosenRotors;
     }
-
     public static void AutomaticallyInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
         if (configFromFile) {
             UserConfigurationDTO machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
@@ -315,23 +375,20 @@ public class UIConsole implements UI {
     // TODO: 8/12/2022 לשנות את מיקומי הזיזים ככה שהם המיקום היחסי כרגע  
     public static void showData(ApiEnigma api, Scanner readInput) {
         FileConfigurationDTO machineConfigFile = api.showDataReceivedFromFile();
-        UserConfigurationDTO machineConfigUser = api.showDataReceivedFromUser();
-        System.out.println("The possible number of rotors/the number of rotors in use is: "
-                + machineConfigFile.getCountOfRotors() + "/" + machineConfigFile.getCountOfRotorsInUse());
-        System.out.println("Number of reflectors:" + machineConfigFile.getCountOfReflectors());
-        System.out.println("Number of messages encrypted by the machine: " + machineConfigUser.getNumberOfMessageEncrypted());
-        if (machineConfigUser.isHaveConfigFromUser()) {
-            if (api.isConfigFromUser()) {
-                System.out.println("original configuration: ");
-                System.out.println(getStringDataReceiveFromUser(api.getCurrentConfiguration()));
-                System.out.println("Current configuration: ");
-                System.out.println(getStringDataReceiveFromUser(machineConfigUser));
-            }
-
+        System.out.println("Current machine Configurations:");
+        System.out.println("the amount of rotors in use/the amount of possible rotors to use is: "
+                + machineConfigFile.getCountOfRotorsInUse() + "/" + machineConfigFile.getCountOfRotors());
+        System.out.println("Amount of reflectors: " + machineConfigFile.getCountOfReflectors());
+        System.out.println("Amount of messages encrypted by the machine: " + machineConfigFile.getNumberOfMessageEncrypted());
+        if (machineConfigFile.isConfigFromUser()) {
+            UserConfigurationDTO machineConfigUser = api.showDataReceivedFromUser();
+            System.out.println("original configuration: ");
+            System.out.println(getStringDataReceiveFromUser(api.getCurrentConfiguration()));
+            System.out.println("Current configuration: ");
+            System.out.println(getStringDataReceiveFromUser(machineConfigUser));
         }
 
-    }
-
+        }
 
     // TODO: 8/13/2022 add firstConfiguration and now configuration 
     public static StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
@@ -362,20 +419,27 @@ public class UIConsole implements UI {
 
     // TODO: 8/6/2022 thinking on what to show when the machine is not initalize
     public static void menu(boolean configByUser) {
+        System.out.println("-------------------------------------------------");
         System.out.println("please choose option from the menu:");
         System.out.println("1) Initialize the Machine using a file");
-        System.out.println("2) Displaying the machine specifications");
-        System.out.println("3) Selecting an initial code configuration (manually)");
-        System.out.println("4) Selection of initial code configuration (automatically)");
-        if(!configByUser)
-            System.out.println("5) Exit");
-        else{
-            System.out.println("5) encrypt");
-            System.out.println("6) Resetting rotors position to pre-encryption position");
-            System.out.println("7) History and statistics");
-            System.out.println("8) Exit");
+        if(!haveFirstConfig){
+            System.out.println("2) Exit");
         }
-
+        else {
+            System.out.println("1) Initialize the Machine using a file");
+            System.out.println("2) Displaying the machine specifications");
+            System.out.println("3) Selecting an initial code configuration (manually)");
+            System.out.println("4) Selection of initial code configuration (automatically)");
+            if (!configByUser)
+                System.out.println("5) Exit");
+            else {
+                System.out.println("5) encrypt");
+                System.out.println("6) Resetting rotors position to pre-encryption position");
+                System.out.println("7) History and statistics");
+                System.out.println("8) Exit");
+            }
+        }
+        System.out.println("-------------------------------------------------");
     }
 }
 

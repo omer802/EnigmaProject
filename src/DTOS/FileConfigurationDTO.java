@@ -13,7 +13,10 @@ public class FileConfigurationDTO {
     private int countOfRotorsInUse;
     //private List<PairOfNotchAndRotorId> NotchAndIds;
     private final int countOfReflectors;
-    private int numberOfMessegeEncrypted;
+
+    private int numberOfMessageEncrypted;
+
+    private boolean isConfigFromUser;
 
 
     // TODO: 8/13/2022 notice that the number of rotors is from file and not the user chose this  
@@ -27,18 +30,15 @@ public class FileConfigurationDTO {
         this.countOfRotors = machineInput.getRotorsObject().getRotorsAmount();
         this.countOfRotorsInUse = machineInput.getRotorsAmountInUse();
         this.countOfReflectors = machineInput.getReflectorsObject().getReflectorsAmount();
+        this.numberOfMessageEncrypted = machineInput.theNumberOfStringsEncrypted;
+        this.isConfigFromUser = machineInput.isConfigFromUser();
+
 
     }
-    /*private void setPairOfNotchAndRotorId(final EnigmaMachine machineInput){
-        List<PairOfNotchAndRotorId> pairs = machineInput.getPairOfNotchAndRotorId();
-        this.NotchAndIds = pairs;
-    }*/
     public int getCountOfRotors() {
         return countOfRotors;
     }
-   /* public List<PairOfNotchAndRotorId> getNotchAndIds() {
-        return NotchAndIds;
-    }*/
+
     public int getCountOfReflectors() {
         return countOfReflectors;
     }
@@ -46,4 +46,10 @@ public class FileConfigurationDTO {
         return countOfRotorsInUse;
     }
 
+    public int getNumberOfMessageEncrypted() {
+        return numberOfMessageEncrypted;
+    }
+    public boolean isConfigFromUser() {
+        return isConfigFromUser;
+    }
 }

@@ -6,7 +6,11 @@ import engine.enigma.pairOfData;
 import java.util.List;
 
 public class Rotor {
+
      protected final String id;
+
+
+
      public char startingPositionCharacter;
      protected int position;
      // TODO: 8/7/2022 replace position index to method
@@ -33,8 +37,7 @@ public class Rotor {
                }
           }
      }
-     public int getStartingPositionIndex()
-     {
+     public int getStartingPositionIndex() {
           return startingPositionIndex;
      }
 
@@ -69,11 +72,12 @@ public class Rotor {
      public String getId() {
           return id;
      }
+     public char getStartingPositionCharacter() {
+          return startingPositionCharacter;
+     }
 
      @Override
      public String toString() {
           return id;
-
-
      }
 }

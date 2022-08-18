@@ -22,7 +22,7 @@ public class PlugBoard implements Serializable {
     private void initialPlugBoard(String connections) {
         mapInputOutput = new HashMap<>();
         //taking pair of plugs
-        for (int i = 0; i < connections.length()/2; i+=2) {
+        for (int i = 0; i < connections.length(); i+=2) {
             Character c1 = (Character)connections.charAt(i);
             Character c2 = (Character)connections.charAt(i+1);
             mapInputOutput.put(c1, c2);
