@@ -24,10 +24,10 @@ public interface ApiEnigma {
     public boolean isConfigFromUser();
     public int getAmountOfRotors();
 
-    public boolean isLegalRotors(String chosenRotors) ;
+    public List<String> isLegalRotors(String chosenRotors) ;
 
     public boolean isRotorsPositionsInRange(String positions);
-    public boolean isReflectorValid(String chosenReflector);
+    public  List<String> isReflectorValid(String chosenReflector);
     public List<String> cleanStringAndReturnList(String chosenRotorsInputStr);
     public boolean alreadyEncryptedMessages();
 

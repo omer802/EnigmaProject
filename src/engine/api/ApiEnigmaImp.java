@@ -43,11 +43,17 @@ public class ApiEnigmaImp implements ApiEnigma {
 
         return enigmaMachine.getPossibleReflectors();
     }
-    public boolean isReflectorValid(String chosenReflector){
-        if(Integer.parseInt(chosenReflector)>5|| Integer.parseInt(chosenReflector)<1)
-            throw new NumberFormatException("The input is out of range");
-        int chosenReflectorInteger = Integer.parseInt(chosenReflector);
-        return getPossibleReflectors().contains(Reflectors.IntegerToReflectorString(chosenReflectorInteger));
+    public List<String> isReflectorValid(String chosenReflector){
+        List<String> ReflectorErrors = new ArrayList<>();
+        if(!chosenReflector.matches("[0-9]+"))
+           ReflectorErrors.add("Error: It is not possible to insert an input that is not a number. " +
+                   "you need to select ");
+        else {
+            int chosenReflectorInteger = Integer.parseInt(chosenReflector);
+            if (!getPossibleReflectors().contains(Reflectors.IntegerToReflectorString(chosenReflectorInteger)))
+                ReflectorErrors.add("Error: There is no reflector in the system with the entered id");
+        }
+        return ReflectorErrors;
     }
     public FileConfigurationDTO showDataReceivedFromFile(){
         FileConfigurationDTO Machinespecification = new FileConfigurationDTO(enigmaMachine);
@@ -124,19 +130,19 @@ public class ApiEnigmaImp implements ApiEnigma {
     public int getAmountOfRotors(){
         return enigmaMachine.getRotorsAmountInUse();
     }
-    public boolean isLegalRotors(String chosenRotorsInputStr)  {
+    public List<String> isLegalRotors(String chosenRotorsInputStr)  {
+        List<String> RotorsErrors = new ArrayList<>();
         List<String> chosenRotorsList = cleanStringAndReturnList(chosenRotorsInputStr);
         List<String> possibleRotors = getPossibleRotors();
         if(chosenRotorsList.size()!= getAmountOfRotors())
-            throw new ExceptionInInitializerError("The amount of rotors does not correspond to the amount of rotors" +
-                    " that exist in the system" + "You have to insert "+ getAmountOfRotors()+" rotors");
+            RotorsErrors.add("Error: The amount of rotors does not correspond to the amount of rotors" +
+                    " that exist in the system." + " You have to insert "+ getAmountOfRotors()+" rotors from: "+ getPossibleRotors());
 
         if(!possibleRotors.containsAll(chosenRotorsList))
-            throw new ExceptionInInitializerError("The rotors you are trying to insert is out of range.");
-        //check if there is no reption between objects
+            RotorsErrors.add("Error: The rotors you are trying to insert is out of range. You have to insert " + getAmountOfRotors()+" rotors from: "+ getPossibleRotors());
         if(chosenRotorsList.stream().distinct().count() != chosenRotorsList.size())
-            throw new ExceptionInInitializerError("You have entered more than one identical rotor. ");
-        return true;
+            RotorsErrors.add("Error: You have entered more than one identical rotor. You have to insert " + getAmountOfRotors()+" rotors from: "+ getPossibleRotors());
+        return RotorsErrors;
     }
     public List<String> cleanStringAndReturnList(String chosenRotorsInputStr){
         //Clearing spaces  and tabs from the user if entered

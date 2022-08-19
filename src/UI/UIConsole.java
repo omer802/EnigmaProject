@@ -77,7 +77,9 @@ public class UIConsole implements UI {
                 showData(api, readInput);
                 break;
             case "3":
-                selectInitialCodeConfiguration(api, readInput);
+                if(configFromFile) {
+                    selectInitialCodeConfiguration(api, readInput);
+                }
                 break;
             case "4":
                 AutomaticallyInitialCodeConfiguration(api, readInput);
@@ -86,6 +88,8 @@ public class UIConsole implements UI {
             case "5":
                 if (!configByUser)
                     ExitWasPressed = true;
+                else
+                System.out.println("Configuration cannot be received from a user without a machine being created");
                 break;
             ///
             default:
@@ -135,11 +139,11 @@ public class UIConsole implements UI {
            sb.append("Configurations used by the machine and the encrypted messages in each configuration:\n");
            for (ConfigurationAndEncryption configuration : statisticsToShow.getConfigurationsInUse()) {
                UserConfigurationDTO config = configuration.getConfiguration();
-               sb.append("In configuration:" + getStringDataReceiveFromUser(config) + " The following messages have been encrypted:\n");
+               sb.append("In configuration:" + getStringDataReceiveFromUser(config) + " The following messages have been encrypted: \n");
 
                for (EncryptionData data : configuration.getEncryptionDataList()) {
                    String Format = decimalFormat.format(data.getProcessingTime());
-                   sb.append("\t#.<" + data.getInput() + ">" + "--> " + "<" + data.getOutput() + ">" + "Encryption time: " + Format + "\n");
+                   sb.append("\t#.<" + data.getInput() + ">" + "--> " + "<" + data.getOutput() + ">" + " Encryption time in nano seconds: " + Format + "\n");
                }
            }
        }
@@ -156,14 +160,14 @@ public class UIConsole implements UI {
     public static void dataEncryption(ApiEnigma api, Scanner readInput) {
         String encryptedString;
         boolean goodInput = false;
-        boolean tryAgain = true;
-        while (!goodInput && tryAgain) {
+        boolean ExitWasPress = false;
+        while (!goodInput && (!ExitWasPress)) {
             System.out.println("Enter massage you want to encrypt");
             String toEncrypt = readInput.nextLine();
             goodInput = validateStringToEncrypt(toEncrypt);
             if (!goodInput) {
-                String message = "Some of the letters you entered are not from the alphabet. Please enter a valid string from the alphabet";
-                tryAgain = wrongInputMenu(message, readInput);
+                System.out.println("Some of the letters you entered are not from the alphabet");;
+                ExitWasPress = ExitToMenu(readInput);
             } else {
                 encryptedString = api.dataEncryption(toEncrypt);
                 System.out.println("Message have encrypted. The encryption result is: " + encryptedString);
@@ -172,22 +176,21 @@ public class UIConsole implements UI {
         }
     }
     //if return true continue else go back to main menu
-    public static boolean wrongInputMenu(String wrongInputmessage,Scanner readInput) {
+    public static boolean ExitToMenu(Scanner readInput) {
         boolean goodInput = false;
         boolean toReturn = false;
         System.out.println();
-        System.out.println("Invalid input. " + wrongInputmessage);
         while (!goodInput) {
             System.out.println("1) Try again");
             System.out.println("2) Return to menu");
             String select = readInput.nextLine();
             switch (select) {
                 case "1":
-                    toReturn = true;
+                    toReturn = false;
                     goodInput = true;
                     break;
                 case "2":
-                    toReturn = false;
+                    toReturn = true;
                     goodInput = true;
                     break;
                 default:
@@ -220,68 +223,121 @@ public class UIConsole implements UI {
     }
 
     public static void selectInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
-        if (configFromFile) {
-            UserConfigurationDTO specification;
-            System.out.println("set initial configuration");
-            try {
-                 specification = getDTOConfigurationFromUser(api, readInput);
-            }
-            catch (RuntimeException e){
-                System.out.println(e.getMessage());
-                return;
-            }
+        UserConfigurationDTO specification;
+        System.out.println("set initial configuration");
+        specification = getDTOConfigurationFromUser(api, readInput);
+        if (specification == null) {
+            System.out.println("The configuration was not saved. ");
+            return;
+        } else {
             api.selectInitialCodeConfiguration(specification);
             System.out.println("Your configuration has been successfully saved in the system");
             configByUser = true;
-        } else
-            System.out.println("Configuration cannot be received from a user without a machine being created");
+        }
     }
+
 
     // TODO: 8/13/2022 add option to exit every time we want to
     public static UserConfigurationDTO getDTOConfigurationFromUser(ApiEnigma api, Scanner readInput) {
         List<String> chosenRotors = chosenRotorsFromUser(api, readInput);
+        if (chosenRotors == null)
+            return null;
+        else
+            System.out.println("Rotors id updated successfully");
         String chosenPositions = getRotorsStartingPosition(api, readInput, chosenRotors.size());
+        if (chosenPositions == null)
+            return null;
+        else
+            System.out.println("rotors starting positions updated successfully ");
         String chosenReflector = getReflector(api, readInput);
-        UserConfigurationDTO Specification = new UserConfigurationDTO(chosenRotors, chosenPositions, chosenReflector);
-        boolean isPlugged = isPluged(api, readInput);
-        if (isPlugged) {
-            String plug = getPlug(api, readInput);
-            Specification.setPlugBoardConnections(plug);
-        }
-        return Specification;
-    }
+        if (chosenReflector == null)
+            return null;
+        else
+            System.out.println("Reflector id updated successfully");
 
-    public static boolean isPluged(ApiEnigma api, Scanner readInput) {
+        UserConfigurationDTO Specification = new UserConfigurationDTO(chosenRotors, chosenPositions, chosenReflector);
+        int isPlugged = isPluged(api, readInput);
+        if (isPlugged == -1)
+            return null;
+        else if (isPlugged == 1) {
+            String plug = getPlug(api, readInput);
+            if(plug == null) {
+                System.out.println("Plug board was not set");
+                return null;
+            }
+            else {
+                Specification.setPlugBoardConnections(plug);
+                System.out.println("Plug board updated successfully");
+            }
+        } else if (isPlugged == 0)
+            System.out.println("Plug board was not set");
+
+            return Specification;
+    }
+    /*public static void selectInitialCodeConfigurationTemp(ApiEnigma api, Scanner readInput){
+        boolean goodRotorsInput = true;
+        boolean goodPositionInput = true;
+        boolean goodReflectorInput = true;
+        boolean goodPlugInput = true;
+        boolean continueConfiguration = true;
+        System.out.println("enter the rotors you would like to use with a comma separating each rotor");
+        while (continueConfiguration) {
+            String select = readInput.nextLine();
+            List<String> rotorsErrors = api.isLegalRotors(select);//isLegalRotors returns all the errors that occurred
+            while(rotorsErrors.size() !=0)
+            {
+                rotorsErrors.forEach(System.out::println);
+                if(ExitToMenu(readInput))
+                    continueConfiguration = false;
+            }
+        }*/
+
+
+
+
+
+    public static int isPluged(ApiEnigma api, Scanner readInput) {
         boolean wrongInput = true;
-        boolean toReturn = false;
-        System.out.println("Want to connect a plug board? press y/n");
+        int toReturn = 0;
         while (wrongInput) {
+            System.out.println("Want to connect a plug board? press y/n");
             String select = readInput.nextLine();
             switch (select){
                 case "y":
-                    toReturn = true;
+                    toReturn = 1;
                     wrongInput = false;
                     break;
                 case "n":
-                    return false;
-
+                    toReturn = 0;
+                    wrongInput = false;
+                    break;
                 default:
-                    //boolean continueGetPlug = wrongInputMenu("No y or n was Pressed",readInput);
-                    //if(!continueGetPlug)
-                      //  throw new RuntimeException("The configuration was not saved");
+                    System.out.println("No y or n was entered");
+                    if(ExitToMenu(readInput))
+                       return -1;
             }
         }
-        return false;
+        return toReturn;
     }
     public static String getPlug(ApiEnigma api, Scanner readInput) {
         boolean wrongInput = true;
-        System.out.println("select letters pairs from the alphabet for the plug board");
         while (wrongInput) {
+            System.out.println("select letters pairs from the alphabet for the plug board");
             String chosenPlug = readInput.nextLine();
-            if ((chosenPlug.length() % 2 == 0) && (Keyboard.isStringInRange(chosenPlug)) && isUniqueCharacters(chosenPlug))
+            if (chosenPlug.length() % 2 != 0)
+                System.out.println("Error: only an even amount of characters can be entered");
+            if(!Keyboard.isStringInRange(chosenPlug)){
+                System.out.println("Error: one of the letters entered is not in the alphabet");
+            }
+            if(!isUniqueCharacters(chosenPlug))
+            {
+                System.out.println("Error: Not all letters are different");
+            }
+            if((chosenPlug.length() % 2 == 0) && (Keyboard.isStringInRange(chosenPlug)) && isUniqueCharacters(chosenPlug))
                 return chosenPlug;
-            else
-                System.out.println("invalid input, please letters pairs from the alphabet");
+            if(ExitToMenu(readInput))
+                return null;
+
         }
         return null;
     }
@@ -303,18 +359,19 @@ public class UIConsole implements UI {
     public static String getReflector(ApiEnigma api, Scanner readInput) {
         boolean wrongInput = true;
         String chosenReflector = new String();
-        System.out.println("select reflector from " + api.getPossibleReflectors());
         while (wrongInput) {
+            System.out.println("select reflector from: " + api.getPossibleReflectors());
+
             chosenReflector = readInput.nextLine();
-            try {
-                if (api.isReflectorValid(chosenReflector))
-                    wrongInput = false;
-                else
-                    System.out.println("Invalid reflector was chosen. \nPlease select a reflector from the list." +
-                            " For example for reflector 1 choose I");
-            } catch (Exception e) {
-                System.out.println("Invalid reflector was chosen. " + e.getMessage() + "\nPlease select a reflector from the list." +
-                        " For example for reflector 1 choose I");
+            List<String> errorsInReflectorInput = api.isReflectorValid(chosenReflector);
+            if (errorsInReflectorInput.size() > 0) {
+                errorsInReflectorInput.forEach(System.out::println);
+                if (ExitToMenu(readInput)) {
+                    return null;
+                }
+            }
+            else {
+                wrongInput = false;
             }
         }
         return Reflectors.IntegerToReflectorString(Integer.parseInt(chosenReflector));
@@ -323,43 +380,51 @@ public class UIConsole implements UI {
     public static String getRotorsStartingPosition(ApiEnigma api, Scanner readInput, int rotorsAmount) {
         boolean wrongInput = true;
         String rotorsPositionsInput = new String();
-        System.out.println("select The initial rotors positions from the alphabet: ");
         while (wrongInput) {
+            System.out.println("select " +api.getAmountOfRotors()+" positions from the alphabet:");
             rotorsPositionsInput = readInput.nextLine();
+            if(!api.isRotorsPositionsInRange(rotorsPositionsInput))
+                System.out.println("Error: a letter that is not in the alphabet was entered");
+            if(rotorsPositionsInput.length() != rotorsAmount)
+            System.out.println("Error: The amount of positions entered does not match the amount of rotors in the system. you " +
+                    "need to enter " +api.getAmountOfRotors()+ " positions from the alphabet");
             if ((api.isRotorsPositionsInRange(rotorsPositionsInput)) && (rotorsPositionsInput.length() == rotorsAmount))
                 wrongInput = false;
             else {
-                // TODO: 8/13/2022 make option for exit
-                System.out.println("Invalid input! Please enter legal positions of the rotors");
+                if(ExitToMenu(readInput))
+                    return null;
             }
         }
         return rotorsPositionsInput;
     }
 
     public static List<String> chosenRotorsFromUser(ApiEnigma api, Scanner readInput) {
-        System.out.println("enter the rotors you would like to use with a comma separating each rotor");
         boolean wrongInput = true;
         String rotorsInput = new String();
         wrongInput = true;
         while (wrongInput) {
+            System.out.println("enter "+ api.getAmountOfRotors() +" rotors you would like to use with a comma separating each rotor from: " +api.getPossibleRotors());
             rotorsInput = readInput.nextLine();
-            try {
-                if (api.isLegalRotors(rotorsInput))
-                    wrongInput = false;
-            } catch (ExceptionInInitializerError e) {
-                // TODO: 8/13/2022 add option to exit from this operation think like expetion
-                System.out.println(e.getMessage());
+            List<String> ErrorsInRotorsInput = api.isLegalRotors(rotorsInput);
+            if (ErrorsInRotorsInput.size() == 0)
+                wrongInput = false;
+            else {
+                ErrorsInRotorsInput.forEach(System.out::println);
+                if (ExitToMenu(readInput))
+                    return null;
             }
         }
-        // TODO: 8/13/2022 think how is incarge of reverse the list for machine
-        List<String> chosenRotors = api.cleanStringAndReturnList(rotorsInput);
-        Collections.reverse(chosenRotors);
-        return chosenRotors;
+            // TODO: 8/13/2022 think how is decrese of reverse the list for machine
+            List<String> chosenRotors = api.cleanStringAndReturnList(rotorsInput);
+            Collections.reverse(chosenRotors);
+            return chosenRotors;
+
     }
     public static void AutomaticallyInitialCodeConfiguration(ApiEnigma api, Scanner readInput) {
         if (configFromFile) {
             UserConfigurationDTO machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
-            System.out.println(getStringDataReceiveFromUser(machineConfigUser));
+            System.out.println("configuration has been successfully saved in the system");
+            System.out.println("Current machine Configurations: "+ getStringDataReceiveFromUser(machineConfigUser));
         } else {
             System.out.println("It is not possible to create a machine configuration " +
                     "without a machine in the system. Please insert a file that produces the machine");
@@ -417,8 +482,8 @@ public class UIConsole implements UI {
     public static void menu(boolean configByUser) {
         System.out.println("-------------------------------------------------");
         System.out.println("please choose option from the menu:");
-        System.out.println("1) Initialize the Machine using a file");
         if(!haveFirstConfig){
+            System.out.println("1) Initialize the Machine using a file");
             System.out.println("2) Exit");
         }
         else {
