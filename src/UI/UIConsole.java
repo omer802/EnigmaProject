@@ -273,10 +273,6 @@ public class UIConsole implements UI {
         }
         return false;
     }
-    public void menuForInitalConfiguration(Scanner readInput){
-
-    }
-
     public static String getPlug(ApiEnigma api, Scanner readInput) {
         boolean wrongInput = true;
         System.out.println("select letters pairs from the alphabet for the plug board");
