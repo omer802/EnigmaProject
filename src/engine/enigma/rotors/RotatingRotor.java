@@ -2,9 +2,10 @@ package engine.enigma.rotors;
 
 import engine.enigma.pairOfData;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RotatingRotor extends Rotor implements advanceRotor {
+public class RotatingRotor extends Rotor implements advanceRotor, Serializable {
     protected int notch;
     private RotatingRotor nextRotor;
 
@@ -12,7 +13,6 @@ public class RotatingRotor extends Rotor implements advanceRotor {
     private boolean lastRotor;
 
 
-    // TODO: 8/6/2022 check notch ok with set pair array size  
     public RotatingRotor(int notch, String id, List<pairOfData> setPairArray) {
         super( id, setPairArray);
         this.notch = notch;
@@ -21,8 +21,7 @@ public class RotatingRotor extends Rotor implements advanceRotor {
         position = (position + 1) % PairOfDataArray.size();
         if(!islastRotor()){
             if(nextRotor==null)
-                // TODO: 8/4/2022 throw exption
-                throw  new ExceptionInInitializerError("you havent intialzie rotors right");
+                throw  new ExceptionInInitializerError("you haven't intialzie rotors right");
             else{
                 if(atNotch()) {
                     nextRotor.advanceNextRotor();

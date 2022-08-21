@@ -3,9 +3,10 @@ package engine.enigma.rotors;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.pairOfData;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Rotor {
+public class Rotor implements Serializable {
 
      protected final String id;
 

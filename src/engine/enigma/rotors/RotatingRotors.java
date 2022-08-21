@@ -1,9 +1,10 @@
 package engine.enigma.rotors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RotatingRotors {
+public class RotatingRotors  implements Serializable {
 
     private List<RotatingRotor> rotors;
     private int rotorsAmount;

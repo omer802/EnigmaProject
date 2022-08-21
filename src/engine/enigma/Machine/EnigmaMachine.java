@@ -11,9 +11,10 @@ import engine.enigma.rotors.RotatingRotor;
 import engine.enigma.rotors.RotatingRotors;
 import engine.enigma.statistics.Statistics;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class EnigmaMachine {
+public class EnigmaMachine implements Serializable {
     private RotatingRotors rotors;
     private Reflectors reflectors;
     private PlugBoard plugBoard;
@@ -28,17 +29,7 @@ public class EnigmaMachine {
     //private UserConfigurationDTO firstConfiguration;
     protected final int amountOfRotors;
     private Statistics statistics;
-
-    public static boolean isConfigFromFile() {
-        return ConfigFromFile;
-    }
-
     static private boolean ConfigFromFile = false;
-
-    public static boolean isConfigFromUser() {
-        return ConfigFromUser;
-    }
-
     static private boolean ConfigFromUser = false;
 
     public EnigmaMachine(Keyboard keyboardInput, List<RotatingRotor> rotorsInput,int amountOfRotorsToUse, List<Reflector> reflectorsInput) {
@@ -72,7 +63,6 @@ public class EnigmaMachine {
 
     public Character encodeChar(char charToEncode) {
         char currentCharToEncode = charToEncode;
-        // TODO: 8/7/2022 change to optianl 
         if (havePlugBoard) {
             if (plugBoard.isPluged(currentCharToEncode))
                 currentCharToEncode = plugBoard.getPlugedValue(currentCharToEncode);
@@ -245,7 +235,6 @@ public class EnigmaMachine {
 
 
 
-    // TODO: 8/11/2022 make it a single row using stream
     public List<String> getPossibleRotors() {
         return getRotorsObject().getAllRotorsAsStringList();
     }
@@ -265,7 +254,6 @@ public class EnigmaMachine {
         for (RotatingRotor rotor :rotorsInUse) {
             String rotorId = rotor.getId();
             int notch = rotor.getNotch();
-            // TODO: 8/13/2022 check if work
             // getting the distance from notch. every rotor have alphabet from the keyboard
             int distanceFromNotch = (notch - rotor.getPosition() + Keyboard.alphabet.length()) % Keyboard.alphabet.length();
             pairs.add(new PairOfNotchAndRotorId(rotorId,distanceFromNotch));
@@ -279,4 +267,11 @@ public class EnigmaMachine {
     public MachineStatisticsDTO getStatistics() {
         return new MachineStatisticsDTO(statistics);
     }
+    public static boolean isConfigFromUser() {
+        return ConfigFromUser;
+    }
+    public static boolean isConfigFromFile() {
+        return ConfigFromFile;
+    }
+
 }

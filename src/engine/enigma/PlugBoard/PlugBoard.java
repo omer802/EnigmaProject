@@ -18,7 +18,6 @@ public class PlugBoard implements Serializable {
         mapInputOutput = new HashMap<>();
     }
 
-    // TODO: 8/7/2022 changing to without , and |
     private void initialPlugBoard(String connections) {
         mapInputOutput = new HashMap<>();
         //taking pair of plugs

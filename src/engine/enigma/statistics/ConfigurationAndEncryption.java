@@ -8,7 +8,6 @@ import java.util.List;
 
 public class ConfigurationAndEncryption implements Serializable {
 
-    // TODO: 8/15/2022 make stringProccesingInformation tuple
     private List<EncryptionData> EncryptionDataList;
 
     private UserConfigurationDTO configuration;

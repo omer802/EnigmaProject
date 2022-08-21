@@ -1,9 +1,10 @@
 package engine.enigma.reflector;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reflectors {
+public class Reflectors implements Serializable {
     public enum ReflectorEnum {
         I, II, III, IV,V
     }

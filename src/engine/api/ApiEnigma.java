@@ -6,6 +6,8 @@ import DTOS.UserConfigurationDTO;
 import DTOS.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 public interface ApiEnigma {
@@ -39,4 +41,8 @@ public interface ApiEnigma {
     public boolean haveConfigFromUser();
 
     public boolean haveConfigFromFile();
+
+    public void saveMachineStateToFile(String filePath) throws IOException;
+
+    public void loadMachineStateFromFIle(String filePath) throws IOException, ClassNotFoundException;
     }

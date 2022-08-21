@@ -1,11 +1,10 @@
 package engine.enigma.keyboard;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO: 8/6/2022 add to rotors and everybody the keyboard  and work with it - index to char .
-// TODO: 8/6/2022 starting with Machine and after that to rotors and reflectors 
-public class Keyboard {
+public class Keyboard implements Serializable {
     private static Map<Character,Integer> ABCToIndex;
     private static Map<Integer,Character> IndexToABC;
     public static String alphabet;

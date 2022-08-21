@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoadDataFromXml implements LoadData {
-    // TODO: 8/2/2022  change the input to object
     private final static String JAXB_XML_PACKAGE_NAME = "engine.LoadData.jaxb.schema.generated";
     public EnigmaMachine loadDataFromInput(String FilePath, xmlFileValidatorDTO validator){
 
@@ -48,7 +47,6 @@ public class LoadDataFromXml implements LoadData {
 
     }
 
-    // TODO: 8/17/2022 make every method equal with sanding parameter
     private EnigmaMachine deserializeMachineInput(CTEMachine MachineInput){
         Keyboard keyboard = getKeyBoard(MachineInput);
         List<RotatingRotor> rotors = getRotorsFromInput(MachineInput);
@@ -63,8 +61,6 @@ public class LoadDataFromXml implements LoadData {
         return new Keyboard(ABC);
     }
 
-    // TODO: 8/17/2022 check if not to much cut for charcter
-    // TODO: 8/17/2022 change it to validator
 
 
     private List<Reflector> getReflectorsFromInput(List<CTEReflector> reflectorsInput){
@@ -83,7 +79,6 @@ public class LoadDataFromXml implements LoadData {
     private List<inputOutputPair> getPairsInputOutput(List<CTEReflect> inputReflector){
         List<inputOutputPair> pairOfData = new ArrayList<>();
         for (int i = 0; i <inputReflector.size() ; i++) {
-            // TODO: 8/2/2022 change to normal casting
             int input = inputReflector.get(i).getInput() -1;
             int output = inputReflector.get(i).getOutput() -1;
             pairOfData.add(new inputOutputPair(input,output));

@@ -35,7 +35,6 @@ public class UserConfigurationDTO implements Serializable {
         setPairOfNotchAndRotorId(machineInput.getPairOfNotchAndRotorId());
         this.CountOfRotorsInUse = machineInput.getRotorsObject().getRotorsAmountInUse();
         this.numberOfMessageEncrypted = machineInput.theNumberOfStringsEncrypted;
-        // TODO: 8/11/2022 think about chainging toString that return the used to all rotors in object
         setChosenRotorsWithOrder(machineInput);
         setRotorsStartingPosition(machineInput);
         this.isPlugged = machineInput.isPluged();
@@ -44,7 +43,6 @@ public class UserConfigurationDTO implements Serializable {
         this.haveConfigFromUser = true;
     }
 
-    // TODO: 8/13/2022 see how to change that we dont need to excess this from the machine
     private void setChosenRotorsWithOrder(final EnigmaMachine machineInput){
         this.chosenRotorsWithOrder = machineInput.getRotorsObject().getChosenRotorsString();
 

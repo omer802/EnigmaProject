@@ -1,7 +1,8 @@
 package engine.enigma;
 
-// TODO: 8/15/2022 change to pair  
-public class pairOfData {
+import java.io.Serializable;
+
+public class pairOfData implements Serializable {
 
     private final Character right;
 

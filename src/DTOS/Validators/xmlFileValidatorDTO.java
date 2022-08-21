@@ -22,7 +22,7 @@ public class xmlFileValidatorDTO {
 
     public void setMachine(CTEMachine MachineInput){
         this.enigmaMachineFromFile = MachineInput;
-        String ABC = enigmaMachineFromFile.getABC();
+        String ABC = enigmaMachineFromFile.getABC().toUpperCase();
         this.alphabet = getCleanAlphabet(ABC);
 
         this.listOfExceptions = new ArrayList<>();
@@ -41,6 +41,8 @@ public class xmlFileValidatorDTO {
     public static String getCleanAlphabet(String str) {
         str = str.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
         str = str.replaceAll("\\p{C}", "");
+        str = str.trim();
+        str = str.toUpperCase();
         return str;
     }
 
@@ -60,8 +62,8 @@ public class xmlFileValidatorDTO {
     }
     public void validateAmountOfRotors(List<CTERotor> rotorsInput, int amountOfRotorsToUse){
         if(amountOfRotorsToUse>99)
-            addException(new RuntimeException("Error: initialize with more than 9 rotors. Please upload" +
-                    " a file with more than 2 rotors in use"));
+            addException(new RuntimeException("Error: initialize with more than 99 rotors. Please upload" +
+                    " a file with less than 99 rotors in use"));
         if(amountOfRotorsToUse <2)
             addException(new RuntimeException("Error: initialize with less than 2 rotors. Please upload" +
                     " a file with more than 2 rotors in use"));
@@ -175,7 +177,6 @@ public class xmlFileValidatorDTO {
         if(ReflectorDifferentIdCount!= reflectorsId.size())
             addException(new RuntimeException("Error: not all reflector ids are different"));
     }
-    // TODO: 8/17/2022 generate one function that check numbering numerals
     public void isRunningNumberingOfRomanNumerals(List<String> reflectorsId){
 
         for (int i = 1; i <= reflectorsId.size() ; i++) {

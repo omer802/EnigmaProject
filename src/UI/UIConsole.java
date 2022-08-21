@@ -11,20 +11,16 @@ import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
 import engine.enigma.statistics.ConfigurationAndEncryption;
 import engine.enigma.statistics.EncryptionData;
-import sun.misc.ExtensionInstallationException;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
-// TODO: 8/13/2022 figuer out how to cancle so much reverse 
 public class UIConsole implements UI {
     public static void main(String[] args) {
         ReadFromMenu();
     }
 
-    // TODO: 8/7/2022 check if members in main class is ok/ change this to member of api or send it to func by reference
-    // TODO: 8/12/2022 think about change to only get file and the show to menu
     public static Boolean configByUser;
     public static Boolean ExitWasPressed;
     public static Boolean configFromFile;
@@ -38,27 +34,30 @@ public class UIConsole implements UI {
         while (!ExitWasPressed) {
             menu(configByUser);
             String select = readInput.nextLine();
-            if (!select.matches("\\D*\\d\\D*"))
-                System.out.println("Wrong input! Only options from the menu can be entered");
+            if(select.matches("[0-9]+")){
+                if(Integer.parseInt(select) >0 && Integer.parseInt(select)<11)
+                    choseOption(api, readInput, select);
+                else
+                    System.out.println("wrong input. please select option from the menu between 1-10");
+            }
             else
-                choseOption(api, readInput, select);
-
+                System.out.println("wrong input. please insert only numbers between 1-10");
+            }
         }
-    }
+
 
 
     public static void choseOption(ApiEnigma api, Scanner readInput, String select) {
         if (!haveFirstConfig) {
             switch (select) {
                 case "1":
-                    // TODO: 8/12/2022 change the number to enum
                     readData(api, readInput);
                     break;
                 case "2":
                     ExitWasPressed = true;
                     break;
                 default:
-                        System.out.println("wrong input! You didn't choose an option from the displayed menu");
+                        System.out.println("wrong input. please choose an option from the menu");
 
             }
         }
@@ -70,7 +69,6 @@ public class UIConsole implements UI {
     public static void choseOptionAfterFirstConfig(ApiEnigma api, Scanner readInput, String select){
         switch (select) {
             case "1":
-                // TODO: 8/12/2022 change the number to enum
                 readData(api, readInput);
                 break;
             case "2":
@@ -88,8 +86,6 @@ public class UIConsole implements UI {
             case "5":
                 if (!configByUser)
                     ExitWasPressed = true;
-                else
-                System.out.println("Configuration cannot be received from a user without a machine being created");
                 break;
             ///
             default:
@@ -113,6 +109,12 @@ public class UIConsole implements UI {
                 break;
             case "8":
                 ExitWasPressed = true;
+                break;
+            case "9":
+                saveMachineToFile(api,readInput);
+                break;
+            case "10":
+                loadMachineStateFromFile(api,readInput);
                 break;
         }
     }
@@ -143,7 +145,7 @@ public class UIConsole implements UI {
 
                for (EncryptionData data : configuration.getEncryptionDataList()) {
                    String Format = decimalFormat.format(data.getProcessingTime());
-                   sb.append("\t#.<" + data.getInput() + ">" + "--> " + "<" + data.getOutput() + ">" + " Encryption time in nano seconds: " + Format + "\n");
+                   sb.append("\t#.<" + data.getInput().toUpperCase() + ">" + "--> " + "<" + data.getOutput().toUpperCase() + ">" + " Encryption time in nano seconds: " + Format + "\n");
                }
            }
        }
@@ -164,13 +166,14 @@ public class UIConsole implements UI {
         while (!goodInput && (!ExitWasPress)) {
             System.out.println("Enter massage you want to encrypt");
             String toEncrypt = readInput.nextLine();
+            toEncrypt = toEncrypt.toUpperCase();
             goodInput = validateStringToEncrypt(toEncrypt);
             if (!goodInput) {
                 System.out.println("Some of the letters you entered are not from the alphabet");;
                 ExitWasPress = ExitToMenu(readInput);
             } else {
                 encryptedString = api.dataEncryption(toEncrypt);
-                System.out.println("Message have encrypted. The encryption result is: " + encryptedString);
+                System.out.println("Message have encrypted. The encryption result is: " + encryptedString.toUpperCase());
             }
 
         }
@@ -215,7 +218,7 @@ public class UIConsole implements UI {
             }
             System.out.println("");
         } else {
-            System.out.println("The information was read successfully");
+            System.out.println("The file was read successfully");
             configByUser = false;
             configFromFile = true;
             haveFirstConfig = true;
@@ -237,7 +240,6 @@ public class UIConsole implements UI {
     }
 
 
-    // TODO: 8/13/2022 add option to exit every time we want to
     public static UserConfigurationDTO getDTOConfigurationFromUser(ApiEnigma api, Scanner readInput) {
         List<String> chosenRotors = chosenRotorsFromUser(api, readInput);
         if (chosenRotors == null)
@@ -324,6 +326,7 @@ public class UIConsole implements UI {
         while (wrongInput) {
             System.out.println("select letters pairs from the alphabet for the plug board");
             String chosenPlug = readInput.nextLine();
+            chosenPlug = chosenPlug.toUpperCase();
             if (chosenPlug.length() % 2 != 0)
                 System.out.println("Error: only an even amount of characters can be entered");
             if(!Keyboard.isStringInRange(chosenPlug)){
@@ -383,6 +386,7 @@ public class UIConsole implements UI {
         while (wrongInput) {
             System.out.println("select " +api.getAmountOfRotors()+" positions from the alphabet:");
             rotorsPositionsInput = readInput.nextLine();
+            rotorsPositionsInput = rotorsPositionsInput.toUpperCase();
             if(!api.isRotorsPositionsInRange(rotorsPositionsInput))
                 System.out.println("Error: a letter that is not in the alphabet was entered");
             if(rotorsPositionsInput.length() != rotorsAmount)
@@ -414,7 +418,6 @@ public class UIConsole implements UI {
                     return null;
             }
         }
-            // TODO: 8/13/2022 think how is decrese of reverse the list for machine
             List<String> chosenRotors = api.cleanStringAndReturnList(rotorsInput);
             Collections.reverse(chosenRotors);
             return chosenRotors;
@@ -432,8 +435,6 @@ public class UIConsole implements UI {
     }
 
 
-    // TODO: 8/7/2022  use stringBuilder and add <> in the end
-    // TODO: 8/12/2022 לשנות את מיקומי הזיזים ככה שהם המיקום היחסי כרגע  
     public static void showData(ApiEnigma api, Scanner readInput) {
         FileConfigurationDTO machineConfigFile = api.showDataReceivedFromFile();
         System.out.println("Current machine Configurations:");
@@ -451,7 +452,6 @@ public class UIConsole implements UI {
 
         }
 
-    // TODO: 8/13/2022 add firstConfiguration and now configuration 
     public static StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
         StringBuilder stringBuilder = new StringBuilder();
         List<PairOfNotchAndRotorId> chosenRotors = machineConfigUser.getNotchAndIds();
@@ -478,7 +478,6 @@ public class UIConsole implements UI {
         stringBuilderInput.append( ">");
     }
 
-    // TODO: 8/6/2022 thinking on what to show when the machine is not initalize
     public static void menu(boolean configByUser) {
         System.out.println("-------------------------------------------------");
         System.out.println("please choose option from the menu:");
@@ -498,9 +497,36 @@ public class UIConsole implements UI {
                 System.out.println("6) Resetting rotors position to pre-encryption position");
                 System.out.println("7) History and statistics");
                 System.out.println("8) Exit");
+                System.out.println("9) Save current machine state to file");
+                System.out.println("10) Load current machine state from file");
             }
         }
         System.out.println("-------------------------------------------------");
+    }
+    public static void saveMachineToFile(ApiEnigma api, Scanner readInput) {
+        System.out.println("Please enter full path of the file without suffix ");
+        String path = readInput.nextLine();
+        try{
+            api.saveMachineStateToFile(path);
+            System.out.println("The current machine state was saved successfully");
+        }
+        catch(IOException e){
+            System.out.println("Error: cannot write to file");
+
+        }
+    }
+    public static void loadMachineStateFromFile(ApiEnigma api, Scanner readInput){
+        System.out.println("please enter the full path of the file you want to reload");
+        String path = readInput.nextLine();
+        try{
+            api.loadMachineStateFromFIle(path);
+            System.out.println("the machine state loaded successfully from file");
+        }
+         catch (ClassNotFoundException e ) {
+             System.out.println("Error: cannot load data from a file. please check the file and the path of the file you have insert");
+        } catch (IOException e) {
+            System.out.println("Error: cannot load data from a file. please check the file and the path of the file you have insert");
+        }
     }
 }
 
