@@ -23,10 +23,6 @@ public class EnigmaMachine implements Serializable {
 
     public static int theNumberOfStringsEncrypted;
 
-    public static int numOfConfiguration;
-    private static int numOfConfigFromUser = 0;
-
-    //private UserConfigurationDTO firstConfiguration;
     protected final int amountOfRotors;
     private Statistics statistics;
     static private boolean ConfigFromFile = false;

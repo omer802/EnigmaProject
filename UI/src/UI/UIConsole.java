@@ -1,5 +1,4 @@
 package UI;
-
 import DTOS.FileConfigurationDTO;
 import DTOS.UserConfigurationDTO;
 import DTOS.MachineStatisticsDTO;
@@ -16,7 +15,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class UIConsole implements UI {
+public class UIConsole  {
+
     public static void main(String[] args) {
         ReadFromMenu();
     }

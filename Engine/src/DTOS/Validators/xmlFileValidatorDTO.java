@@ -1,6 +1,9 @@
 package DTOS.Validators;
 
-import engine.LoadData.jaxb.schema.generated.*;
+import engine.LoadData.jaxb.schema.generated.CTEMachine;
+import engine.LoadData.jaxb.schema.generated.CTEPositioning;
+import engine.LoadData.jaxb.schema.generated.CTEReflector;
+import engine.LoadData.jaxb.schema.generated.CTERotor;
 import engine.enigma.reflector.Reflectors;
 
 import java.util.ArrayList;
