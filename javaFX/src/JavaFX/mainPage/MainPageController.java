@@ -44,8 +44,6 @@ public class MainPageController {
     private HBox HBoxReflectorChoice;
     @FXML
     private CheckBox CheckBoxIsPluged;
-    @FXML
-    private AnchorPane RandomCodeButton;
 
     private Stage PrimaryStage;
     @FXML
@@ -79,10 +77,14 @@ public class MainPageController {
     private Label chosenRotorsLabel;
     @FXML
     private Label fullConfigurationLabel;
+    @FXML
+    private Button randomCodeButton;
 
-    @FXML private ScrollPane codeConfiguration;
+    @FXML
+    private ScrollPane codeConfiguration;
     // TODO: 9/3/2022 change codeconfiguration to upercase 
-    @FXML private codeConfigurationController codeConfigurationController;
+    @FXML
+    private codeConfigurationController codeConfigurationController;
     private SimpleStringProperty chosenRotors;
     private SimpleStringProperty NotchAndLetterAtPeekPaneStartingPosition;
     private SimpleStringProperty chosenReflector;
@@ -129,7 +131,7 @@ public class MainPageController {
         setCodeButton.disableProperty().bind(isFileSelected.not());
         machineDetailsFlowPane.disableProperty().bind(isFileSelected.not());
         CheckBoxIsPluged.disableProperty().bind(isFileSelected.not());
-        RandomCodeButton.disableProperty().bind(isFileSelected.not());
+        //RandomCodeButton.disableProperty().bind(isFileSelected.not());
         //initiate property starting configuration
        //chosenRotorsLabel.textProperty().bind(Bindings.format("%s",chosenRotors));
        //positionsAndNotchLabel.textProperty().bind(Bindings.format("%s",NotchAndLetterAtPeekPaneStartingPosition));
@@ -137,7 +139,7 @@ public class MainPageController {
        //plugBoardConnectionsLabel.textProperty().bind(Bindings.format("%s",plugBoardToShow));
     }
     @FXML
-    void loadXmlFile(ActionEvent event) {
+    public void loadXmlFile(ActionEvent event) {
         // TODO: 9/1/2022 add alert window
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select machine file");
@@ -161,6 +163,7 @@ public class MainPageController {
             isFileSelected.set(true);
             haveCodeConfiguration.set(false);
             CheckBoxIsPluged.setSelected(false);
+
         }
     }
     public void initOriginalConfiguration(){
@@ -188,11 +191,14 @@ public class MainPageController {
         createReflectorChoiceBox();
     }
     public void makeEmptyLayouts(){
+        if(codeConfigurationController.isConfig())
+        codeConfigurationController.makeEmptyLayout();
         this.HboxRtorosID.getChildren().clear();
         this.HBoxlistOfRotorsButtons.getChildren().clear();
         this.HBoxListOfPositions.getChildren().clear();
         this.HBoxReflectorChoice.getChildren().clear();
         this.FlowPaneAlphabet.getChildren().clear();
+        //codeConfigurationController.makeEmptyLayout();
     }
 
     // TODO: 9/2/2022 make it a property in initlize
@@ -323,9 +329,16 @@ public class MainPageController {
             if(!setPlugBoard(Specification))
                 return;
         }
-        else
-            Specification.removePlug();
+
         api.selectInitialCodeConfiguration(Specification);
+        updateConfiguration();
+    }
+    @FXML
+    public void generateRandomCode(ActionEvent event){
+        UserConfigurationDTO Specification = api.AutomaticallyInitialCodeConfiguration();
+        updateConfiguration();
+    }
+    public void updateConfiguration(){
         setOriginalConfiguration();
         setCurrentConfiguration();
         haveCodeConfiguration.set(true);
@@ -335,6 +348,7 @@ public class MainPageController {
     public void setCurrentConfiguration(){
         UserConfigurationDTOAdapter currentConfig = codeConfigurationController.getConfigurationProperties();
         api.setCurrentConfigurationProperties(currentConfig);
+        codeConfigurationController.setConfig(true);
     }
     public void setOriginalConfiguration(){
         UserConfigurationDTO originalConfigurationDTO = api.getOriginalConfiguration();
@@ -348,7 +362,7 @@ public class MainPageController {
 
         chosenReflectorLabel.setText(build[3]);
         // TODO: 9/3/2022 make it work with events 
-        if(CheckBoxIsPluged.isSelected()){
+        if(originalConfigurationDTO.isPlugged()){
             plugBoardConnectionsLabel.setText(originalConfigurationDTO.getPlugBoardConnectionsWithFormat());
         }
         else

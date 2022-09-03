@@ -67,4 +67,6 @@ public interface ApiEnigma {
     public StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser);
 
     public void setCurrentConfigurationProperties(UserConfigurationDTOAdapter DTOPropertiesToConfig);
+    public void setUserConfigurationDTO(UserConfigurationDTO originalConfigurationDTO);
+    public void UpdateCode(UserConfigurationDTO originalConfigurationDTO);
 }

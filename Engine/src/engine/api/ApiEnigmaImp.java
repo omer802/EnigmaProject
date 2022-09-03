@@ -84,11 +84,10 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     }
 
-
-
-
     public String dataEncryption(String data){
         String encodeInformation = enigmaMachine.encodeString(data);
+        UserConfigurationDTO config = getCurrentConfiguration();
+        UpdateCode(config);
         return encodeInformation;
     }
 
@@ -96,6 +95,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
     }
 
+    // TODO: 9/3/2022 update code
     public UserConfigurationDTO AutomaticallyInitialCodeConfiguration(){
         enigmaMachine.automaticInitialCodeConfiguration();
          return getCurrentConfiguration();
@@ -214,7 +214,33 @@ public class ApiEnigmaImp implements ApiEnigma {
         stringBuilderInput.append( ">");
     }
     public void setCurrentConfigurationProperties(UserConfigurationDTOAdapter DTOPropertiesToConfig){
-        this.userConfigurationDTOAdapter = DTOPropertiesToConfig;
+        userConfigurationDTOAdapter = DTOPropertiesToConfig;
+        UserConfigurationDTO originalConfigurationDTO = getOriginalConfiguration();
+        setUserConfigurationDTO(originalConfigurationDTO);
+    }
+    public void UpdateCode(UserConfigurationDTO originalConfigurationDTO){
+        StringBuilder originalConfiguration = getStringDataReceiveFromUser(originalConfigurationDTO);
+        String[] configurationArray = originalConfiguration.toString().replace(">","")
+                .split("<");
+        userConfigurationDTOAdapter.setNotchAndLetterAtPeekPaneStartingPosition(configurationArray[2]);
+        userConfigurationDTOAdapter.setFullConfiguration(originalConfiguration.toString());
+    }
+    public void setUserConfigurationDTO(UserConfigurationDTO originalConfigurationDTO){
+        StringBuilder originalConfiguration = getStringDataReceiveFromUser(originalConfigurationDTO);
+        String[] configurationArray = originalConfiguration.toString().replace(">","")
+                .split("<");
+        userConfigurationDTOAdapter.setChosenRotors(configurationArray[1]);
+        userConfigurationDTOAdapter.setNotchAndLetterAtPeekPaneStartingPosition(configurationArray[2]);
+        userConfigurationDTOAdapter.setChosenReflector(configurationArray[3]);
+        // TODO: 9/3/2022 make it work with events
+        if(enigmaMachine.isPluged()){
+            userConfigurationDTOAdapter.setPlugBoardToShow(originalConfigurationDTO.getPlugBoardConnectionsWithFormat());
+        }
+        else
+            userConfigurationDTOAdapter.setPlugBoardToShow("");
+
+        userConfigurationDTOAdapter.setFullConfiguration(originalConfiguration.toString());
+       dataEncryption("AAA");
     }
 
 }

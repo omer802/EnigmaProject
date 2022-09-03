@@ -171,8 +171,8 @@
                                  <items>
                                     <GridPane prefHeight="208.0" prefWidth="418.0">
                                        <columnConstraints>
-                                          <ColumnConstraints hgrow="NEVER" maxWidth="220.0" minWidth="10.0" prefWidth="41.0" />
-                                          <ColumnConstraints hgrow="NEVER" maxWidth="329.0" minWidth="100.0" prefWidth="119.0" />
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="15.0" minWidth="15.0" prefWidth="15.0" />
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
                                           <ColumnConstraints hgrow="SOMETIMES" prefWidth="353.0" />
                                        </columnConstraints>
                                        <rowConstraints>
@@ -180,12 +180,6 @@
                                           <RowConstraints maxHeight="272.0" minHeight="10.0" prefHeight="272.0" vgrow="ALWAYS" />
                                        </rowConstraints>
                                        <children>
-                                          <AnchorPane minHeight="50.0" minWidth="50.0" prefHeight="160.0" prefWidth="119.0" GridPane.rowIndex="1">
-                                             <children>
-                                                <Button layoutX="-14.0" layoutY="104.0" mnemonicParsing="false" text="Random Code" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
-                                             </children>
-                                          </AnchorPane>
-                                          <AnchorPane fx:id="RandomCodeButton" prefHeight="158.0" prefWidth="103.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <ScrollPane prefHeight="208.0" prefWidth="353.0" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
                                              <content>
                                                 <AnchorPane prefHeight="203.0" prefWidth="332.0">
@@ -244,6 +238,11 @@
                                                 </AnchorPane>
                                              </content>
                                           </ScrollPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                             <children>
+                                                <Button fx:id="randomCodeButton" layoutY="160.0" mnemonicParsing="false" onAction="#generateRandomCode" text="Random Code" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
+                                             </children>
+                                          </AnchorPane>
                                        </children>
                                     </GridPane>
                                     <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="166.0" prefWidth="308.0">
