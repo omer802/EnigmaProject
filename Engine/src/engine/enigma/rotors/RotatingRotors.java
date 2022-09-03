@@ -2,7 +2,9 @@ package engine.enigma.rotors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RotatingRotors  implements Serializable {
 
@@ -58,14 +60,7 @@ public class RotatingRotors  implements Serializable {
     }
 
     // TODO: 8/6/2022 think about what exption i need here. like if the position is not in the scoop in every rotor
-    public void setPositions(String positions)
-    {
-        for (int i = 0; i <positions.length() ; i++) {
-            // The positions of the rotors were determined from right to left, although the data is typed from left to right
-            char charPositionEndToBegin = positions.charAt(positions.length() - i - 1);
-            getChosenRotors().get(i).SetStartingPosition(charPositionEndToBegin);
-        }
-    }
+
     public void advanceRotorsInChain()
     {
         getChosenRotors().get(0).advanceNextRotor();
@@ -105,5 +100,19 @@ public class RotatingRotors  implements Serializable {
     } 
     public void returnRotorsToStartingPositions(){
         this.getChosenRotors().stream().forEach(RotatingRotor::returnToStartingPosition);
+    }
+    public void setPositions(String positions)
+    {
+        for (int i = 0; i <positions.length() ; i++) {
+            // The positions of the rotors were determined from right to left, although the data is typed from left to right
+            char charPositionEndToBegin = positions.charAt(positions.length() - i - 1);
+            getChosenRotors().get(i).SetStartingPosition(charPositionEndToBegin);
+        }
+    }
+    public List<Character>  getAllLettersAtPeekPane(){
+        List<Character> allLettersAtPeekPane = this.getChosenRotors().stream()
+                .map(r-> r.getCurrentPositionCharacter()).collect(Collectors.toList());
+        Collections.reverse(allLettersAtPeekPane);
+        return allLettersAtPeekPane;
     }
 }

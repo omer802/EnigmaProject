@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.mainPage.MainPageController">
+   <content>
+      <BorderPane minWidth="500.0">
+         <top>
+            <GridPane maxHeight="-Infinity" prefHeight="79.0" prefWidth="790.0" BorderPane.alignment="TOP_LEFT">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="NEVER" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="114.0" minWidth="-Infinity" prefWidth="114.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="527.0" minWidth="48.0" prefWidth="88.0" />
+                  <ColumnConstraints hgrow="ALWAYS" maxWidth="527.0" minWidth="125.0" prefWidth="324.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="301.0" minWidth="15.0" prefWidth="229.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="NEVER" />
+                  <RowConstraints maxHeight="33.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="54.0" minHeight="2.0" prefHeight="11.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadXmlFile" prefHeight="25.0" prefWidth="99.0" text="Load file" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label alignment="TOP_LEFT" minWidth="-Infinity" prefHeight="26.0" prefWidth="167.0" text="The Enigma Machine" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="45.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <AnchorPane minWidth="30.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.rowIndex="2">
+                     <children>
+                        <TextField fx:id="URLFileText" layoutY="6.0" minWidth="70.0" prefHeight="24.0" prefWidth="626.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="24.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </GridPane>
+         </top>
+         <center>
+            <TabPane prefHeight="443.0" prefWidth="782.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+               <tabs>
+                  <Tab text="Machine">
+                     <content>
+                        <GridPane prefHeight="446.0" prefWidth="841.0">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="140.0" minHeight="0.0" prefHeight="25.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="290.0" minHeight="10.0" prefHeight="152.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="71.0" minHeight="0.0" prefHeight="67.0" vgrow="NEVER" />
+                              <RowConstraints maxHeight="280.0" minHeight="10.0" prefHeight="219.0" vgrow="ALWAYS" />
+                           </rowConstraints>
+                           <children>
+                              <AnchorPane prefHeight="44.0" prefWidth="745.0">
+                                 <children>
+                                    <Label layoutX="268.0" layoutY="3.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="51.0" prefWidth="182.0" text="Enigma machine details" AnchorPane.bottomAnchor="3.0" AnchorPane.topAnchor="10.0">
+                                       <font>
+                                          <Font name="System Bold" size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane prefHeight="219.0" GridPane.rowIndex="1">
+                                 <children>
+                                    <FlowPane fx:id="machineDetailsFlowPane" alignment="CENTER_LEFT" hgap="2.0" maxHeight="-Infinity" prefHeight="165.0" prefWidth="748.0" rowValignment="TOP">
+                                       <padding>
+                                          <Insets left="10.0" />
+                                       </padding>
+                                       <children>
+                                          <GridPane gridLinesVisible="true" maxHeight="171.0" minHeight="134.0" prefHeight="150.0" prefWidth="280.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="NEVER" maxWidth="152.0" minWidth="10.0" prefWidth="150.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="207.0" minWidth="10.0" prefWidth="162.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+                                                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER" />
+                                             </rowConstraints>
+                                             <children>
+                                                <Label prefHeight="20.0" prefWidth="71.0" text="Component">
+                                                   <GridPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </GridPane.margin>
+                                                </Label>
+                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                                                   <children>
+                                                      <Label text="Amount">
+                                                         <padding>
+                                                            <Insets left="5.0" />
+                                                         </padding>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                                <Label prefHeight="17.0" prefWidth="78.0" text="Rotors In Use" GridPane.rowIndex="2">
+                                                   <GridPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </GridPane.margin>
+                                                </Label>
+                                                <Label fx:id="InUseRotorsAmountLabel" prefHeight="17.0" prefWidth="59.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                   <padding>
+                                                      <Insets left="5.0" />
+                                                   </padding>
+                                                </Label>
+                                                <Label text="Reflectors" GridPane.rowIndex="3">
+                                                   <GridPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </GridPane.margin>
+                                                </Label>
+                                                <Label fx:id="ReflectorsAmountLabel" prefHeight="17.0" prefWidth="66.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                   <GridPane.margin>
+                                                      <Insets />
+                                                   </GridPane.margin>
+                                                   <padding>
+                                                      <Insets left="5.0" />
+                                                   </padding>
+                                                </Label>
+                                                <Label text="encrypted messages:" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="5.0" />
+                                                   </padding>
+                                                </Label>
+                                                <Label fx:id="encryptedMessagesAmountLabel" prefHeight="17.0" prefWidth="60.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="5.0" />
+                                                   </padding>
+                                                </Label>
+                                                <Label text="Rotors" GridPane.rowIndex="1">
+                                                   <GridPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </GridPane.margin>
+                                                </Label>
+                                                <Label fx:id="rotorsAmountLabel" prefHeight="17.0" prefWidth="42.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <GridPane.margin>
+                                                      <Insets left="5.0" />
+                                                   </GridPane.margin>
+                                                </Label>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </FlowPane>
+                                 </children>
+                              </AnchorPane>
+                              <SplitPane dividerPositions="0.6243589743589744" minWidth="200.0" prefHeight="178.0" prefWidth="782.0" GridPane.rowIndex="3">
+                                 <items>
+                                    <GridPane prefHeight="208.0" prefWidth="418.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="220.0" minWidth="10.0" prefWidth="41.0" />
+                                          <ColumnConstraints hgrow="NEVER" maxWidth="329.0" minWidth="117.0" prefWidth="119.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" prefWidth="353.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints maxHeight="58.0" minHeight="0.0" prefHeight="0.0" vgrow="ALWAYS" />
+                                          <RowConstraints maxHeight="272.0" minHeight="10.0" prefHeight="272.0" vgrow="ALWAYS" />
+                                       </rowConstraints>
+                                       <children>
+                                          <AnchorPane minHeight="50.0" minWidth="50.0" prefHeight="160.0" prefWidth="119.0" GridPane.rowIndex="1">
+                                             <children>
+                                                <Button layoutX="-14.0" layoutY="104.0" mnemonicParsing="false" text="Random Code" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="208.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <ScrollPane prefHeight="208.0" prefWidth="353.0" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                                             <content>
+                                                <AnchorPane prefHeight="136.0" prefWidth="281.0">
+                                                   <children>
+                                                      <VBox maxWidth="1.7976931348623157E308" prefHeight="231.0" prefWidth="342.0">
+                                                         <padding>
+                                                            <Insets left="10.0" />
+                                                         </padding>
+                                                         <children>
+                                                            <HBox alignment="TOP_CENTER" maxWidth="293.0" prefHeight="33.0" prefWidth="293.0">
+                                                               <children>
+                                                                  <Label text="Code Configuration">
+                                                                     <font>
+                                                                        <Font size="14.0" />
+                                                                     </font>
+                                                                     <padding>
+                                                                        <Insets top="5.0" />
+                                                                     </padding>
+                                                                  </Label>
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="HboxRtorosID" alignment="CENTER_LEFT" prefHeight="18.0" prefWidth="293.0" spacing="21.0" />
+                                                            <HBox fx:id="HBoxlistOfRotorsButtons" prefHeight="18.0" prefWidth="293.0" spacing="6.0">
+                                                               <VBox.margin>
+                                                                  <Insets />
+                                                               </VBox.margin>
+                                                               <padding>
+                                                                  <Insets left="3.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <HBox fx:id="HBoxListOfPositions" prefHeight="18.0" prefWidth="293.0" spacing="6.0">
+                                                               <VBox.margin>
+                                                                  <Insets top="7.0" />
+                                                               </VBox.margin>
+                                                               <padding>
+                                                                  <Insets left="3.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                            <Separator prefHeight="11.0" />
+                                                            <HBox fx:id="HBoxReflectorChoice" alignment="CENTER" maxWidth="-Infinity" prefHeight="38.0" prefWidth="324.0" spacing="10.0" />
+                                                            <Separator prefWidth="200.0" />
+                                                            <CheckBox fx:id="CheckBoxIsPluged" disable="true" mnemonicParsing="false" onAction="#addOrRemovePlugBoard" opacity="0.28" text="Connect PlugBoard" />
+                                                            <FlowPane fx:id="FlowPaneAlphabet" hgap="3.0" maxWidth="-Infinity" prefHeight="48.0" prefWidth="294.0" vgap="5.0" />
+                                                            <AnchorPane prefHeight="26.0" prefWidth="290.0">
+                                                               <children>
+                                                                  <Button fx:id="setCodeButton" disable="true" layoutX="241.0" mnemonicParsing="false" onAction="#setCodeListener" opacity="0.26" prefHeight="26.0" prefWidth="70.0" text="Set Code !">
+                                                                     <padding>
+                                                                        <Insets bottom="3.0" />
+                                                                     </padding>
+                                                                  </Button>
+                                                               </children>
+                                                            </AnchorPane>
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </AnchorPane>
+                                             </content>
+                                          </ScrollPane>
+                                       </children>
+                                    </GridPane>
+                                    <AnchorPane minHeight="140.0" prefHeight="281.0" prefWidth="307.0" />
+                                 </items>
+                              </SplitPane>
+                           </children>
+                        </GridPane>
+                     </content>
+                  </Tab>
+                  <Tab text="Encrypet \ Decrypt">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
+                  <Tab text="Brute Force ">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+         </center>
+      </BorderPane>
+   </content>
+</ScrollPane>

@@ -1,10 +1,13 @@
 package engine.api;
 
-import DTOS.FileConfigurationDTO;
-import DTOS.UserConfigurationDTO;
-import DTOS.MachineStatisticsDTO;
+import DTOS.ConfigrationsPropertyAdapter.FileConfigurationDTOAdapter;
+import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
+import DTOS.Configuration.FileConfigurationDTO;
+import DTOS.Configuration.UserConfigurationDTO;
+import DTOS.Statistics.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 import engine.enigma.Machine.EnigmaMachine;
+import engine.enigma.Machine.NotchAndLetterAtPeekPane;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
 import engine.LoadData.LoadData;
@@ -17,10 +20,23 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     private EnigmaMachine enigmaMachine;
 
-
-
-
+    FileConfigurationDTOAdapter fileConfigurationDTOAdapter;
+    UserConfigurationDTOAdapter userConfigurationDTOAdapter;
     private boolean haveConfigurationFromFile;
+
+    public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
+        this.fileConfigurationDTOAdapter = fileConfigurationDTOAdapter;
+    }
+    public xmlFileValidatorDTO readDataJavaFx(String filePath){
+        xmlFileValidatorDTO validator = readData(filePath);
+        if(validator.getListOfExceptions().size() == 0) {
+            FileConfigurationDTO fileConfigurationDTO = showDataReceivedFromFile();
+            fileConfigurationDTOAdapter.setDataFromFileDTO(fileConfigurationDTO);
+        }
+        return validator;
+
+
+    }
     public xmlFileValidatorDTO readData(String filePath){
         return readDataFromFile(filePath);
     }
@@ -58,14 +74,13 @@ public class ApiEnigmaImp implements ApiEnigma {
         FileConfigurationDTO Machinespecification = new FileConfigurationDTO(enigmaMachine);
         return Machinespecification;
     }
-    public UserConfigurationDTO showDataReceivedFromUser(){
+    public UserConfigurationDTO getCurrentConfiguration(){
         UserConfigurationDTO Machinespecification =  new UserConfigurationDTO(enigmaMachine);
         return Machinespecification;
     }
 
     public void selectInitialCodeConfiguration(UserConfigurationDTO configuration){
         enigmaMachine.selectInitialCodeConfiguration(configuration);
-
 
     }
 
@@ -83,7 +98,8 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     public UserConfigurationDTO AutomaticallyInitialCodeConfiguration(){
         enigmaMachine.automaticInitialCodeConfiguration();
-         return showDataReceivedFromUser();
+         return getCurrentConfiguration();
+         //public void updatescrene
     }
 
     public List<String> getPossibleRotors(){
@@ -102,9 +118,14 @@ public class ApiEnigmaImp implements ApiEnigma {
 
         if(!possibleRotors.containsAll(chosenRotorsList))
             RotorsErrors.add("Error: The rotors you are trying to insert is out of range. You have to insert " + getAmountOfRotors()+" rotors from: "+ getPossibleRotors());
-        if(chosenRotorsList.stream().distinct().count() != chosenRotorsList.size())
+        // TODO: 9/1/2022 check if working with console
+        if(isIdenticalRotors(chosenRotorsList))
             RotorsErrors.add("Error: You have entered more than one identical rotor. You have to insert " + getAmountOfRotors()+" rotors from: "+ getPossibleRotors());
         return RotorsErrors;
+    }
+    public boolean isIdenticalRotors(List<String> chosenRotorsList){
+        return chosenRotorsList.stream().distinct().count() != chosenRotorsList.size();
+
     }
     public List<String> cleanStringAndReturnList(String chosenRotorsInputStr){
         //Clearing spaces  and tabs from the user if entered
@@ -121,10 +142,10 @@ public class ApiEnigmaImp implements ApiEnigma {
     }
 
     public boolean alreadyEncryptedMessages(){
-        return EnigmaMachine.theNumberOfStringsEncrypted>0;
+        return EnigmaMachine.getTheNumberOfStringsEncrypted()>0;
     }
-    public UserConfigurationDTO getCurrentConfiguration(){
-        return enigmaMachine.getCurrentConfiguration();
+    public UserConfigurationDTO getOriginalConfiguration(){
+        return enigmaMachine.getCurrentOriginalConfiguration();
     }
 
     public MachineStatisticsDTO getStatistics(){
@@ -154,4 +175,46 @@ public class ApiEnigmaImp implements ApiEnigma {
                     (EnigmaMachine) in.readObject();
         }
     }
+    public boolean validateStringToEncrypt(String stringToEncrypt) {
+        return Keyboard.isStringInRange(stringToEncrypt);
+    }
+
+
+    public  StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> rotorsWithOrder = machineConfigUser.getChosenRotorsWithOrder();
+        getChosenRotorsWithOrder(rotorsWithOrder, stringBuilder);
+
+        List<NotchAndLetterAtPeekPane> currentPositionsAndNotch = machineConfigUser.getNotchAndLetterPair();
+        getCurrentPositionsWithDistanceFromNotch(currentPositionsAndNotch, stringBuilder);
+
+        stringBuilder.append("<"+machineConfigUser.getChosenReflector()+">");
+        if(machineConfigUser.isPlugged()&&machineConfigUser.getPlugBoardConnectionsWithFormat().length()>0)
+            stringBuilder.append("<" + machineConfigUser.getPlugBoardConnectionsWithFormat()+ ">");
+        return stringBuilder;
+    }
+    public void getChosenRotorsWithOrder( List<String> rotorsWithOrder, StringBuilder stringBuilderInput){
+        boolean isFirst = true;
+        stringBuilderInput.append("<");
+        for (String rotorID: rotorsWithOrder) {
+            if(!isFirst)
+                stringBuilderInput.append(",");
+            stringBuilderInput.append(rotorID);
+            isFirst = false;
+        }
+        stringBuilderInput.append(">");
+    }
+    public void getCurrentPositionsWithDistanceFromNotch(List<NotchAndLetterAtPeekPane> chosenRotors, StringBuilder stringBuilderInput){
+        //reverse the order of rotors beacuse in the machine we work from right to left and the ui show from left to right
+        //Collections.reverse(chosenRotors);
+        boolean isFirst = true;
+        stringBuilderInput.append("<");
+        for (NotchAndLetterAtPeekPane pair: chosenRotors)
+            stringBuilderInput.append(pair.toString());
+        stringBuilderInput.append( ">");
+    }
+    public void setCurrentConfigurationProperties(UserConfigurationDTOAdapter DTOPropertiesToConfig){
+        this.userConfigurationDTOAdapter = DTOPropertiesToConfig;
+    }
+
 }

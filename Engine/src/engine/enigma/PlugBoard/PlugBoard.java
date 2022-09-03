@@ -6,7 +6,8 @@ import java.util.*;
 public class PlugBoard implements Serializable {
     private Map<Character, Character> mapInputOutput;
     public int pairsInPlug;
-    public String connections;
+
+    private String connections;
     public PlugBoard(String connections) {
         this.connections = connections;
         pairsInPlug = connections.length()/2;
@@ -17,7 +18,9 @@ public class PlugBoard implements Serializable {
         pairsInPlug = 0;
         mapInputOutput = new HashMap<>();
     }
-
+    public void setConnections(String connections) {
+        this.connections = connections;
+    }
     private void initialPlugBoard(String connections) {
         mapInputOutput = new HashMap<>();
         //taking pair of plugs

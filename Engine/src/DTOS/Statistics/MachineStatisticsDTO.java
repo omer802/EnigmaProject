@@ -1,4 +1,4 @@
-package DTOS;
+package DTOS.Statistics;
 
 import engine.enigma.statistics.ConfigurationAndEncryption;
 import engine.enigma.statistics.Statistics;

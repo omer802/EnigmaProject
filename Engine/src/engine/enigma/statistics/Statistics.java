@@ -1,6 +1,6 @@
 package engine.enigma.statistics;
 
-import DTOS.UserConfigurationDTO;
+import DTOS.Configuration.UserConfigurationDTO;
 
 import java.io.*;
 import java.util.ArrayList;

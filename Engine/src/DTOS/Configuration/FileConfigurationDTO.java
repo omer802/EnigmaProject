@@ -1,4 +1,4 @@
-package DTOS;
+package DTOS.Configuration;
 
 import engine.enigma.Machine.EnigmaMachine;
 
@@ -9,7 +9,7 @@ public class FileConfigurationDTO {
 
 
     private int countOfRotorsInUse;
-    //private List<PairOfNotchAndRotorId> NotchAndIds;
+    //private List<NotchAndLetterAtPeekPane> NotchAndIds;
     private final int countOfReflectors;
 
     private int numberOfMessageEncrypted;
@@ -22,7 +22,7 @@ public class FileConfigurationDTO {
         this.countOfRotors = machineInput.getRotorsObject().getRotorsAmount();
         this.countOfRotorsInUse = machineInput.getRotorsAmountInUse();
         this.countOfReflectors = machineInput.getReflectorsObject().getReflectorsAmount();
-        this.numberOfMessageEncrypted = machineInput.theNumberOfStringsEncrypted;
+        this.numberOfMessageEncrypted = machineInput.getTheNumberOfStringsEncrypted();
         this.isConfigFromUser = machineInput.isConfigFromUser();
 
 

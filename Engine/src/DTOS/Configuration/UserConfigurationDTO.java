@@ -1,7 +1,7 @@
-package DTOS;
+package DTOS.Configuration;
 
 import engine.enigma.Machine.EnigmaMachine;
-import engine.enigma.Machine.PairOfNotchAndRotorId;
+import engine.enigma.Machine.NotchAndLetterAtPeekPane;
 import engine.enigma.PlugBoard.PlugBoard;
 import engine.enigma.reflector.Reflectors;
 import engine.enigma.rotors.RotatingRotor;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public class UserConfigurationDTO implements Serializable {
-    private int CountOfRotorsInUse;
     private int numberOfMessageEncrypted;
     private List<String> chosenRotorsWithOrder;
     private String RotorsStartingPosition;
@@ -20,7 +19,11 @@ public class UserConfigurationDTO implements Serializable {
     static boolean haveConfigFromUser = false;
     private Reflectors.ReflectorEnum chosenReflector;
 
-    private List<PairOfNotchAndRotorId> NotchAndIds;
+    private List<NotchAndLetterAtPeekPane> NotchAndLetterPair;
+
+    public void removePlug(){
+        isPlugged = false;
+    }
 
     //constructor for transferring data from ui to engine
     public UserConfigurationDTO(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector){
@@ -33,12 +36,12 @@ public class UserConfigurationDTO implements Serializable {
     //constructor for answer of the engine to ui
     public UserConfigurationDTO(final EnigmaMachine machineInput){
         setPairOfNotchAndRotorId(machineInput.getPairOfNotchAndRotorId());
-        this.CountOfRotorsInUse = machineInput.getRotorsObject().getRotorsAmountInUse();
-        this.numberOfMessageEncrypted = machineInput.theNumberOfStringsEncrypted;
+        this.numberOfMessageEncrypted = machineInput.getTheNumberOfStringsEncrypted();
         setChosenRotorsWithOrder(machineInput);
         setRotorsStartingPosition(machineInput);
         this.isPlugged = machineInput.isPluged();
         this.chosenReflector = machineInput.getReflectorsObject().getChosenReflectorByRomeNumerals();
+        if(isPlugged)
         this.plugBoardConnections = machineInput.getPlugBoard();
         this.haveConfigFromUser = true;
     }
@@ -50,14 +53,16 @@ public class UserConfigurationDTO implements Serializable {
     public void setChosenRotorsWithOrder(List<String> chosenRotors){
         this.chosenRotorsWithOrder = chosenRotors;
     }
-    public int getCountOfRotorsInUse() {
-        return CountOfRotorsInUse;
-    }
+
     public int getNumberOfMessageEncrypted() {
         return numberOfMessageEncrypted;
     }
     public List<String> getChosenRotorsWithOrder() {
         return chosenRotorsWithOrder;
+    }
+    public String getChosenRotorsWithOrderWithSeprator(){
+        //chosenRotorsWithOrder.
+        return chosenRotorsWithOrder.stream().map(r->r.toString()).reduce("", String::concat);
     }
     private void setRotorsStartingPosition(final EnigmaMachine machineInput){
         List<RotatingRotor> rotors = machineInput.getRotorsObject().getChosenRotors();
@@ -93,10 +98,10 @@ public class UserConfigurationDTO implements Serializable {
     public String getPlugBoardConnectionsWithFormat(){
         return plugBoardConnections.toString();
     }
-    public void setPairOfNotchAndRotorId(List<PairOfNotchAndRotorId> pairs){
-        this.NotchAndIds = pairs;
+    public void setPairOfNotchAndRotorId(List<NotchAndLetterAtPeekPane> pairs){
+        this.NotchAndLetterPair = pairs;
     }
-    public List<PairOfNotchAndRotorId> getNotchAndIds() {
-        return NotchAndIds;
+    public List<NotchAndLetterAtPeekPane> getNotchAndLetterPair() {
+        return NotchAndLetterPair;
     }
 }

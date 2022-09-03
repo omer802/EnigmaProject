@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/Engine/Engine.iml" filepath="$PROJECT_DIR$/Engine/Engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/EnigmaProject.iml" filepath="$PROJECT_DIR$/EnigmaProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/UI/UI.iml" filepath="$PROJECT_DIR$/UI/UI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javaFX/javaFX.iml" filepath="$PROJECT_DIR$/javaFX/javaFX.iml" />
     </modules>
   </component>
 </project>

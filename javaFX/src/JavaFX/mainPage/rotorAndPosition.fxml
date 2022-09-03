@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<ScrollPane prefHeight="303.0" prefWidth="467.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <VBox maxWidth="1.7976931348623157E308" prefHeight="236.0" prefWidth="368.0" spacing="5.0">
+         <padding>
+            <Insets left="10.0" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="338.0" spacing="22.0">
+               <children>
+                  <Label minWidth="-Infinity" prefHeight="17.0" text="Rotor 19">
+                     <padding>
+                        <Insets left="98.0" />
+                     </padding>
+                  </Label>
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 9" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+                  <Label minWidth="-Infinity" prefWidth="46.0" text="Rotor 19" />
+               </children>
+            </HBox>
+            <HBox prefHeight="18.0" prefWidth="293.0" spacing="6.0">
+               <children>
+                  <Label minWidth="-Infinity" prefHeight="17.0" prefWidth="85.0" text="Set Rotors">
+                     <padding>
+                        <Insets right="15.0" />
+                     </padding>
+                  </Label>
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+               </children>
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+            </HBox>
+            <HBox layoutX="20.0" layoutY="35.0" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="293.0" spacing="6.0">
+               <children>
+                  <Label minWidth="-Infinity" prefHeight="17.0" prefWidth="85.0" text="Set Position">
+                     <padding>
+                        <Insets right="19.0" />
+                     </padding>
+                  </Label>
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="65.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+                  <ChoiceBox minWidth="-Infinity" prefHeight="25.0" prefWidth="61.0" />
+               </children>
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets top="7.0" />
+               </VBox.margin>
+            </HBox>
+            <Separator prefHeight="11.0" prefWidth="1632.0">
+               <VBox.margin>
+                  <Insets top="7.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox alignment="CENTER" maxWidth="-Infinity" prefHeight="39.0" prefWidth="303.0" spacing="10.0">
+               <children>
+                  <Label text="Set Reflector" />
+                  <ChoiceBox prefHeight="25.0" prefWidth="74.0" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <CheckBox mnemonicParsing="false" text="Connect Plugboard" />
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ChoiceBox prefHeight="25.0" prefWidth="30.0" />
+                  <ChoiceBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="30.0" />
+                  <ToggleButton mnemonicParsing="false" text="ToggleButton" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </content>
+</ScrollPane>

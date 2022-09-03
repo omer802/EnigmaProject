@@ -1,9 +1,9 @@
-package UI;
-import DTOS.FileConfigurationDTO;
-import DTOS.UserConfigurationDTO;
-import DTOS.MachineStatisticsDTO;
+package UI.Console;
+import DTOS.Configuration.FileConfigurationDTO;
+import DTOS.Configuration.UserConfigurationDTO;
+import DTOS.Statistics.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
-import engine.enigma.Machine.PairOfNotchAndRotorId;
+import engine.enigma.Machine.NotchAndLetterAtPeekPane;
 import engine.api.ApiEnigma;
 import engine.api.ApiEnigmaImp;
 import engine.enigma.keyboard.Keyboard;
@@ -135,13 +135,13 @@ public class UIConsole  {
         sb.append("History and statistics:\n");
         sb.append("the code configurations performed in the system:\n");
         for (ConfigurationAndEncryption configuration: statisticsToShow.getConfigurations())
-            sb.append("\t"+getStringDataReceiveFromUser(configuration.getConfiguration())+"\n");
+            sb.append("\t"+getStringDataReceiveFromUser(api,configuration.getConfiguration())+"\n");
        sb.append("\n");
        if(statisticsToShow.haveEncoded()) {
            sb.append("Configurations used by the machine and the encrypted messages in each configuration:\n");
            for (ConfigurationAndEncryption configuration : statisticsToShow.getConfigurationsInUse()) {
                UserConfigurationDTO config = configuration.getConfiguration();
-               sb.append("In configuration:" + getStringDataReceiveFromUser(config) + " The following messages have been encrypted: \n");
+               sb.append("In configuration:" + getStringDataReceiveFromUser(api,config) + " The following messages have been encrypted: \n");
 
                for (EncryptionData data : configuration.getEncryptionDataList()) {
                    String Format = decimalFormat.format(data.getProcessingTime());
@@ -167,7 +167,8 @@ public class UIConsole  {
             System.out.println("Enter massage you want to encrypt");
             String toEncrypt = readInput.nextLine();
             toEncrypt = toEncrypt.toUpperCase();
-            goodInput = validateStringToEncrypt(toEncrypt);
+            // TODO: 8/23/2022 move validatestring to api
+            goodInput = api.validateStringToEncrypt(toEncrypt);
             if (!goodInput) {
                 System.out.println("Some of the letters you entered are not from the alphabet");;
                 ExitWasPress = ExitToMenu(readInput);
@@ -201,11 +202,6 @@ public class UIConsole  {
             }
         }
         return toReturn;
-    }
-    public static boolean validateStringToEncrypt(String stringToEncrypt) {
-    return Keyboard.isStringInRange(stringToEncrypt);
-
-
     }
     public static void readData(ApiEnigma api, Scanner readInput) {
         System.out.println("Please enter the file's full path:");
@@ -276,27 +272,6 @@ public class UIConsole  {
 
             return Specification;
     }
-    /*public static void selectInitialCodeConfigurationTemp(ApiEnigma api, Scanner readInput){
-        boolean goodRotorsInput = true;
-        boolean goodPositionInput = true;
-        boolean goodReflectorInput = true;
-        boolean goodPlugInput = true;
-        boolean continueConfiguration = true;
-        System.out.println("enter the rotors you would like to use with a comma separating each rotor");
-        while (continueConfiguration) {
-            String select = readInput.nextLine();
-            List<String> rotorsErrors = api.isLegalRotors(select);//isLegalRotors returns all the errors that occurred
-            while(rotorsErrors.size() !=0)
-            {
-                rotorsErrors.forEach(System.out::println);
-                if(ExitToMenu(readInput))
-                    continueConfiguration = false;
-            }
-        }*/
-
-
-
-
 
     public static int isPluged(ApiEnigma api, Scanner readInput) {
         boolean wrongInput = true;
@@ -427,7 +402,7 @@ public class UIConsole  {
         if (configFromFile) {
             UserConfigurationDTO machineConfigUser = api.AutomaticallyInitialCodeConfiguration();
             System.out.println("configuration has been successfully saved in the system");
-            System.out.println("Current machine Configurations: "+ getStringDataReceiveFromUser(machineConfigUser));
+            System.out.println("Current machine Configurations: "+ getStringDataReceiveFromUser(api,machineConfigUser));
         } else {
             System.out.println("It is not possible to create a machine configuration " +
                     "without a machine in the system. Please insert a file that produces the machine");
@@ -443,38 +418,36 @@ public class UIConsole  {
         System.out.println("Amount of reflectors: " + machineConfigFile.getCountOfReflectors());
         System.out.println("Amount of messages encrypted by the machine: " + machineConfigFile.getNumberOfMessageEncrypted());
         if (machineConfigFile.isConfigFromUser()) {
-            UserConfigurationDTO machineConfigUser = api.showDataReceivedFromUser();
             System.out.println("original configuration: ");
-            System.out.println(getStringDataReceiveFromUser(api.getCurrentConfiguration()));
+            System.out.println(getStringDataReceiveFromUser(api,api.getOriginalConfiguration()));
             System.out.println("Current configuration: ");
-            System.out.println(getStringDataReceiveFromUser(machineConfigUser));
+            UserConfigurationDTO machineConfigUser = api.getCurrentConfiguration();
+            System.out.println(getStringDataReceiveFromUser(api, machineConfigUser));
         }
 
         }
 
-    public static StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
-        StringBuilder stringBuilder = new StringBuilder();
-        List<PairOfNotchAndRotorId> chosenRotors = machineConfigUser.getNotchAndIds();
-        getChosenRotorForBuilder(chosenRotors, stringBuilder);
-        String startingPositions = machineConfigUser.getRotorsStartingPosition();
-        stringBuilder.append("<"+startingPositions+">");
-        //getStartingPositionForBuilder(startingPositions,stringBuilder);
-        stringBuilder.append("<"+machineConfigUser.getChosenReflector()+">");
-        if(machineConfigUser.isPlugged())
-            stringBuilder.append("<" + machineConfigUser.getPlugBoardConnectionsWithFormat()+ ">");
-        return stringBuilder;
+    public static StringBuilder getStringDataReceiveFromUser(ApiEnigma api, UserConfigurationDTO machineConfigUser){
+        return api.getStringDataReceiveFromUser(machineConfigUser);
     }
-    public static void getChosenRotorForBuilder(List<PairOfNotchAndRotorId> chosenRotors,StringBuilder stringBuilderInput){
+    public static void getChosenRotorsWithOrder( List<String> rotorsWithOrder, StringBuilder stringBuilderInput){
+        boolean isFirst = true;
+        stringBuilderInput.append("<");
+        for (String rotorID: rotorsWithOrder) {
+            if(!isFirst)
+                stringBuilderInput.append(",");
+            stringBuilderInput.append(rotorID);
+            isFirst = false;
+        }
+        stringBuilderInput.append(">");
+    }
+    public static void getCurrentPositionsWithDistanceFromNotch(List<NotchAndLetterAtPeekPane> chosenRotors, StringBuilder stringBuilderInput){
         //reverse the order of rotors beacuse in the machine we work from right to left and the ui show from left to right
         //Collections.reverse(chosenRotors);
         boolean isFirst = true;
         stringBuilderInput.append("<");
-        for (PairOfNotchAndRotorId pair: chosenRotors) {
-            if(!isFirst)
-                stringBuilderInput.append(",");
+        for (NotchAndLetterAtPeekPane pair: chosenRotors)
             stringBuilderInput.append(pair.toString());
-            isFirst = false;
-        }
         stringBuilderInput.append( ">");
     }
 

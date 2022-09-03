@@ -1,8 +1,8 @@
 package engine.enigma.Machine;
 
 
-import DTOS.UserConfigurationDTO;
-import DTOS.MachineStatisticsDTO;
+import DTOS.Configuration.UserConfigurationDTO;
+import DTOS.Statistics.MachineStatisticsDTO;
 import engine.enigma.PlugBoard.PlugBoard;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflector;
@@ -21,7 +21,11 @@ public class EnigmaMachine implements Serializable {
     private boolean havePlugBoard;
     private Keyboard keyboard;
 
-    public static int theNumberOfStringsEncrypted;
+    public static int getTheNumberOfStringsEncrypted() {
+        return theNumberOfStringsEncrypted;
+    }
+
+    private static int theNumberOfStringsEncrypted;
 
     protected final int amountOfRotors;
     private Statistics statistics;
@@ -217,8 +221,12 @@ public class EnigmaMachine implements Serializable {
         getRotorsObject().setPositions(specification.getRotorsStartingPosition());
         getReflectorsObject().SetChosenReflector(specification.getChosenReflector());
         specification.setPairOfNotchAndRotorId(getPairOfNotchAndRotorId());
-        if (specification.isPlugged())
+        if (specification.isPlugged()) {
             setPlugBoard(specification.getPlugBoard());
+            havePlugBoard =true;
+        }
+        else
+            havePlugBoard = false;
         addConfiguration();
         ConfigFromUser = true;
     }
@@ -244,20 +252,21 @@ public class EnigmaMachine implements Serializable {
     public List<String> getPossibleReflectors(){
         return getReflectorsObject().getPossibleReflectors();
     }
-    public List<PairOfNotchAndRotorId> getPairOfNotchAndRotorId(){
+    public List<NotchAndLetterAtPeekPane> getPairOfNotchAndRotorId(){
         List<RotatingRotor> rotorsInUse = getRotorsObject().getChosenRotors();
-        List<PairOfNotchAndRotorId> pairs = new ArrayList<>();
+        List<NotchAndLetterAtPeekPane> pairs = new ArrayList<>();
         for (RotatingRotor rotor :rotorsInUse) {
-            String rotorId = rotor.getId();
+            Character LetterAtPeekPane = rotor.getCurrentPositionCharacter();
             int notch = rotor.getNotch();
             // getting the distance from notch. every rotor have alphabet from the keyboard
             int distanceFromNotch = (notch - rotor.getPosition() + Keyboard.alphabet.length()) % Keyboard.alphabet.length();
-            pairs.add(new PairOfNotchAndRotorId(rotorId,distanceFromNotch));
+            pairs.add(new NotchAndLetterAtPeekPane(LetterAtPeekPane,distanceFromNotch));
         }
          Collections.reverse(pairs);
         return pairs;
     }
-    public UserConfigurationDTO getCurrentConfiguration() {
+
+    public UserConfigurationDTO getCurrentOriginalConfiguration() {
         return statistics.getCurrentConfiguration();
     }
     public MachineStatisticsDTO getStatistics() {
