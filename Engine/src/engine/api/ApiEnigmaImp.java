@@ -12,8 +12,14 @@ import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
 import engine.LoadData.LoadData;
 import engine.LoadData.LoadDataFromXml;
+import engine.enigma.statistics.ConfigurationAndEncryption;
+import engine.enigma.statistics.EncryptionData;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class ApiEnigmaImp implements ApiEnigma {
@@ -22,6 +28,7 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     FileConfigurationDTOAdapter fileConfigurationDTOAdapter;
     UserConfigurationDTOAdapter userConfigurationDTOAdapter;
+    StringProperty statistics;
     private boolean haveConfigurationFromFile;
 
     public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
@@ -81,6 +88,7 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     public void selectInitialCodeConfiguration(UserConfigurationDTO configuration){
         enigmaMachine.selectInitialCodeConfiguration(configuration);
+        updateStatisticsProperty();
 
     }
 
@@ -88,11 +96,28 @@ public class ApiEnigmaImp implements ApiEnigma {
         String encodeInformation = enigmaMachine.encodeString(data);
         UserConfigurationDTO config = getCurrentConfiguration();
         UpdateCode(config);
+        updateStatisticsProperty();
+        System.out.println("-----------------");
+        System.out.println(statistics.getValue());
         return encodeInformation;
+
+    }
+    public void updateStatistics(String input, String output, long processingTime){
+        enigmaMachine.addEncryptionToStatistics(input,output,processingTime);
+        updateStatisticsProperty();
+    }
+    public Character encryptChar(char ch){
+        Character toReturnChar = enigmaMachine.encodeChar(ch);
+        UserConfigurationDTO config = getCurrentConfiguration();
+        UpdateCode(config);
+        updateStatisticsProperty();
+        return toReturnChar;
     }
 
-    public void systemReset(){
+    public void resetPositions(){
         enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
+        UserConfigurationDTO config = getCurrentConfiguration();
+        UpdateCode(config);
     }
 
     // TODO: 9/3/2022 update code
@@ -176,7 +201,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         }
     }
     public boolean validateStringToEncrypt(String stringToEncrypt) {
-        return Keyboard.isStringInRange(stringToEncrypt);
+        return (Keyboard.isStringInRange(stringToEncrypt));
     }
 
 
@@ -218,12 +243,14 @@ public class ApiEnigmaImp implements ApiEnigma {
         UserConfigurationDTO originalConfigurationDTO = getOriginalConfiguration();
         setUserConfigurationDTO(originalConfigurationDTO);
     }
-    public void UpdateCode(UserConfigurationDTO originalConfigurationDTO){
+    public void UpdateCode(UserConfigurationDTO originalConfigurationDTO) {
         StringBuilder originalConfiguration = getStringDataReceiveFromUser(originalConfigurationDTO);
-        String[] configurationArray = originalConfiguration.toString().replace(">","")
+        String[] configurationArray = originalConfiguration.toString().replace(">", "")
                 .split("<");
-        userConfigurationDTOAdapter.setNotchAndLetterAtPeekPaneStartingPosition(configurationArray[2]);
-        userConfigurationDTOAdapter.setFullConfiguration(originalConfiguration.toString());
+        if (userConfigurationDTOAdapter != null) {
+            userConfigurationDTOAdapter.setNotchAndLetterAtPeekPaneStartingPosition(configurationArray[2]);
+            userConfigurationDTOAdapter.setFullConfiguration(originalConfiguration.toString());
+        }
     }
     public void setUserConfigurationDTO(UserConfigurationDTO originalConfigurationDTO){
         StringBuilder originalConfiguration = getStringDataReceiveFromUser(originalConfigurationDTO);
@@ -240,7 +267,43 @@ public class ApiEnigmaImp implements ApiEnigma {
             userConfigurationDTOAdapter.setPlugBoardToShow("");
 
         userConfigurationDTOAdapter.setFullConfiguration(originalConfiguration.toString());
-       dataEncryption("AAA");
+      // dataEncryption("AAA");
     }
+
+    public void setStatisticsProperty(StringProperty statisticsProperty){
+        this.statistics = new SimpleStringProperty();
+       statisticsProperty.bind(Bindings.format("%s",(statistics)));
+    }
+    private void updateStatisticsProperty(){
+        this.statistics.setValue(PrintStatistic().toString());
+    }
+
+    public StringBuilder PrintStatistic() {
+        String pattern = "###,###,###";
+        DecimalFormat decimalFormat = new DecimalFormat(pattern);
+        MachineStatisticsDTO statisticsToShow = getStatistics();
+        StringBuilder sb = new StringBuilder();
+        sb.append("History and statistics:\n");
+        sb.append("the code configurations performed in the system:\n");
+        for (ConfigurationAndEncryption configuration: statisticsToShow.getConfigurations())
+            sb.append("\t"+getStringDataReceiveFromUser(configuration.getConfiguration())+"\n");
+        sb.append("\n");
+        if(statisticsToShow.haveEncoded()) {
+            sb.append("Configurations used by the machine and the encrypted messages in each configuration:\n");
+            for (ConfigurationAndEncryption configuration : statisticsToShow.getConfigurationsInUse()) {
+                UserConfigurationDTO config = configuration.getConfiguration();
+                sb.append("In configuration:" + getStringDataReceiveFromUser(config) + " The following messages have been encrypted: \n");
+
+                for (EncryptionData data : configuration.getEncryptionDataList()) {
+                    String Format = decimalFormat.format(data.getProcessingTime());
+                    sb.append("\t#.<" + data.getInput().toUpperCase() + ">" + "--> " + "<" + data.getOutput().toUpperCase() + ">" + " Encryption time in nano seconds: " + Format + "\n");
+                }
+            }
+        }
+        else
+            sb.append("The machine has not yet encrypted messages");
+        return sb;
+    }
+
 
 }

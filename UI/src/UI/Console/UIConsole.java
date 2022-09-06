@@ -1,18 +1,14 @@
 package UI.Console;
 import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
-import DTOS.Statistics.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 import engine.enigma.Machine.NotchAndLetterAtPeekPane;
 import engine.api.ApiEnigma;
 import engine.api.ApiEnigmaImp;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflectors;
-import engine.enigma.statistics.ConfigurationAndEncryption;
-import engine.enigma.statistics.EncryptionData;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class UIConsole  {
@@ -124,11 +120,11 @@ public class UIConsole  {
         else if (!configByUser)
             System.out.println("Statistics cannot be displayed when there is no configuration of the machine");
         else
-            PrintStatistic(api, readInput);
+            System.out.println(api.PrintStatistic());
     }
-    public static void PrintStatistic(ApiEnigma api, Scanner readInput) {
-
-        String pattern = "###,###,###";
+    /*public static StringBuilder PrintStatistic(ApiEnigma api) {
+        //System.out.println(api.PrintStatistic());
+        string pattern = "###,###,###";
         DecimalFormat decimalFormat = new DecimalFormat(pattern);
         MachineStatisticsDTO statisticsToShow = api.getStatistics();
         StringBuilder sb = new StringBuilder();
@@ -149,13 +145,14 @@ public class UIConsole  {
                }
            }
        }
+
        else
            sb.append("The machine has not yet encrypted messages");
-        System.out.println(sb);
-    }
+        return sb;
+    }*/
 
     public static void systemReset(ApiEnigma api, Scanner readInput) {
-        api.systemReset();
+        api.resetPositions();
         System.out.println("The reset was done successfully");
     }
 

@@ -4,6 +4,7 @@ import DTOS.ConfigrationsPropertyAdapter.FileConfigurationDTOAdapter;
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import JavaFX.EncryptDecrypt.EncryptDecryptController;
 import JavaFX.UIComponent.PlugBoardUI;
 import JavaFX.codeConfiguration.codeConfigurationController;
 import engine.api.ApiEnigma;
@@ -77,6 +78,7 @@ public class MainPageController {
     private Label chosenRotorsLabel;
     @FXML
     private Label fullConfigurationLabel;
+
     @FXML
     private Button randomCodeButton;
 
@@ -85,6 +87,11 @@ public class MainPageController {
     // TODO: 9/3/2022 change codeconfiguration to upercase 
     @FXML
     private codeConfigurationController codeConfigurationController;
+
+    @FXML
+    private ScrollPane encryptDecrypt;
+    @FXML
+    private EncryptDecryptController encryptDecryptController;
     private SimpleStringProperty chosenRotors;
     private SimpleStringProperty NotchAndLetterAtPeekPaneStartingPosition;
     private SimpleStringProperty chosenReflector;
@@ -114,6 +121,7 @@ public class MainPageController {
         this.encryptedMessagesAmount = new SimpleIntegerProperty(0);
         this.haveCodeConfiguration = new SimpleBooleanProperty(false);
         this.isFileSelected = new SimpleBooleanProperty(false);
+        this.haveCodeConfiguration = new SimpleBooleanProperty(false);
         this.chosenRotors = new SimpleStringProperty();
         this.NotchAndLetterAtPeekPaneStartingPosition = new SimpleStringProperty();
         this.chosenReflector = new SimpleStringProperty();
@@ -131,12 +139,6 @@ public class MainPageController {
         setCodeButton.disableProperty().bind(isFileSelected.not());
         machineDetailsFlowPane.disableProperty().bind(isFileSelected.not());
         CheckBoxIsPluged.disableProperty().bind(isFileSelected.not());
-        //RandomCodeButton.disableProperty().bind(isFileSelected.not());
-        //initiate property starting configuration
-       //chosenRotorsLabel.textProperty().bind(Bindings.format("%s",chosenRotors));
-       //positionsAndNotchLabel.textProperty().bind(Bindings.format("%s",NotchAndLetterAtPeekPaneStartingPosition));
-       //chosenRotorsLabel.textProperty().bind(Bindings.format("%s",chosenReflector));
-       //plugBoardConnectionsLabel.textProperty().bind(Bindings.format("%s",plugBoardToShow));
     }
     @FXML
     public void loadXmlFile(ActionEvent event) {
@@ -163,6 +165,7 @@ public class MainPageController {
             isFileSelected.set(true);
             haveCodeConfiguration.set(false);
             CheckBoxIsPluged.setSelected(false);
+            encryptDecryptController.setStatistics();
 
         }
     }
@@ -180,6 +183,10 @@ public class MainPageController {
 
     public void setApi(ApiEnigma api) {
         this.api = api;
+        if(encryptDecryptController!=null) {
+            encryptDecryptController.setCodeConfigurationController(codeConfigurationController);
+            encryptDecryptController.setApi(this.api);
+        }
     }
 
     // TODO: 9/2/2022 bind the setcode to if the plugboard is even 
@@ -188,6 +195,7 @@ public class MainPageController {
         createLabels(countOfRotors);
         createRotorsButtons(countOfRotors);
         createPositionsButtons(countOfRotors);
+        createReflectorChoiceBox();
         createReflectorChoiceBox();
     }
     public void makeEmptyLayouts(){
@@ -329,9 +337,9 @@ public class MainPageController {
             if(!setPlugBoard(Specification))
                 return;
         }
-
         api.selectInitialCodeConfiguration(Specification);
         updateConfiguration();
+        // TODO: 9/5/2022  think how to bind statitsics to encrypted decrypted
     }
     @FXML
     public void generateRandomCode(ActionEvent event){

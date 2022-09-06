@@ -352,12 +352,21 @@
                   </Tab>
                   <Tab text="Encrypet \ Decrypt">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="468.0" prefWidth="798.0">
+                           <children>
+                              <BorderPane layoutX="-1.0" prefHeight="492.0" prefWidth="800.0">
+                                 <top>
+                                    <fx:include fx:id="encryptDecrypt" source="../EncryptDecrypt/EncrypetDecryptTab.fxml" />
+                                 </top></BorderPane>
+                           </children></AnchorPane>
                      </content>
                   </Tab>
                   <Tab text="Brute Force ">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <Button layoutX="223.0" layoutY="139.0" mnemonicParsing="false" text="Button" />
+                           </children></AnchorPane>
                      </content>
                   </Tab>
                </tabs>

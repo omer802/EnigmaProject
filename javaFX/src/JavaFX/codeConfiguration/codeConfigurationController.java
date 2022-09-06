@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 
 
 public class codeConfigurationController {
-
     @FXML
     private Label chosenReflectorLabel;
 
@@ -26,6 +25,26 @@ public class codeConfigurationController {
 
     private SimpleStringProperty fullConfiguration;
     private SimpleStringProperty chosenRotors;
+
+    public SimpleStringProperty fullConfigurationProperty() {
+        return fullConfiguration;
+    }
+    public SimpleStringProperty chosenRotorsProperty() {
+        return chosenRotors;
+    }
+
+    public SimpleStringProperty notchAndLetterAtPeekPaneStartingPositionProperty() {
+        return NotchAndLetterAtPeekPaneStartingPosition;
+    }
+
+    public SimpleStringProperty chosenReflectorProperty() {
+        return chosenReflector;
+    }
+
+    public SimpleStringProperty plugBoardToShowProperty() {
+        return plugBoardToShow;
+    }
+
     private SimpleStringProperty NotchAndLetterAtPeekPaneStartingPosition;
     private SimpleStringProperty chosenReflector;
     private SimpleStringProperty plugBoardToShow;
@@ -67,6 +86,24 @@ public class codeConfigurationController {
     }
     public boolean isConfig() {
         return isConfig;
+    }
+
+    // TODO: 9/5/2022 change to more algant way
+   /* public void setConfigurationProperties(SimpleStringProperty chosenRotors, SimpleStringProperty NotchAndLetterAtPeekPaneStartingPosition,
+                                           SimpleStringProperty chosenReflector, SimpleStringProperty plugBoardToShow,
+                                           SimpleStringProperty fullConfiguration){
+        this.chosenRotors = chosenRotors;
+        this.NotchAndLetterAtPeekPaneStartingPosition = NotchAndLetterAtPeekPaneStartingPosition;
+        this.chosenReflector = chosenReflector;
+        this.plugBoardToShow = plugBoardToShow;
+        this.fullConfiguration = fullConfiguration;
+    }*/
+    public void BindCodeConfiguration(codeConfigurationController controller){
+        this.chosenRotors.bind(controller.chosenRotorsProperty());
+        this.NotchAndLetterAtPeekPaneStartingPosition.bind(controller.notchAndLetterAtPeekPaneStartingPositionProperty());
+        this.chosenReflector.bind(controller.chosenReflectorProperty());
+        this.plugBoardToShow.bind(controller.plugBoardToShowProperty());
+        this.fullConfiguration.bind(controller.fullConfigurationProperty());
     }
 }
 

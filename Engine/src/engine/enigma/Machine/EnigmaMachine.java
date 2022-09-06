@@ -51,14 +51,19 @@ public class EnigmaMachine implements Serializable {
 
     public String encodeString(String toEncode) {
         long startTime = System.nanoTime();
-        addOneToCountOfDataEncrypted();
         String encodeResult = new String();
         for (int i = 0; i < toEncode.length(); i++) {
             encodeResult += encodeChar(toEncode.charAt(i));
         }
         long timeToEncode = System.nanoTime() - startTime;
-        statistics.addEncryptionToStatistics(toEncode,encodeResult,timeToEncode);
+        addEncryptionToStatistics(toEncode,encodeResult,timeToEncode);
         return encodeResult;
+        //statistics.addEncryptionToStatistics(toEncode,encodeResult,timeToEncode);
+        //return encodeResult;
+    }
+    public void addEncryptionToStatistics(String input, String output, long processingTime){
+        addOneToCountOfDataEncrypted();
+        statistics.addEncryptionToStatistics(input,output,processingTime);
     }
 
     public Character encodeChar(char charToEncode) {
