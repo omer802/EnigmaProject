@@ -43,6 +43,10 @@ public class Reflectors implements Serializable {
         return reflectorsAmount;
     }
 
+    public void SetChosenReflector(String reflector){
+        ReflectorEnum reflectorEnum = ReflectorEnum.valueOf(reflector);
+        SetChosenReflector(reflectorEnum);
+    }
 
 
     public void SetChosenReflector(ReflectorEnum chosenReflector) {

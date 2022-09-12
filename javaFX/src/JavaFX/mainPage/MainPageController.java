@@ -339,13 +339,16 @@ public class MainPageController {
         }
         api.selectInitialCodeConfiguration(Specification);
         updateConfiguration();
+        api.DecipherMessage("LCIN'YFB'!PSIRY'AF",1,10);
         // TODO: 9/5/2022  think how to bind statitsics to encrypted decrypted
     }
     @FXML
     public void generateRandomCode(ActionEvent event){
         UserConfigurationDTO Specification = api.AutomaticallyInitialCodeConfiguration();
         updateConfiguration();
+
     }
+
     public void updateConfiguration(){
         setOriginalConfiguration();
         setCurrentConfiguration();

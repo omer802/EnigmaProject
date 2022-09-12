@@ -2,7 +2,7 @@ package engine.enigma.Machine;
 
 
 import DTOS.Configuration.UserConfigurationDTO;
-import DTOS.Statistics.MachineStatisticsDTO;
+import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import engine.enigma.PlugBoard.PlugBoard;
 import engine.enigma.keyboard.Keyboard;
 import engine.enigma.reflector.Reflector;
@@ -11,10 +11,10 @@ import engine.enigma.rotors.RotatingRotor;
 import engine.enigma.rotors.RotatingRotors;
 import engine.enigma.statistics.Statistics;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
-public class EnigmaMachine implements Serializable {
+public class EnigmaMachine implements Serializable, Cloneable {
     private RotatingRotors rotors;
     private Reflectors reflectors;
     private PlugBoard plugBoard;
@@ -28,6 +28,7 @@ public class EnigmaMachine implements Serializable {
     private static int theNumberOfStringsEncrypted;
 
     protected final int amountOfRotors;
+
     private Statistics statistics;
     static private boolean ConfigFromFile = false;
     static private boolean ConfigFromUser = false;
@@ -64,6 +65,9 @@ public class EnigmaMachine implements Serializable {
     public void addEncryptionToStatistics(String input, String output, long processingTime){
         addOneToCountOfDataEncrypted();
         statistics.addEncryptionToStatistics(input,output,processingTime);
+    }
+    public int getAmountOfReflectors(){
+        return reflectors.getReflectorsAmount();
     }
 
     public Character encodeChar(char charToEncode) {
@@ -222,9 +226,9 @@ public class EnigmaMachine implements Serializable {
     }
 
     public void selectInitialCodeConfiguration(UserConfigurationDTO specification) {
-        getRotorsObject().setChosenRotorToUse(specification.getChosenRotorsWithOrder());
-        getRotorsObject().setPositions(specification.getRotorsStartingPosition());
-        getReflectorsObject().SetChosenReflector(specification.getChosenReflector());
+        setChosenRotors(specification.getChosenRotorsWithOrder());
+        setPositions(specification.getRotorsStartingPosition());
+        setReflector(specification.getChosenReflector());
         specification.setPairOfNotchAndRotorId(getPairOfNotchAndRotorId());
         if (specification.isPlugged()) {
             setPlugBoard(specification.getPlugBoard());
@@ -235,7 +239,20 @@ public class EnigmaMachine implements Serializable {
         addConfiguration();
         ConfigFromUser = true;
     }
-    //public MachineSpecificationFromUser(List<String> chosenRotors, String rotorsStartingPosition, String chosenReflector)
+    public void setChosenRotors(List<String> chosenRotors){
+        getRotorsObject().setChosenRotorToUse(chosenRotors);
+    }
+    public void setPositions(String positions){
+        getRotorsObject().setPositions(positions);
+    }
+    public void setReflector(Reflectors.ReflectorEnum chosenReflector){
+        getReflectorsObject().SetChosenReflector(chosenReflector);
+
+    }
+    public void setReflector(String reflector){
+        getReflectorsObject().SetChosenReflector(reflector);
+    }
+
     private void addConfiguration(){
         UserConfigurationDTO config = new UserConfigurationDTO(this);
         statistics.addConfiguration(config);
@@ -282,6 +299,22 @@ public class EnigmaMachine implements Serializable {
     }
     public static boolean isConfigFromFile() {
         return ConfigFromFile;
+    }
+
+    @Override
+    public EnigmaMachine clone() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (EnigmaMachine) ois.readObject();
+        } catch (IOException e) {
+            return null;
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
 }

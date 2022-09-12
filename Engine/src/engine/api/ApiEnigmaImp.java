@@ -4,8 +4,9 @@ import DTOS.ConfigrationsPropertyAdapter.FileConfigurationDTOAdapter;
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
-import DTOS.Statistics.MachineStatisticsDTO;
+import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import engine.enigma.Enigma;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.Machine.NotchAndLetterAtPeekPane;
 import engine.enigma.keyboard.Keyboard;
@@ -21,15 +22,22 @@ import javafx.beans.property.StringProperty;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
+// TODO: 9/8/2022 move api to ui and Enigma machine to warper class that contain DM
 
 public class ApiEnigmaImp implements ApiEnigma {
-
-    private EnigmaMachine enigmaMachine;
+    
+    //private EnigmaMachine enigmaMachine;
+    private Enigma enigma;
 
     FileConfigurationDTOAdapter fileConfigurationDTOAdapter;
     UserConfigurationDTOAdapter userConfigurationDTOAdapter;
     StringProperty statistics;
     private boolean haveConfigurationFromFile;
+
+    public void DecipherMessage(String messageToDecipher,int difficulty, int missionSize){
+        enigma.getDecipher().setMachine(enigma.getMachine().clone());
+        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize);
+    }
 
     public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
         this.fileConfigurationDTOAdapter = fileConfigurationDTOAdapter;
@@ -40,22 +48,24 @@ public class ApiEnigmaImp implements ApiEnigma {
             FileConfigurationDTO fileConfigurationDTO = showDataReceivedFromFile();
             fileConfigurationDTOAdapter.setDataFromFileDTO(fileConfigurationDTO);
         }
+        System.out.println(enigma.getDecipher());
         return validator;
 
 
     }
     public xmlFileValidatorDTO readData(String filePath){
-        return readDataFromFile(filePath);
+        xmlFileValidatorDTO validatorDTO = readDataFromFile(filePath);
+        return validatorDTO;
     }
 
     private xmlFileValidatorDTO readDataFromFile(String filePath){
         xmlFileValidatorDTO validator = new xmlFileValidatorDTO(filePath);
         if(validator.getListOfExceptions().size()==0){
             LoadData dataFromXml = new LoadDataFromXml();
-            EnigmaMachine tempEnigmaMachine = dataFromXml.loadDataFromInput(filePath,validator);
-            if(validator.getListOfExceptions().size()== 0 && tempEnigmaMachine!=null) {
+            Enigma tempEnigma = dataFromXml.loadDataFromInput(filePath,validator);
+            if(validator.getListOfExceptions().size()== 0 && tempEnigma!=null) {
                 haveConfigurationFromFile = true;
-                this.enigmaMachine = tempEnigmaMachine;
+                this.enigma = tempEnigma;
             }
         }
        return validator;
@@ -63,7 +73,7 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     public List<String> getPossibleReflectors(){
 
-        return enigmaMachine.getPossibleReflectors();
+        return enigma.getMachine().getPossibleReflectors();
     }
     public List<String> isReflectorValid(String chosenReflector){
         List<String> ReflectorErrors = new ArrayList<>();
@@ -78,22 +88,22 @@ public class ApiEnigmaImp implements ApiEnigma {
         return ReflectorErrors;
     }
     public FileConfigurationDTO showDataReceivedFromFile(){
-        FileConfigurationDTO Machinespecification = new FileConfigurationDTO(enigmaMachine);
+        FileConfigurationDTO Machinespecification = new FileConfigurationDTO(enigma.getMachine());
         return Machinespecification;
     }
     public UserConfigurationDTO getCurrentConfiguration(){
-        UserConfigurationDTO Machinespecification =  new UserConfigurationDTO(enigmaMachine);
+        UserConfigurationDTO Machinespecification =  new UserConfigurationDTO(enigma.getMachine());
         return Machinespecification;
     }
 
     public void selectInitialCodeConfiguration(UserConfigurationDTO configuration){
-        enigmaMachine.selectInitialCodeConfiguration(configuration);
+        enigma.getMachine().selectInitialCodeConfiguration(configuration);
         updateStatisticsProperty();
 
     }
 
     public String dataEncryption(String data){
-        String encodeInformation = enigmaMachine.encodeString(data);
+        String encodeInformation = enigma.getMachine().encodeString(data);
         UserConfigurationDTO config = getCurrentConfiguration();
         UpdateCode(config);
         updateStatisticsProperty();
@@ -103,11 +113,11 @@ public class ApiEnigmaImp implements ApiEnigma {
 
     }
     public void updateStatistics(String input, String output, long processingTime){
-        enigmaMachine.addEncryptionToStatistics(input,output,processingTime);
+        enigma.getMachine().addEncryptionToStatistics(input,output,processingTime);
         updateStatisticsProperty();
     }
     public Character encryptChar(char ch){
-        Character toReturnChar = enigmaMachine.encodeChar(ch);
+        Character toReturnChar = enigma.getMachine().encodeChar(ch);
         UserConfigurationDTO config = getCurrentConfiguration();
         UpdateCode(config);
         updateStatisticsProperty();
@@ -115,23 +125,23 @@ public class ApiEnigmaImp implements ApiEnigma {
     }
 
     public void resetPositions(){
-        enigmaMachine.getRotorsObject().returnRotorsToStartingPositions();
+        enigma.getMachine().getRotorsObject().returnRotorsToStartingPositions();
         UserConfigurationDTO config = getCurrentConfiguration();
         UpdateCode(config);
     }
 
     // TODO: 9/3/2022 update code
     public UserConfigurationDTO AutomaticallyInitialCodeConfiguration(){
-        enigmaMachine.automaticInitialCodeConfiguration();
+        enigma.getMachine().automaticInitialCodeConfiguration();
          return getCurrentConfiguration();
          //public void updatescrene
     }
 
     public List<String> getPossibleRotors(){
-       return enigmaMachine.getPossibleRotors();
+       return enigma.getMachine().getPossibleRotors();
     }
     public int getAmountOfRotors(){
-        return enigmaMachine.getRotorsAmountInUse();
+        return enigma.getMachine().getRotorsAmountInUse();
     }
     public List<String> isLegalRotors(String chosenRotorsInputStr)  {
         List<String> RotorsErrors = new ArrayList<>();
@@ -170,24 +180,24 @@ public class ApiEnigmaImp implements ApiEnigma {
         return EnigmaMachine.getTheNumberOfStringsEncrypted()>0;
     }
     public UserConfigurationDTO getOriginalConfiguration(){
-        return enigmaMachine.getCurrentOriginalConfiguration();
+        return enigma.getMachine().getCurrentOriginalConfiguration();
     }
 
     public MachineStatisticsDTO getStatistics(){
-        return enigmaMachine.getStatistics();
+        return enigma.getMachine().getStatistics();
     }
     public boolean haveConfigFromUser(){
-        return enigmaMachine.isConfigFromUser();
+        return enigma.getMachine().isConfigFromUser();
     }
     public boolean haveConfigFromFile(){
-        return enigmaMachine.isConfigFromFile();
+        return enigma.getMachine().isConfigFromFile();
     }
 
     public void saveMachineStateToFile(String filePath) throws IOException {
         try (ObjectOutputStream out =
                      new ObjectOutputStream(
                              new FileOutputStream(filePath))) {
-            out.writeObject(this.enigmaMachine);
+            out.writeObject(this.enigma.getMachine());
             out.flush();
         }
     }
@@ -196,8 +206,7 @@ public class ApiEnigmaImp implements ApiEnigma {
                      new ObjectInputStream(
                              new FileInputStream(filePath))) {
             // we know that we read the enigmaMachine we saved
-            this.enigmaMachine =
-                    (EnigmaMachine) in.readObject();
+            this.enigma.setMachine( (EnigmaMachine) in.readObject());
         }
     }
     public boolean validateStringToEncrypt(String stringToEncrypt) {
@@ -260,7 +269,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         userConfigurationDTOAdapter.setNotchAndLetterAtPeekPaneStartingPosition(configurationArray[2]);
         userConfigurationDTOAdapter.setChosenReflector(configurationArray[3]);
         // TODO: 9/3/2022 make it work with events
-        if(enigmaMachine.isPluged()){
+        if(enigma.getMachine().isPluged()){
             userConfigurationDTOAdapter.setPlugBoardToShow(originalConfigurationDTO.getPlugBoardConnectionsWithFormat());
         }
         else

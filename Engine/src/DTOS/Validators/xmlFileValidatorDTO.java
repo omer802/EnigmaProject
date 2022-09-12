@@ -26,7 +26,7 @@ public class xmlFileValidatorDTO {
     public void setMachine(CTEMachine MachineInput){
         this.enigmaMachineFromFile = MachineInput;
         String ABC = enigmaMachineFromFile.getABC().toUpperCase();
-        this.alphabet = getCleanAlphabet(ABC);
+        this.alphabet = cleanStringFromXMLFile(ABC);
 
         this.listOfExceptions = new ArrayList<>();
     }
@@ -41,7 +41,7 @@ public class xmlFileValidatorDTO {
         if (alphabet.length() % 2 != 0)
             addException(new RuntimeException("Error loading file: The size of the alphabet must be even"));
     }
-    public static String getCleanAlphabet(String str) {
+    public static String cleanStringFromXMLFile(String str) {
         str = str.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
         str = str.replaceAll("\\p{C}", "");
         str = str.trim();
@@ -188,6 +188,13 @@ public class xmlFileValidatorDTO {
             }
         }
     }
+    public void validateNumOfAgents(int amountOfAgents){
+        if(amountOfAgents>50||amountOfAgents<2) {
+            addException(new RuntimeException("Error: The Amount of agents need to be" +
+                    "in range of 2-55"));
+        }
+    }
+
     public void isValidMachineInputFromFile(){
         validateAlphabet();
         validateRotors();

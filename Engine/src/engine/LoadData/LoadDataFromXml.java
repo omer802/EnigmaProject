@@ -1,6 +1,9 @@
 package engine.LoadData;
 
 import DTOS.Validators.xmlFileValidatorDTO;
+import engine.decryptionManager.Agents.Agents;
+import engine.decryptionManager.DM;
+import engine.decryptionManager.dictionary.Dictionary;
 import engine.enigma.*;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
@@ -21,27 +24,60 @@ import java.util.List;
 
 public class LoadDataFromXml implements LoadData {
     private final static String JAXB_XML_PACKAGE_NAME = "engine.LoadData.jaxb.schema.generated";
-    public EnigmaMachine loadDataFromInput(String FilePath, xmlFileValidatorDTO validator){
-
-        return loadDataFromXml(FilePath,validator);
-
+    public Enigma loadDataFromInput(String FilePath, xmlFileValidatorDTO validator){
+        CTEEnigma enigmaCTEE = loadEnigmaFromFile(FilePath,validator);
+        if(enigmaCTEE!=null) {
+            EnigmaMachine machine = loadMachine(enigmaCTEE, validator);
+            if (machine != null) {
+                DM decipher = loadDecipher(machine,enigmaCTEE, validator);
+                if (decipher != null) {
+                    //decipher.getAgents().getAgents().toString();
+                    return new Enigma(machine, decipher);
+                }
+            }
+        }
+        return null;
     }
-    private EnigmaMachine loadDataFromXml(String FilePath, xmlFileValidatorDTO validator) {
-        CTEEnigma anigma;
+    private DM loadDecipher(EnigmaMachine machine, CTEEnigma enigma, xmlFileValidatorDTO validator){
+        Dictionary dictionary = loadDictionary(enigma, validator);
+        Agents agents = loadAgents(machine, enigma,validator);
+        if(agents == null)
+            return null;
+        return new DM(dictionary,agents,agents.getAgentsAmount());
+    }
+    private Agents loadAgents(EnigmaMachine machine,CTEEnigma enigma, xmlFileValidatorDTO validator){
+        int amountOfAgents = enigma.getCTEDecipher().getAgents();
+        validator.validateNumOfAgents(amountOfAgents);
+        if(validator.getListOfExceptions().size() == 0)
+        return new Agents(machine,amountOfAgents);
+        else
+            return null;
+    }
+    private Dictionary loadDictionary(CTEEnigma enigma, xmlFileValidatorDTO validator){
+        String excludeChars = enigma.getCTEDecipher().getCTEDictionary().getExcludeChars();
+        String words = enigma.getCTEDecipher().getCTEDictionary().getWords();
+        return new Dictionary(words, excludeChars);
+    }
+
+    private CTEEnigma loadEnigmaFromFile(String FilePath, xmlFileValidatorDTO validator){
+        CTEEnigma enigma;
         try {
             InputStream inputStream = new FileInputStream(new File(FilePath));
-            anigma = deserializeFrom(inputStream);
+            enigma = deserializeFrom(inputStream);
         } catch (JAXBException e) {
             validator.addException(new RuntimeException("Error: invalid file were entered"));
             return null;
         } catch(FileNotFoundException e){
-                validator.addException(new RuntimeException("Error: invalid file path were entered"));
-                return null;
-            }
-        validator.setMachine(anigma.getCTEMachine());
+            validator.addException(new RuntimeException("Error: invalid file path were entered"));
+            return null;
+        }
+        return enigma;
+    }
+    private EnigmaMachine loadMachine(CTEEnigma enigma, xmlFileValidatorDTO validator) {
+        validator.setMachine(enigma.getCTEMachine());
         validator.isValidMachineInputFromFile();
         if(validator.getListOfExceptions().size()== 0)
-            return deserializeMachineInput(anigma.getCTEMachine());
+            return deserializeMachineInput(enigma.getCTEMachine());
         else
             return null;
 
@@ -57,7 +93,7 @@ public class LoadDataFromXml implements LoadData {
     }
     private Keyboard getKeyBoard(CTEMachine MachineInput){
         String ABC = MachineInput.getABC();
-        ABC = xmlFileValidatorDTO.getCleanAlphabet(ABC);
+        ABC = xmlFileValidatorDTO.cleanStringFromXMLFile(ABC);
         return new Keyboard(ABC);
     }
 

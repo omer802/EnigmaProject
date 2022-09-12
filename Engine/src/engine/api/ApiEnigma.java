@@ -4,7 +4,7 @@ import DTOS.ConfigrationsPropertyAdapter.FileConfigurationDTOAdapter;
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
-import DTOS.Statistics.MachineStatisticsDTO;
+import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 import javafx.beans.property.StringProperty;
 
@@ -74,4 +74,5 @@ public interface ApiEnigma {
     public Character encryptChar(char ch);
     public void updateStatistics(String input, String output, long processingTime);
     public void setStatisticsProperty(StringProperty statisticsProperty);
+    public void DecipherMessage(String messageToDecipher,int difficulty, int missionSize);
 }
