@@ -6,6 +6,8 @@ import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import UIAdapter.UIAdapter;
+import engine.decryptionManager.DM;
 import javafx.beans.property.StringProperty;
 
 import java.io.IOException;
@@ -74,5 +76,7 @@ public interface ApiEnigma {
     public Character encryptChar(char ch);
     public void updateStatistics(String input, String output, long processingTime);
     public void setStatisticsProperty(StringProperty statisticsProperty);
-    public void DecipherMessage(String messageToDecipher,int difficulty, int missionSize);
+    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel easy, int missionSize, UIAdapter uiAdapter);
+    public boolean isDictionaryContainString(String toEncrypt);
+    public String cleanStringFromExcludeChars(String words);
 }

@@ -2,14 +2,18 @@ package JavaFX.EncryptDecrypt;
 
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import JavaFX.codeConfiguration.codeConfigurationController;
+import JavaFX.mainPage.MainPageController;
 import engine.api.ApiEnigma;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.FlowPane;
+import sun.applet.Main;
 
 public class EncryptDecryptController {
     @FXML
@@ -34,7 +38,8 @@ public class EncryptDecryptController {
 
     @FXML
     private Button doneButton;
-
+    @FXML
+    private FlowPane buttonsEncryptionFlowPane;
     @FXML
     private Button resetButton;
 
@@ -43,19 +48,24 @@ public class EncryptDecryptController {
 
     @FXML
     private codeConfigurationController EncryptDecryptCodeConfigurationController;
-
+    private MainPageController mainPageController;
     private SimpleBooleanProperty isAutomaticMode;
     private String  ManuelEncryptionString;
     private ApiEnigma api;
 
     private StringProperty statistics;
+    private SimpleIntegerProperty encryptedMessagesAmount;
+    private SimpleBooleanProperty haveCodeConfiguration;
+
 
     private long startingEncryptionTime;
 
     public EncryptDecryptController(){
-        isAutomaticMode = new SimpleBooleanProperty(true);
-        ManuelEncryptionString = new String();
-        statistics = new SimpleStringProperty();
+        this.isAutomaticMode = new SimpleBooleanProperty(true);
+        this.ManuelEncryptionString = new String();
+        this.statistics = new SimpleStringProperty();
+        this.encryptedMessagesAmount = new SimpleIntegerProperty();
+        this.haveCodeConfiguration = new SimpleBooleanProperty();
 
     }
     @FXML
@@ -64,9 +74,15 @@ public class EncryptDecryptController {
        makeToggleGroupAlwaysSelect();
         isAutomaticMode.bind(automaticModeButton.selectedProperty());
         ProcessButton.disableProperty().bind(isAutomaticMode.not());
+
         clearButton.disableProperty().bind(isAutomaticMode.not());
         doneButton.disableProperty().bind(isAutomaticMode);
         HistoryAndStatistics.textProperty().bind(statistics);
+        automaticModeButton.disableProperty().bind(haveCodeConfiguration.not());
+        ManuelModeButton.disableProperty().bind(haveCodeConfiguration.not());
+        buttonsEncryptionFlowPane.disableProperty().bind(haveCodeConfiguration.not());
+        encryptedMessege.disableProperty().bind(haveCodeConfiguration.not());
+
     }
 
     public void makeToggleGroupAlwaysSelect(){
@@ -79,33 +95,43 @@ public class EncryptDecryptController {
     public void setCodeConfigurationController(codeConfigurationController codeConfiguration){
         this.EncryptDecryptCodeConfigurationController.BindCodeConfiguration(codeConfiguration);
     }
+    public void setMainPageController(MainPageController mainPageController){
+        this.mainPageController = mainPageController;
+        this.haveCodeConfiguration.bind(mainPageController.isConfigProperty());
+    }
+
     public void setApi(ApiEnigma api) {
         this.api = api;
     }
     @FXML
-    void ApplyAutomaticMode(ActionEvent event) {
+    public void ApplyAutomaticMode(ActionEvent event) {
         //isAutomaticMode.set(true);
     }
 
     @FXML
-    void ApplyManuelMode(ActionEvent event) {
+    public void ApplyManuelMode(ActionEvent event) {
         //isAutomaticMode.set(false);
     }
 
     @FXML
-    void EncrypteFullMessage(ActionEvent event) {
-
+    public void EncrypteFullMessage(ActionEvent event) {
         String toEncrypt = encryptedMessege.getText();
+        encryptFullMessageNoneAction(toEncrypt);
+        }
+
+    public String encryptFullMessageNoneAction(String toEncrypt) {
         toEncrypt = toEncrypt.toUpperCase();
         boolean isStringValid = api.validateStringToEncrypt(toEncrypt);
         if (!isStringValid)
             System.out.println("Some of the letters you entered are not from the alphabet");
-        else{
-            if(toEncrypt.length()>0) {
+        else {
+            if (toEncrypt.length() > 0) {
                 String encryptedString = api.dataEncryption(toEncrypt);
                 EncryptDecryptResultLabel.setText(encryptedString);
+                return encryptedString;
             }
         }
+        return null;
 
     }
 
@@ -117,7 +143,7 @@ public class EncryptDecryptController {
 
     @FXML
     void resetPositions(ActionEvent event) {
-        api.resetPositions();
+        mainPageController.resetPosition();
         initiateEncryptionTextField();
 
     }
@@ -138,7 +164,7 @@ public class EncryptDecryptController {
             else {
                 ManuelEncryptionString += api.encryptChar(toEncrypt.charAt(0));
                 EncryptDecryptResultLabel.setText(ManuelEncryptionString);
-
+                IncrementAmountOfMessageDecrypted();
             }
         }
     }
@@ -147,9 +173,16 @@ public class EncryptDecryptController {
 
     @FXML
     private void updateStatisticsAndClearText(ActionEvent event) {
-        long timeToEncrypt =  System.nanoTime()- startingEncryptionTime ;
+        long timeToEncrypt =  System.nanoTime() - startingEncryptionTime ;
         api.updateStatistics(encryptedMessege.getText(),ManuelEncryptionString,timeToEncrypt);
         initiateEncryptionTextField();
+        IncrementAmountOfMessageDecrypted();
+    }
+    private void IncrementAmountOfMessageDecrypted(){
+        mainPageController.IncrementAmountOfMessageDecrypted();
+    }
+    private void updateNumOfEncryptedMessage(){
+
     }
 
     private void initiateEncryptionTextField(){

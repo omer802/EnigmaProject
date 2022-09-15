@@ -66,9 +66,7 @@ public class EnigmaMachine implements Serializable, Cloneable {
         addOneToCountOfDataEncrypted();
         statistics.addEncryptionToStatistics(input,output,processingTime);
     }
-    public int getAmountOfReflectors(){
-        return reflectors.getReflectorsAmount();
-    }
+
 
     public Character encodeChar(char charToEncode) {
         char currentCharToEncode = charToEncode;
@@ -242,6 +240,10 @@ public class EnigmaMachine implements Serializable, Cloneable {
     public void setChosenRotors(List<String> chosenRotors){
         getRotorsObject().setChosenRotorToUse(chosenRotors);
     }
+
+    public List<String> getChosenRotors(){
+        return getRotorsObject().getChosenRotorsString();
+    }
     public void setPositions(String positions){
         getRotorsObject().setPositions(positions);
     }
@@ -288,8 +290,8 @@ public class EnigmaMachine implements Serializable, Cloneable {
         return pairs;
     }
 
-    public UserConfigurationDTO getCurrentOriginalConfiguration() {
-        return statistics.getCurrentConfiguration();
+    public UserConfigurationDTO getCurrentStartingConfiguration() {
+        return statistics.getCurrentStartingConfiguration();
     }
     public MachineStatisticsDTO getStatistics() {
         return new MachineStatisticsDTO(statistics);

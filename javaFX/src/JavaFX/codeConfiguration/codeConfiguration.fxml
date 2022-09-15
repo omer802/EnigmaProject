@@ -3,16 +3,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <ScrollPane prefHeight="178.0" prefWidth="308.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.codeConfiguration.codeConfigurationController">
    <content>
-      <BorderPane>
-         <center>
+      <VBox>
+         <children>
             <GridPane gridLinesVisible="true" prefHeight="150.0" prefWidth="305.0">
                <columnConstraints>
                   <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="140.0" minWidth="100.0" prefWidth="140.0" />
@@ -46,7 +46,7 @@
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label prefHeight="17.0" prefWidth="70.0" text="Component">
+                  <Label text="Component">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
@@ -78,9 +78,7 @@
                   </Label>
                </children>
             </GridPane>
-         </center>
-         <bottom>
-            <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="305.0" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="305.0">
                <children>
                   <Label minWidth="-Infinity" text="Full Configuration:">
                      <padding>
@@ -94,7 +92,7 @@
                   </Label>
                </children>
             </HBox>
-         </bottom>
-      </BorderPane>
+         </children>
+      </VBox>
    </content>
 </ScrollPane>

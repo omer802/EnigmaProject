@@ -104,4 +104,38 @@ public class UserConfigurationDTO implements Serializable {
     public List<NotchAndLetterAtPeekPane> getNotchAndLetterPair() {
         return NotchAndLetterPair;
     }
+
+    public StringBuilder getCodeConfigurationString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> rotorsWithOrder = getChosenRotorsWithOrder();
+        createCodeConfigurationGetChosenRotors(rotorsWithOrder, stringBuilder);
+
+        List<NotchAndLetterAtPeekPane> currentPositionsAndNotch = getNotchAndLetterPair();
+        getCurrentPositionsWithDistanceFromNotch(currentPositionsAndNotch, stringBuilder);
+
+        stringBuilder.append("<"+getChosenReflector()+">");
+        if(isPlugged()&&getPlugBoardConnectionsWithFormat().length()>0)
+            stringBuilder.append("<" + getPlugBoardConnectionsWithFormat()+ ">");
+        return stringBuilder;
+    }
+
+    private void getCurrentPositionsWithDistanceFromNotch(List<NotchAndLetterAtPeekPane> currentPositionsAndNotch, StringBuilder stringBuilderInput) {
+        boolean isFirst = true;
+        stringBuilderInput.append("<");
+        for (NotchAndLetterAtPeekPane pair: currentPositionsAndNotch)
+            stringBuilderInput.append(pair.toString());
+        stringBuilderInput.append( ">");
+    }
+
+    private void createCodeConfigurationGetChosenRotors(List<String> rotorsWithOrder, StringBuilder stringBuilderInput) {
+        boolean isFirst = true;
+        stringBuilderInput.append("<");
+        for (String rotorID: rotorsWithOrder) {
+            if(!isFirst)
+                stringBuilderInput.append(",");
+            stringBuilderInput.append(rotorID);
+            isFirst = false;
+        }
+        stringBuilderInput.append(">");
+    }
 }

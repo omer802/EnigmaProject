@@ -85,7 +85,7 @@ public class RotatingRotors  implements Serializable {
     public List<String> getChosenRotorsString(){
         List<String> chosenRotors = new ArrayList<>();
         for (int i = getChosenRotors().size() -1; i >=0 ; i--) {
-            chosenRotors.add(getChosenRotors().get(i).toString());
+            chosenRotors.add((getChosenRotors().get(i).toString()));
         }
         return chosenRotors;
     }

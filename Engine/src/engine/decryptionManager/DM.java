@@ -1,14 +1,19 @@
 package engine.decryptionManager;
 
+import UIAdapter.UIAdapter;
+import com.sun.org.apache.xml.internal.utils.Trie;
 import engine.decryptionManager.Agents.Agents;
 import engine.decryptionManager.dictionary.Dictionary;
-import engine.decryptionManager.task.tasksCreator;
+import engine.decryptionManager.task.TasksGenerator;
 import engine.enigma.Machine.EnigmaMachine;
 
 public class DM {
 
 
     // TODO: 9/10/2022 change from agents to tasks
+    public enum DifficultyLevel{
+        EASY, MEDIUM, HARD, IMPOSSIBLE
+    }
     private Agents agents;
     private int AgentsAmount;
     private Dictionary dictionary;
@@ -17,20 +22,29 @@ public class DM {
     private int missionSize;
     private EnigmaMachine machine;
     private int difficulty;
-    private tasksCreator taskCreator;
+    private TasksGenerator taskCreator;
     public DM(Dictionary dictionary, Agents agents, int agentsAmount){
         this.dictionary = dictionary;
         this.agents = agents;
         this.AgentsAmount = agentsAmount;
 
     }
-    public void DecipherMessage(String messageToDecipher,int difficulty,int missionSize){
+    public void DecipherMessage(String messageToDecipher, DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter){
         this.missionSize = missionSize;
-        tasksCreator tasksCreator =new tasksCreator(messageToDecipher,missionSize,difficulty,AgentsAmount,machine.clone());
-        //tasksCreator.run();
+        TasksGenerator tasksCreator =new TasksGenerator(messageToDecipher,missionSize,difficulty,AgentsAmount,machine.clone(), uiAdapter);
         new Thread(tasksCreator,"tasksCreatorThread").start();
-        //tasksCreator.start();
     }
+    public boolean isDictionaryContainString(String str){
+        return dictionary.isDictionaryContainString(str);
+
+    }
+    public String cleanStringFromExcludeChars(String words){
+        return dictionary.cleanStringFromExcludeChars(words);
+    }
+    public Trie getTrieFromDictionary(){
+        return dictionary.createTrieFromDictionary();
+    }
+
 
     public Dictionary getDictionary() {
         return dictionary;

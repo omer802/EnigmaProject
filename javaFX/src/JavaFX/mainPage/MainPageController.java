@@ -4,9 +4,12 @@ import DTOS.ConfigrationsPropertyAdapter.FileConfigurationDTOAdapter;
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import JavaFX.BruteForce.BruteForceController;
 import JavaFX.EncryptDecrypt.EncryptDecryptController;
 import JavaFX.UIComponent.PlugBoardUI;
 import JavaFX.codeConfiguration.codeConfigurationController;
+import UIAdapter.UIAdapter;
+import UIAdapter.UIAdapterImpJavaFX;
 import engine.api.ApiEnigma;
 import engine.enigma.keyboard.Keyboard;
 import javafx.beans.binding.Bindings;
@@ -89,6 +92,10 @@ public class MainPageController {
     private codeConfigurationController codeConfigurationController;
 
     @FXML
+    private BorderPane BruteForce;
+    @FXML
+    private BruteForceController BruteForceController;
+    @FXML
     private ScrollPane encryptDecrypt;
     @FXML
     private EncryptDecryptController encryptDecryptController;
@@ -108,7 +115,11 @@ public class MainPageController {
     private SimpleIntegerProperty reflectorsAmount;
     private SimpleIntegerProperty encryptedMessagesAmount;
 
-    private SimpleBooleanProperty haveCodeConfiguration;
+
+
+
+
+    private SimpleBooleanProperty isConfig;
     private SimpleBooleanProperty isFileSelected;
 
     private FileConfigurationDTOAdapter fileConfigurationDTOAdapter;
@@ -119,9 +130,8 @@ public class MainPageController {
        this.rotorsInUseAmount = new SimpleIntegerProperty(0);
        this.reflectorsAmount = new SimpleIntegerProperty(0);
         this.encryptedMessagesAmount = new SimpleIntegerProperty(0);
-        this.haveCodeConfiguration = new SimpleBooleanProperty(false);
         this.isFileSelected = new SimpleBooleanProperty(false);
-        this.haveCodeConfiguration = new SimpleBooleanProperty(false);
+        this.isConfig = new SimpleBooleanProperty(false);
         this.chosenRotors = new SimpleStringProperty();
         this.NotchAndLetterAtPeekPaneStartingPosition = new SimpleStringProperty();
         this.chosenReflector = new SimpleStringProperty();
@@ -129,19 +139,33 @@ public class MainPageController {
     }
     @FXML
     private void initialize(){
+
         rotorsAmountLabel.textProperty().bind(Bindings.format("%,d", rotorsAmount));
         InUseRotorsAmountLabel.textProperty().bind(Bindings.format("%,d", rotorsInUseAmount));
         ReflectorsAmountLabel.textProperty().bind(Bindings.format("%,d",reflectorsAmount));
         encryptedMessagesAmountLabel.textProperty().bind(Bindings.format("%,d",encryptedMessagesAmount));
+
+        rotorsAmountLabel.visibleProperty().bind(isFileSelected);
+        InUseRotorsAmountLabel.visibleProperty().bind(isFileSelected);
+        ReflectorsAmountLabel.visibleProperty().bind(isFileSelected);
+        encryptedMessagesAmountLabel.visibleProperty().bind(isFileSelected);
         fileConfigurationDTOAdapter = new FileConfigurationDTOAdapter(rotorsAmount,rotorsInUseAmount ,reflectorsAmount,
                 encryptedMessagesAmount);
 
+        codeConfiguration.disableProperty().bind(isConfig.not());
+        CodeAtMachineDetails.disableProperty().bind(isConfig.not());
+        encryptDecrypt.disableProperty().bind(isConfig.not());
+
         setCodeButton.disableProperty().bind(isFileSelected.not());
+        randomCodeButton.disableProperty().bind(isFileSelected.not());
         machineDetailsFlowPane.disableProperty().bind(isFileSelected.not());
         CheckBoxIsPluged.disableProperty().bind(isFileSelected.not());
+
+
     }
     @FXML
     public void loadXmlFile(ActionEvent event) {
+
         // TODO: 9/1/2022 add alert window
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select machine file");
@@ -163,10 +187,9 @@ public class MainPageController {
             setTextURL(path);
             createCodeMenu(api.getAmountOfRotors());
             isFileSelected.set(true);
-            haveCodeConfiguration.set(false);
+            isConfig.set(false);
             CheckBoxIsPluged.setSelected(false);
             encryptDecryptController.setStatistics();
-
         }
     }
     public void initOriginalConfiguration(){
@@ -186,7 +209,16 @@ public class MainPageController {
         if(encryptDecryptController!=null) {
             encryptDecryptController.setCodeConfigurationController(codeConfigurationController);
             encryptDecryptController.setApi(this.api);
+            encryptDecryptController.setMainPageController(this);
         }
+        if(BruteForceController!=null){
+            BruteForceController.setApi(api);
+            BruteForceController.setMainPageController(this);
+            BruteForceController.bindCodeConfiguration(codeConfigurationController);
+        }
+    }
+    public void IncrementAmountOfMessageDecrypted(){
+        encryptedMessagesAmount.set(encryptedMessagesAmount.getValue()+ 1);
     }
 
     // TODO: 9/2/2022 bind the setcode to if the plugboard is even 
@@ -195,7 +227,6 @@ public class MainPageController {
         createLabels(countOfRotors);
         createRotorsButtons(countOfRotors);
         createPositionsButtons(countOfRotors);
-        createReflectorChoiceBox();
         createReflectorChoiceBox();
     }
     public void makeEmptyLayouts(){
@@ -339,8 +370,16 @@ public class MainPageController {
         }
         api.selectInitialCodeConfiguration(Specification);
         updateConfiguration();
-        api.DecipherMessage("LCIN'YFB'!PSIRY'AF",1,10);
+        UIAdapter uiAdapter = createUIAdapter();
+
+        //api.DecipherMessage("ICJ AOZKR", DM.DifficultyLevel.IMPOSSIBLE,10, uiAdapter);
+
         // TODO: 9/5/2022  think how to bind statitsics to encrypted decrypted
+
+    }
+    public UIAdapterImpJavaFX createUIAdapter(){
+        return new UIAdapterImpJavaFX(
+                str->URLFileText.appendText(str));
     }
     @FXML
     public void generateRandomCode(ActionEvent event){
@@ -348,11 +387,14 @@ public class MainPageController {
         updateConfiguration();
 
     }
+    public String encryptMessage(String toEncrypt){
+       return encryptDecryptController.encryptFullMessageNoneAction(toEncrypt);
+    }
 
     public void updateConfiguration(){
         setOriginalConfiguration();
         setCurrentConfiguration();
-        haveCodeConfiguration.set(true);
+        isConfig.set(true);
     }
 
     // TODO: 9/3/2022 merge current and original configuration to one function that effect each other
@@ -360,6 +402,9 @@ public class MainPageController {
         UserConfigurationDTOAdapter currentConfig = codeConfigurationController.getConfigurationProperties();
         api.setCurrentConfigurationProperties(currentConfig);
         codeConfigurationController.setConfig(true);
+    }
+    public SimpleBooleanProperty isConfigProperty() {
+        return isConfig;
     }
     public void setOriginalConfiguration(){
         UserConfigurationDTO originalConfigurationDTO = api.getOriginalConfiguration();
@@ -484,6 +529,11 @@ public class MainPageController {
     public int generateRandomIntForRgb(){
         return (int) (Math.random()*254+1);
     }
+
+    public void resetPosition(){
+        api.resetPositions();
+    }
+
 }
 
 

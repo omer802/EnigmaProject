@@ -118,7 +118,7 @@
                                                       </Label>
                                                    </children>
                                                 </HBox>
-                                                <Label prefHeight="17.0" prefWidth="78.0" text="Rotors In Use" GridPane.rowIndex="2">
+                                                <Label text="Rotors In Use" GridPane.rowIndex="2">
                                                    <GridPane.margin>
                                                       <Insets left="5.0" />
                                                    </GridPane.margin>
@@ -141,7 +141,7 @@
                                                       <Insets left="5.0" />
                                                    </padding>
                                                 </Label>
-                                                <Label text="encrypted messages:" GridPane.rowIndex="4">
+                                                <Label text="encrypted messages" GridPane.rowIndex="4">
                                                    <padding>
                                                       <Insets left="5.0" />
                                                    </padding>
@@ -240,7 +240,10 @@
                                           </ScrollPane>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                              <children>
-                                                <Button fx:id="randomCodeButton" layoutY="160.0" mnemonicParsing="false" onAction="#generateRandomCode" text="Random Code" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" />
+                                                <Button fx:id="randomCodeButton" layoutX="-13.0" layoutY="173.0" mnemonicParsing="false" onAction="#generateRandomCode" prefHeight="25.0" prefWidth="86.0" text="Random Code" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="-13.0">
+                                                   <font>
+                                                      <Font size="11.0" />
+                                                   </font></Button>
                                              </children>
                                           </AnchorPane>
                                        </children>
@@ -291,7 +294,7 @@
                                                             <Insets left="5.0" />
                                                          </GridPane.margin>
                                                       </Label>
-                                                      <Label prefHeight="17.0" prefWidth="70.0" text="Component">
+                                                      <Label text="Component">
                                                          <GridPane.margin>
                                                             <Insets left="5.0" />
                                                          </GridPane.margin>
@@ -365,7 +368,8 @@
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <Button layoutX="223.0" layoutY="139.0" mnemonicParsing="false" text="Button" />
+                              <AnchorPane layoutX="-10.0" layoutY="-3.0" prefHeight="475.0" prefWidth="800.0" />
+                              <fx:include fx:id="BruteForce" source="../BruteForce/BruteForce.fxml" />
                            </children></AnchorPane>
                      </content>
                   </Tab>

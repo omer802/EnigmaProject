@@ -12,7 +12,7 @@ public class Statistics implements Serializable, Cloneable {
     public Statistics() {
         configurationList = new ArrayList<>();
     }
-    public UserConfigurationDTO getCurrentConfiguration(){
+    public UserConfigurationDTO getCurrentStartingConfiguration(){
         return configurationList.get(configurationList.size()-1).getConfiguration();
     }
     public void addConfiguration(UserConfigurationDTO configuration) {

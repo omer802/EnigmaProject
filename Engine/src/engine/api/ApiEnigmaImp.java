@@ -6,6 +6,9 @@ import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import UIAdapter.UIAdapter;
+import com.sun.org.apache.xml.internal.utils.Trie;
+import engine.decryptionManager.DM;
 import engine.enigma.Enigma;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.Machine.NotchAndLetterAtPeekPane;
@@ -18,6 +21,7 @@ import engine.enigma.statistics.EncryptionData;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import sun.reflect.generics.tree.Tree;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -34,9 +38,11 @@ public class ApiEnigmaImp implements ApiEnigma {
     StringProperty statistics;
     private boolean haveConfigurationFromFile;
 
-    public void DecipherMessage(String messageToDecipher,int difficulty, int missionSize){
+    // TODO: 9/14/2022 notice that added dependency on uiadapter make a cirlce dependency with javafx
+    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter)
+    {
         enigma.getDecipher().setMachine(enigma.getMachine().clone());
-        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize);
+        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize, uiAdapter);
     }
 
     public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
@@ -133,6 +139,7 @@ public class ApiEnigmaImp implements ApiEnigma {
     // TODO: 9/3/2022 update code
     public UserConfigurationDTO AutomaticallyInitialCodeConfiguration(){
         enigma.getMachine().automaticInitialCodeConfiguration();
+        updateStatisticsProperty();
          return getCurrentConfiguration();
          //public void updatescrene
     }
@@ -180,7 +187,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         return EnigmaMachine.getTheNumberOfStringsEncrypted()>0;
     }
     public UserConfigurationDTO getOriginalConfiguration(){
-        return enigma.getMachine().getCurrentOriginalConfiguration();
+        return enigma.getMachine().getCurrentStartingConfiguration();
     }
 
     public MachineStatisticsDTO getStatistics(){
@@ -214,8 +221,9 @@ public class ApiEnigmaImp implements ApiEnigma {
     }
 
 
-    public  StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
-        StringBuilder stringBuilder = new StringBuilder();
+    public StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser){
+        return machineConfigUser.getCodeConfigurationString();
+        /*StringBuilder stringBuilder = new StringBuilder();
         List<String> rotorsWithOrder = machineConfigUser.getChosenRotorsWithOrder();
         getChosenRotorsWithOrder(rotorsWithOrder, stringBuilder);
 
@@ -225,7 +233,7 @@ public class ApiEnigmaImp implements ApiEnigma {
         stringBuilder.append("<"+machineConfigUser.getChosenReflector()+">");
         if(machineConfigUser.isPlugged()&&machineConfigUser.getPlugBoardConnectionsWithFormat().length()>0)
             stringBuilder.append("<" + machineConfigUser.getPlugBoardConnectionsWithFormat()+ ">");
-        return stringBuilder;
+        return stringBuilder;*/
     }
     public void getChosenRotorsWithOrder( List<String> rotorsWithOrder, StringBuilder stringBuilderInput){
         boolean isFirst = true;
@@ -312,6 +320,15 @@ public class ApiEnigmaImp implements ApiEnigma {
         else
             sb.append("The machine has not yet encrypted messages");
         return sb;
+    }
+    public boolean isDictionaryContainString(String toEncrypt){
+        return enigma.getDecipher().isDictionaryContainString(toEncrypt);
+    }
+    public String cleanStringFromExcludeChars(String words){
+        return enigma.getDecipher().cleanStringFromExcludeChars(words);
+    }
+    public Trie getTrieFromDictionary(){
+        return enigma.getDecipher().getTrieFromDictionary();
     }
 
 

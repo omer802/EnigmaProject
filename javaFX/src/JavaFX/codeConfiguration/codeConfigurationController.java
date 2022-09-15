@@ -1,6 +1,7 @@
 package JavaFX.codeConfiguration;
 import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -21,7 +22,7 @@ public class codeConfigurationController {
 
     @FXML
     private Label fullConfigurationLabel;
-    private boolean isConfig;
+    private SimpleBooleanProperty isConfig;
 
     private SimpleStringProperty fullConfiguration;
     private SimpleStringProperty chosenRotors;
@@ -56,7 +57,7 @@ public class codeConfigurationController {
         chosenReflector = new SimpleStringProperty("");
         plugBoardToShow = new SimpleStringProperty("");
         fullConfiguration = new SimpleStringProperty("");
-        isConfig = false;
+        isConfig =new SimpleBooleanProperty();
     }
 
     @FXML
@@ -82,22 +83,14 @@ public class codeConfigurationController {
                 chosenReflector, plugBoardToShow, fullConfiguration);
     }
     public void setConfig(boolean config) {
-        isConfig = config;
+
     }
     public boolean isConfig() {
-        return isConfig;
+        return isConfig.getValue();
     }
 
     // TODO: 9/5/2022 change to more algant way
-   /* public void setConfigurationProperties(SimpleStringProperty chosenRotors, SimpleStringProperty NotchAndLetterAtPeekPaneStartingPosition,
-                                           SimpleStringProperty chosenReflector, SimpleStringProperty plugBoardToShow,
-                                           SimpleStringProperty fullConfiguration){
-        this.chosenRotors = chosenRotors;
-        this.NotchAndLetterAtPeekPaneStartingPosition = NotchAndLetterAtPeekPaneStartingPosition;
-        this.chosenReflector = chosenReflector;
-        this.plugBoardToShow = plugBoardToShow;
-        this.fullConfiguration = fullConfiguration;
-    }*/
+
     public void BindCodeConfiguration(codeConfigurationController controller){
         this.chosenRotors.bind(controller.chosenRotorsProperty());
         this.NotchAndLetterAtPeekPaneStartingPosition.bind(controller.notchAndLetterAtPeekPaneStartingPositionProperty());

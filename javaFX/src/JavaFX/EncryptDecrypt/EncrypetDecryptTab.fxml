@@ -61,7 +61,7 @@
                                        </padding>
                                     </Label>
                                     <TextField fx:id="encryptedMessege" onKeyTyped="#EncryptCharacter" prefHeight="25.0" prefWidth="245.0" />
-                                    <FlowPane alignment="TOP_CENTER" prefHeight="50.0" prefWidth="86.0">
+                                    <FlowPane fx:id="buttonsEncryptionFlowPane" alignment="TOP_CENTER" prefHeight="50.0" prefWidth="86.0">
                                        <padding>
                                           <Insets right="20.0" />
                                        </padding>

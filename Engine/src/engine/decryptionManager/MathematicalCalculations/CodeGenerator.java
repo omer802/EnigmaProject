@@ -1,16 +1,16 @@
-package engine.decryptionManager.task;
+package engine.decryptionManager.MathematicalCalculations;
 
 import engine.enigma.keyboard.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CodeConfigurationGenerator {
+public class CodeGenerator {
     private List<String> positionsToSend;
     private String currentPosition;
     private List<Integer> positionsIndex;
     private int positionLength;
-    public CodeConfigurationGenerator(int positionLength){
+    public CodeGenerator(int positionLength){
         this.positionLength = positionLength;
         initPositions();
     }
@@ -43,6 +43,7 @@ public class CodeConfigurationGenerator {
     private void advanceIndexPositionsList(){
         boolean isFirstPosition = true;
         boolean isFirstIteration = true;
+
         for (int i = positionLength -1; i >= 1; i--) {
             int positionIndex = positionsIndex.get(i);
             if(isFirstPosition) {
@@ -61,6 +62,31 @@ public class CodeConfigurationGenerator {
             }
         }
 
+    }
+    public List<int[]> generateNChooseK(int n, int r) {
+        List<int[]> combinations = new ArrayList<>();
+        int[] combination = new int[r];
+
+        // initialize with lowest lexicographic combination
+        for (int i = 0; i < r; i++) {
+            combination[i] = i;
+        }
+
+        while (combination[r - 1] < n) {
+            combinations.add(combination.clone());
+
+            // generate next combination in lexicographic order
+            int t = r - 1;
+            while (t != 0 && combination[t] == n - r + t) {
+                t--;
+            }
+            combination[t]++;
+            for (int i = t + 1; i < r; i++) {
+                combination[i] = combination[i - 1] + 1;
+            }
+        }
+
+        return combinations;
     }
 
 
