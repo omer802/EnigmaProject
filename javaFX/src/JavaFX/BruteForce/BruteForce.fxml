@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.BruteForce.BruteForceController">
+<BorderPane fx:id="bruteForceBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.BruteForce.BruteForceController">
    <top>
       <BorderPane prefHeight="216.0" prefWidth="800.0">
          <left>
@@ -129,7 +129,7 @@
       </BorderPane>
    </top>
    <left>
-      <VBox prefHeight="134.0" prefWidth="270.0" spacing="20.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="259.0" prefWidth="277.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="283.0" spacing="10.0">
                <children>
@@ -178,15 +178,15 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <HBox prefHeight="58.0" prefWidth="426.0" spacing="10.0">
+            <HBox prefHeight="58.0" prefWidth="281.0" spacing="10.0">
                <children>
                   <Label minWidth="-Infinity" text="Task Progress">
                      <padding>
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <Label fx:id="progressPercentLabel" prefHeight="17.0" prefWidth="34.0" />
-                  <ProgressBar fx:id="taskProgressBar" prefHeight="18.0" prefWidth="308.0" progress="0.0" />
+                  <Label fx:id="progressPercentLabel" minWidth="-Infinity" prefHeight="17.0" prefWidth="34.0" />
+                  <ProgressBar fx:id="taskProgressBar" prefHeight="18.0" prefWidth="181.0" progress="0.0" />
                </children>
             </HBox>
          </children>
@@ -196,12 +196,12 @@
       </VBox>
    </left>
    <center>
-      <AnchorPane fx:id="operationButtons" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="operationButtons" prefHeight="215.0" prefWidth="152.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="startButton" layoutX="31.0" layoutY="105.0" mnemonicParsing="false" onAction="#decipherEncryptedMessage" prefHeight="25.0" prefWidth="50.0" text="Start" />
-            <Button fx:id="stopButton" layoutX="80.0" layoutY="105.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Stop" />
-            <Button fx:id="PauseButton" layoutX="31.0" layoutY="130.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Pause" />
-            <Button fx:id="ResumeButton" layoutX="80.0" layoutY="130.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Resume" />
+            <Button fx:id="stopButton" layoutX="80.0" layoutY="105.0" mnemonicParsing="false" onAction="#stopTaskButtonAction" prefHeight="25.0" prefWidth="58.0" text="Stop" />
+            <Button fx:id="PauseButton" layoutX="31.0" layoutY="130.0" mnemonicParsing="false" onAction="#pauseTaskButtonAction" prefHeight="25.0" prefWidth="50.0" text="Pause" />
+            <Button fx:id="ResumeButton" layoutX="80.0" layoutY="130.0" mnemonicParsing="false" onAction="#resumeTaskButtonAction" prefHeight="25.0" prefWidth="58.0" text="Resume" />
          </children>
       </AnchorPane>
    </center>
@@ -213,7 +213,7 @@
                   <Label text="Candidates" />
                </children>
             </HBox>
-            <TextArea fx:id="TextAreaCandidates" prefHeight="162.0" prefWidth="371.0" />
+            <TextArea fx:id="TextAreaCandidates" editable="false" prefHeight="162.0" prefWidth="371.0" />
             <HBox prefHeight="32.0" prefWidth="371.0">
                <children>
                   <Button fx:id="clearCandidateButton" mnemonicParsing="false" onAction="#clearCandidate" text="Clear Candidates" />

@@ -6,7 +6,8 @@ import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
-import UIAdapter.UIAdapter;
+import DTOS.decryptionManager.DecryptionManagerDTO;
+import JavaFX.mainPage.MainPageController;
 import engine.decryptionManager.DM;
 import engine.decryptionManager.dictionary.Trie;
 import javafx.beans.property.StringProperty;
@@ -71,16 +72,38 @@ public interface ApiEnigma {
     public StringBuilder getStringDataReceiveFromUser(UserConfigurationDTO machineConfigUser);
 
     public void setCurrentConfigurationProperties(UserConfigurationDTOAdapter DTOPropertiesToConfig);
+
     public void setUserConfigurationDTO(UserConfigurationDTO originalConfigurationDTO);
+
     public void UpdateCode(UserConfigurationDTO originalConfigurationDTO);
+
     public StringBuilder PrintStatistic();
+
     public Character encryptChar(char ch);
+
     public void updateStatistics(String input, String output, long processingTime);
+
     public void setStatisticsProperty(StringProperty statisticsProperty);
-    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel easy, int missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess);
+
+    public void DecipherMessage(DecryptionManagerDTO decryptionManagerDTO, Runnable onFinish);
+
     public boolean isDictionaryContainString(String toEncrypt);
+
     public String cleanStringFromExcludeChars(String words);
+
     public Trie getTrieFromDictionary();
+
     public int getAmountOfAgents();
+
     public double calculateAmountOfTasks(int missionSize, DM.DifficultyLevel level);
-    }
+
+    public void setMainController(MainPageController mainController);
+
+    public void cancelCurrentTask();
+
+    public void pauseCurrentTask();
+
+    void resumeCurrentTask();
+}
+
+

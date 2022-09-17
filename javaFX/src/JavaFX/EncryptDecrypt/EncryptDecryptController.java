@@ -116,18 +116,22 @@ public class EncryptDecryptController {
     @FXML
     public void EncrypteFullMessage(ActionEvent event) {
         String toEncrypt = encryptedMessege.getText();
-        encryptFullMessageNoneAction(toEncrypt);
+        String encryptedString = encryptFullMessageNoneAction(toEncrypt);
+        if (encryptedString != null) {
+            EncryptDecryptResultLabel.setText(encryptedString);
         }
+    }
 
     public String encryptFullMessageNoneAction(String toEncrypt) {
         toEncrypt = toEncrypt.toUpperCase();
         boolean isStringValid = api.validateStringToEncrypt(toEncrypt);
-        if (!isStringValid)
+        if (!isStringValid) {
             System.out.println("Some of the letters you entered are not from the alphabet");
+            return null;
+        }
         else {
             if (toEncrypt.length() > 0) {
                 String encryptedString = api.dataEncryption(toEncrypt);
-                EncryptDecryptResultLabel.setText(encryptedString);
                 return encryptedString;
             }
         }

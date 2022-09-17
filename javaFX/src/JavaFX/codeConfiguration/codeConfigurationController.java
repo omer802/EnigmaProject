@@ -22,6 +22,15 @@ public class codeConfigurationController {
 
     @FXML
     private Label fullConfigurationLabel;
+
+    public boolean isIsConfig() {
+        return isConfig.get();
+    }
+
+    public SimpleBooleanProperty isConfigProperty() {
+        return isConfig;
+    }
+
     private SimpleBooleanProperty isConfig;
 
     private SimpleStringProperty fullConfiguration;
@@ -88,6 +97,7 @@ public class codeConfigurationController {
     public boolean isConfig() {
         return isConfig.getValue();
     }
+
 
     // TODO: 9/5/2022 change to more algant way
 

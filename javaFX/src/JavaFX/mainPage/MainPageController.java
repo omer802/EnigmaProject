@@ -11,6 +11,7 @@ import JavaFX.codeConfiguration.codeConfigurationController;
 import UIAdapter.UIAdapter;
 import UIAdapter.UIAdapterImpJavaFX;
 import engine.api.ApiEnigma;
+import engine.decryptionManager.task.TasksManager;
 import engine.enigma.keyboard.Keyboard;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -93,6 +94,10 @@ public class MainPageController {
 
     @FXML
     private BorderPane BruteForce;
+
+    public JavaFX.BruteForce.BruteForceController getBruteForceController() {
+        return BruteForceController;
+    }
     @FXML
     private BruteForceController BruteForceController;
     @FXML
@@ -123,6 +128,7 @@ public class MainPageController {
     private SimpleBooleanProperty isFileSelected;
 
     private FileConfigurationDTOAdapter fileConfigurationDTOAdapter;
+
     public MainPageController(){
         this.chosenRotorsList = new ArrayList<>();
         this.chosenPositions = new ArrayList<>();
@@ -232,8 +238,8 @@ public class MainPageController {
         createReflectorChoiceBox();
     }
     public void makeEmptyLayouts(){
-        if(codeConfigurationController.isConfig())
-        codeConfigurationController.makeEmptyLayout();
+        if(isConfig.getValue())
+            codeConfigurationController.makeEmptyLayout();
         this.HboxRtorosID.getChildren().clear();
         this.HBoxlistOfRotorsButtons.getChildren().clear();
         this.HBoxListOfPositions.getChildren().clear();
@@ -413,7 +419,7 @@ public class MainPageController {
         StringBuilder originalConfiguration = api.getStringDataReceiveFromUser(originalConfigurationDTO);
         String[] build = originalConfiguration.toString().replace(">","")
                 .split("<");
-        System.out.println(build);
+        //System.out.println(build);
         chosenRotorsLabel.setText(build[1]);
 
         positionsAndNotchLabel.setText(build[2]);
@@ -448,7 +454,7 @@ public class MainPageController {
         }
         else{
             Specification.setPlugBoardConnections(connections);
-            System.out.println(connections);
+            //System.out.println(connections);
             return true;
         }
     }
@@ -458,7 +464,7 @@ public class MainPageController {
         String positionsToReturn = chosenPositions.stream().
                 map(p -> p.getValue().
                         toString()).reduce("", String::concat);
-        System.out.println(positionsToReturn);
+        //System.out.println(positionsToReturn);
         return positionsToReturn;
     }
 
@@ -535,6 +541,7 @@ public class MainPageController {
     public void resetPosition(){
         api.resetPositions();
     }
+
 
 }
 

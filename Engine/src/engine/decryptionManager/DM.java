@@ -1,16 +1,19 @@
 package engine.decryptionManager;
 
+import DTOS.decryptionManager.DecryptionManagerDTO;
+import JavaFX.BruteForce.BruteForceController;
 import UIAdapter.UIAdapter;
 import engine.decryptionManager.Agents.Agents;
 import engine.decryptionManager.dictionary.Dictionary;
 import engine.decryptionManager.dictionary.Trie;
-import engine.decryptionManager.task.TasksGenerator;
+import engine.decryptionManager.task.TasksManager;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
 
 import java.math.BigInteger;
 
 public class DM {
+
 
 
 
@@ -26,7 +29,7 @@ public class DM {
     private int missionSize;
     private EnigmaMachine machine;
     private int difficulty;
-    private TasksGenerator taskCreator;
+    private TasksManager tasksCreator;
     public DM(Dictionary dictionary, Agents agents, int maxAgentsAmount, EnigmaMachine machine){
         this.dictionary = dictionary;
         this.agents = agents;
@@ -34,17 +37,31 @@ public class DM {
         this.machine = machine;
 
     }
-    public void DecipherMessage(String messageToDecipher, DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess){
-        this.missionSize = missionSize;
+    public void pauseCurrentTask() {
+        tasksCreator.pauseCurrentTask();
+    }
+    public void resumeCurrentTask() {
+        tasksCreator.resumeCurrentTask();
+    }
+    public void DecipherMessage(DecryptionManagerDTO decryptionManagerDTO, BruteForceController bruteForceController, Runnable onFinish){
+
+        this.missionSize = decryptionManagerDTO.getMissionSize();
         // TODO: 9/16/2022 add check if agents amount ok
-        if(amountOfAgentsForProcess>maxAgentAmount)
+        if(decryptionManagerDTO.getAmountOfAgentsForProcess()>maxAgentAmount)
             throw new RuntimeException();
-        TasksGenerator tasksCreator =new TasksGenerator(messageToDecipher,missionSize,difficulty,amountOfAgentsForProcess,machine.clone(), uiAdapter);
-        new Thread(tasksCreator,"tasksCreatorThread").start();
+        this.tasksCreator = new TasksManager(decryptionManagerDTO,machine.clone());
+        bruteForceController.bindTaskToUIComponents(tasksCreator, onFinish);
+        new Thread(tasksCreator,"Manager tasks thread ").start();
     }
     public boolean isDictionaryContainString(String str){
         return dictionary.isDictionaryContainString(str);
 
+
+    }
+    public void cancelCurrentTask(){
+        System.out.println("cancal!");
+
+        tasksCreator.cancel();
     }
     public String cleanStringFromExcludeChars(String words){
         return dictionary.cleanStringFromExcludeChars(words);

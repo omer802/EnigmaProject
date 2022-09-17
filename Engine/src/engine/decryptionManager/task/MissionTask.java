@@ -5,12 +5,11 @@ import UIAdapter.UIAdapter;
 import engine.decryptionManager.dictionary.Dictionary;
 import engine.enigma.Machine.EnigmaMachine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
-public class Task implements Runnable{
+public class MissionTask implements Runnable{
 
 
     private EnigmaMachine machine;
@@ -34,8 +33,8 @@ public class Task implements Runnable{
     private UIAdapter uiAdapter;
 
 
-    public Task(EnigmaMachine machine, List<String> positions,
-                String toDecode, BlockingDeque<AgentCandidatesList> candidateBlockingQueue, UIAdapter uiAdapter){
+    public MissionTask(EnigmaMachine machine, List<String> positions,
+                       String toDecode, BlockingDeque<AgentCandidatesList> candidateBlockingQueue, UIAdapter uiAdapter){
         this.machine = machine;
         this.positions = positions;
         this.toDecode = toDecode;
@@ -58,17 +57,16 @@ public class Task implements Runnable{
             if (decipherResult != null) {
                 machine.setPositions(position);//return to the position that found the candidate
                 updateCandidate(decipherResult);
-                System.out.println("updateCandidate");
             }
         }
     }
 
     public String decipher(String position)
     {
-         //System.out.println(position);
         machine.setPositions(position);
         String decryptionResult = machine.encodeString(toDecode);
         List<String> words = splitDecryptionToWords(decryptionResult);
+        //System.out.println(position);
         if(Dictionary.isWordsInDictionary(words)) {
             return decryptionResult;
         }
@@ -90,8 +88,6 @@ public class Task implements Runnable{
         System.out.println(configurationDTO.getCodeConfigurationString());
         StringBuilder currConfig = configurationDTO.getCodeConfigurationString();
         System.out.println(words);
-        //CandidateList.add(threadName+ ":" +words+":"+currConfig);
         candidatesList.addCandidate(words,currConfig.toString());
-
     }
 }

@@ -29,11 +29,12 @@ public class UpdateCandidateConsumer implements Runnable {
                 AgentCandidateList = blockingDeque.take();
 
                 synchronized (uiAdapter) {
+
                     uiAdapter.AddCandidateStringForDecoding(AgentCandidateList);
                 }
-               // System.out.println("Thread " + threadName + " consumed item: " + AgentCandidateList.getCandidates()+":"+ AgentCandidateList.getAgentName());
+                System.out.println("Thread " + threadName + " consumed item: " + AgentCandidateList.getCandidates()+":"+ AgentCandidateList.getAgentName());
             }
-                System.out.println("consumer done********************************************");
+                //System.out.println("consumer done********************************************");
 
         } catch (InterruptedException e) {
             System.out.println("Was interrupted !");

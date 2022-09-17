@@ -6,6 +6,8 @@ import DTOS.Configuration.FileConfigurationDTO;
 import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
+import DTOS.decryptionManager.DecryptionManagerDTO;
+import JavaFX.mainPage.MainPageController;
 import UIAdapter.UIAdapter;
 import engine.decryptionManager.DM;
 import engine.decryptionManager.dictionary.Trie;
@@ -36,12 +38,16 @@ public class ApiEnigmaImp implements ApiEnigma {
     UserConfigurationDTOAdapter userConfigurationDTOAdapter;
     StringProperty statistics;
     private boolean haveConfigurationFromFile;
+    private MainPageController mainController;
+    public void setMainController(MainPageController mainController){
+        this.mainController = mainController;
+    }
 
     // TODO: 9/14/2022 notice that added dependency on uiadapter make a cirlce dependency with javafx
-    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess)
+    public void DecipherMessage(DecryptionManagerDTO decryptionManagerDTO, Runnable onFinish)
     {
         enigma.getDecipher().setMachine(enigma.getMachine().clone());
-        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize, uiAdapter,amountOfAgentsForProcess);
+        enigma.getDecipher().DecipherMessage(decryptionManagerDTO,mainController.getBruteForceController(),onFinish);
     }
 
     public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
@@ -53,7 +59,6 @@ public class ApiEnigmaImp implements ApiEnigma {
             FileConfigurationDTO fileConfigurationDTO = showDataReceivedFromFile();
             fileConfigurationDTOAdapter.setDataFromFileDTO(fileConfigurationDTO);
         }
-        System.out.println(enigma.getDecipher());
         return validator;
 
 
@@ -335,6 +340,16 @@ public class ApiEnigmaImp implements ApiEnigma {
     public double calculateAmountOfTasks(int missionSize, DM.DifficultyLevel level){
         return enigma.getDecipher().calculateAmountOfTasks(missionSize,level);
     }
+    public void cancelCurrentTask(){
+        enigma.getDecipher().cancelCurrentTask();
+    }
+    public void pauseCurrentTask(){
+        enigma.getDecipher().pauseCurrentTask();
+    }
+    public void resumeCurrentTask(){
+        enigma.getDecipher().resumeCurrentTask();
+    }
+
 
 
 }
