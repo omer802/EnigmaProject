@@ -43,7 +43,7 @@ public class LoadDataFromXml implements LoadData {
         Agents agents = loadAgents(machine, enigma,validator);
         if(agents == null)
             return null;
-        return new DM(dictionary,agents,agents.getAgentsAmount());
+        return new DM(dictionary,agents,agents.getAgentsAmount(),machine.clone());
     }
     private Agents loadAgents(EnigmaMachine machine,CTEEnigma enigma, xmlFileValidatorDTO validator){
         int amountOfAgents = enigma.getCTEDecipher().getAgents();

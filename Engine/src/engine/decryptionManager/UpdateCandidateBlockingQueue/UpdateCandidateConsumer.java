@@ -1,14 +1,18 @@
 package engine.decryptionManager.UpdateCandidateBlockingQueue;
 
 import UIAdapter.UIAdapter;
+import engine.decryptionManager.task.AgentCandidatesList;
 
+import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
 public class UpdateCandidateConsumer implements Runnable {
-    BlockingDeque<String> blockingDeque;
+
+
+    BlockingDeque<AgentCandidatesList> blockingDeque;
     UIAdapter uiAdapter;
-    boolean isRunning;
-    public UpdateCandidateConsumer(BlockingDeque blockingDeque, UIAdapter uiAdapter){
+    static boolean isRunning;
+    public UpdateCandidateConsumer(BlockingDeque<AgentCandidatesList> blockingDeque, UIAdapter uiAdapter){
         this.blockingDeque = blockingDeque;
         this.uiAdapter = uiAdapter;
         this.isRunning = true;
@@ -19,15 +23,18 @@ public class UpdateCandidateConsumer implements Runnable {
     public void run() {
         try {
             final String threadName = Thread.currentThread().getName();
-            String item;
+            AgentCandidatesList AgentCandidateList;
             while (isRunning) {
-                System.out.println("Thread " + threadName + " is about to consume item");
+                //System.out.println("Thread " + threadName + " is about to consume item");
+                AgentCandidateList = blockingDeque.take();
+
                 synchronized (uiAdapter) {
-                    item = blockingDeque.take();
-                    uiAdapter.AddCandidateStringForDecoding(item);
+                    uiAdapter.AddCandidateStringForDecoding(AgentCandidateList);
                 }
-                System.out.println("Thread " + threadName + " consumed item: " + item);
+               // System.out.println("Thread " + threadName + " consumed item: " + AgentCandidateList.getCandidates()+":"+ AgentCandidateList.getAgentName());
             }
+                System.out.println("consumer done********************************************");
+
         } catch (InterruptedException e) {
             System.out.println("Was interrupted !");
         }

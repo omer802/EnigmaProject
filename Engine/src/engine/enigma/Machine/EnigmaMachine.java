@@ -318,5 +318,8 @@ public class EnigmaMachine implements Serializable, Cloneable {
             return null;
         }
     }
+    public int getReflectorsAmount(){
+        return reflectors.getReflectorsAmount();
+    }
 
 }

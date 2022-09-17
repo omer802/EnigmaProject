@@ -183,6 +183,7 @@ public class MainPageController {
                 System.out.println(e.getMessage());
             }
         } else {
+
             initOriginalConfiguration();
             setTextURL(path);
             createCodeMenu(api.getAmountOfRotors());
@@ -190,6 +191,7 @@ public class MainPageController {
             isConfig.set(false);
             CheckBoxIsPluged.setSelected(false);
             encryptDecryptController.setStatistics();
+            BruteForceController.setBruteForceComponent();
         }
     }
     public void initOriginalConfiguration(){
@@ -297,7 +299,7 @@ public class MainPageController {
             choiceBox.setPrefWidth(61);
             choiceBox.setMinWidth(Region.USE_PREF_SIZE);
             choiceBox.getItems().addAll(addToList);
-            choiceBox.getSelectionModel().selectFirst();
+            choiceBox.getSelectionModel().select(i);
             ObjectProperty<String> chosenRotorProperty = choiceBox.valueProperty();
             chosenRotorsList.add(chosenRotorProperty);
             addToHBox.getChildren().add(choiceBox);
@@ -370,17 +372,17 @@ public class MainPageController {
         }
         api.selectInitialCodeConfiguration(Specification);
         updateConfiguration();
-        UIAdapter uiAdapter = createUIAdapter();
+
 
         //api.DecipherMessage("ICJ AOZKR", DM.DifficultyLevel.IMPOSSIBLE,10, uiAdapter);
 
         // TODO: 9/5/2022  think how to bind statitsics to encrypted decrypted
 
     }
-    public UIAdapterImpJavaFX createUIAdapter(){
+    /*public UIAdapterImpJavaFX createUIAdapter(){
         return new UIAdapterImpJavaFX(
                 str->URLFileText.appendText(str));
-    }
+    }*/
     @FXML
     public void generateRandomCode(ActionEvent event){
         UserConfigurationDTO Specification = api.AutomaticallyInitialCodeConfiguration();

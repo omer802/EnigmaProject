@@ -1,6 +1,5 @@
 package engine.decryptionManager.dictionary;
 
-import com.sun.org.apache.xml.internal.utils.Trie;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +58,7 @@ public class Dictionary {
          return true;
     }
     public Trie createTrieFromDictionary(){
-        Trie trie = new Trie();
+        Trie trie = new Trie(wordDictionary);
         return trie;
     }
 }

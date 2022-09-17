@@ -1,10 +1,11 @@
 package engine.decryptionManager.task;
 
 import UIAdapter.UIAdapter;
+import engine.decryptionManager.CustomThreadPool.CustomThreadPoolExecutor;
 import engine.decryptionManager.DM;
-import engine.decryptionManager.MathematicalCalculations.RotorsPermuter;
-import engine.decryptionManager.MathematicalCalculations.CodeGenerator;
-import engine.decryptionManager.ThreadFactory.ThreadFactoryBuilder;
+import engine.decryptionManager.MathCalculations.RotorsPermuter;
+import engine.decryptionManager.MathCalculations.CodeGenerator;
+import engine.decryptionManager.CustomThreadPool.ThreadFactoryBuilder;
 import engine.decryptionManager.UpdateCandidateBlockingQueue.UpdateCandidateConsumer;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
@@ -22,16 +23,14 @@ public class TasksGenerator implements Runnable{
     private String messageToDecode;
     private int possibleAmountOfCodes;
     private EnigmaMachine machine;
-    private ThreadPoolExecutor executor;
+    private CustomThreadPoolExecutor executor;
     private BlockingQueue<Runnable> blockingQueue;
     private int agentsAmount;
     private int positionLength;
     UIAdapter uiAdapter;
 
-    BlockingDeque<String> candidateBlockingQueue;
+    BlockingDeque<AgentCandidatesList> candidateBlockingQueue;
     private Thread blockingConsumer;
-
-
     public TasksGenerator(String messageToDecode, int missionSize, DM.DifficultyLevel difficulty, int agentsAmount,
                           EnigmaMachine machine, UIAdapter uiAdapter){
         this.missionSize = missionSize;
@@ -68,7 +67,7 @@ public class TasksGenerator implements Runnable{
                     }
                 }).build();
         this.executor =
-                new ThreadPoolExecutor(agentsAmount, agentsAmount, 1000, TimeUnit.MINUTES,
+                new CustomThreadPoolExecutor(agentsAmount, agentsAmount, 1000, TimeUnit.MINUTES,
                         this.blockingQueue, customThreadFactory);
     }
     @Override
@@ -76,7 +75,7 @@ public class TasksGenerator implements Runnable{
         CodeGenerator codeGenerator = new CodeGenerator(positionLength);
         executor.prestartAllCoreThreads();
         blockingConsumer  = new Thread(new UpdateCandidateConsumer(candidateBlockingQueue, uiAdapter),
-                "Candidate consumer thread");
+                "AgentCandidatesList consumer thread");
         blockingConsumer.start();
         try {
             switch (difficulty) {
@@ -95,7 +94,6 @@ public class TasksGenerator implements Runnable{
             }
             executor.shutdown();
             executor.awaitTermination(15, TimeUnit.MINUTES);
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -155,18 +153,25 @@ public class TasksGenerator implements Runnable{
     }
     private void generateTaskAndPushToBlockingQueue(CodeGenerator codeGenerator, int missionSize) throws InterruptedException {
         List<String> positionsList = codeGenerator.generateNextPositionsListForTask(missionSize);
-        Task task = new Task(machine.clone(),positionsList,messageToDecode,candidateBlockingQueue);
+        Task task = new Task(machine.clone(),positionsList,messageToDecode,candidateBlockingQueue,uiAdapter);
         //System.out.println("push to blocking queqe "+ task.positions.toString());
         pushTaskToBlockingQueue(task);
     }
     private void pushTaskToBlockingQueue(Task task) throws InterruptedException {
         blockingQueue.put(task);
     }
-
     public double calculateAmountOfTasksEasyLevel(){
         int amountOfTasks = Keyboard.alphabet.length();
         int exponent = machine.getRotorsAmountInUse();
         double numOfTask = Math.pow(amountOfTasks,exponent);
         return numOfTask/missionSize;
     }
+
+    public double calculateAmountOfTasksEasyLevel(double missionSize){
+        int amountOfTasks = Keyboard.alphabet.length();
+        int exponent = machine.getRotorsAmountInUse();
+        double numOfTask = Math.pow(amountOfTasks,exponent);
+        return numOfTask/missionSize;
+    }
+
 }

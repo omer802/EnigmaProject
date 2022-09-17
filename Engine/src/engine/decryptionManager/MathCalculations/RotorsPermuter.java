@@ -1,4 +1,4 @@
-package engine.decryptionManager.MathematicalCalculations;
+package engine.decryptionManager.MathCalculations;
 
 public class RotorsPermuter {
     private int[] perms;

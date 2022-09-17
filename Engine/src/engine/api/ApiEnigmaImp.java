@@ -7,8 +7,8 @@ import DTOS.Configuration.UserConfigurationDTO;
 import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 import UIAdapter.UIAdapter;
-import com.sun.org.apache.xml.internal.utils.Trie;
 import engine.decryptionManager.DM;
+import engine.decryptionManager.dictionary.Trie;
 import engine.enigma.Enigma;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.Machine.NotchAndLetterAtPeekPane;
@@ -21,7 +21,6 @@ import engine.enigma.statistics.EncryptionData;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -39,10 +38,10 @@ public class ApiEnigmaImp implements ApiEnigma {
     private boolean haveConfigurationFromFile;
 
     // TODO: 9/14/2022 notice that added dependency on uiadapter make a cirlce dependency with javafx
-    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter)
+    public void DecipherMessage(String messageToDecipher, DM.DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess)
     {
         enigma.getDecipher().setMachine(enigma.getMachine().clone());
-        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize, uiAdapter);
+        enigma.getDecipher().DecipherMessage(messageToDecipher,difficulty,missionSize, uiAdapter,amountOfAgentsForProcess);
     }
 
     public void setDTOConfigurationAdapter(FileConfigurationDTOAdapter fileConfigurationDTOAdapter){
@@ -329,6 +328,12 @@ public class ApiEnigmaImp implements ApiEnigma {
     }
     public Trie getTrieFromDictionary(){
         return enigma.getDecipher().getTrieFromDictionary();
+    }
+    public int getAmountOfAgents(){
+        return enigma.getDecipher().getAmountOfAgents();
+    }
+    public double calculateAmountOfTasks(int missionSize, DM.DifficultyLevel level){
+        return enigma.getDecipher().calculateAmountOfTasks(missionSize,level);
     }
 
 
