@@ -7,15 +7,19 @@ import engine.api.ApiEnigma;
 import engine.decryptionManager.DM;
 import engine.decryptionManager.dictionary.Trie;
 import engine.decryptionManager.task.TasksManager;
+import engine.decryptionManager.task.TimeToCalc;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import UIAdapter.UIAdapterImpJavaFX;
@@ -23,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +68,9 @@ public class BruteForceController {
     @FXML
     private Spinner<Integer> SpinnerMissionSize;
 
+    /*@FXML
+    private ScrollPane scrollPaneEncryptDecrypt;*/
+
     @FXML
     private Label amountOfMissionLabel;
 
@@ -83,25 +91,16 @@ public class BruteForceController {
 
     @FXML
     private Button ResumeButton;
-    /*@FXML
-    private TableView<AgentCandidatesList> CandidateStringTableView;
-
-    @FXML
-    private TableColumn<AgentCandidatesList, String> agentColumn;
-
-    @FXML
-    private TableColumn<AgentCandidatesList, List<String>> candidateStringColumn;
-
-    @FXML
-    private TableColumn<AgentCandidatesList, Long> MissionTimeColumn;
-
-    @FXML
-    private TableColumn<AgentCandidatesList, List<String>> codeColumn;*/
     @FXML
     private TextArea TextAreaCandidates;
 
     @FXML
     private AnchorPane operationButtons;
+
+    @FXML
+    private Label averageTimeLabel;
+    @FXML
+    private Label ProcessTimeLabel;
 
     @FXML
     private Button clearCandidateButton;
@@ -118,22 +117,28 @@ public class BruteForceController {
     private MainPageController mainPageController;
     private ApiEnigma api;
 
-    private int missionSize;
+    private Double missionSize;
     private Trie trieAutoComplete;
     private int amountOfAgentsForProcess;
     private String decryptedMessage;
     private UIAdapter uiAdapter;
-
+    private SimpleBooleanProperty afterProcess;
+    private SimpleLongProperty processTime;
+    private SimpleDoubleProperty averageMissionTime;
     public BruteForceController() {
         this.encryptionResultProperty = new SimpleStringProperty("");
         this.isBruteForceProcess = new SimpleBooleanProperty();
-        this.missionAmount = new SimpleDoubleProperty();
+        this.missionAmount = new SimpleDoubleProperty(1);
         this.codeConfiguration = new SimpleStringProperty();
         this.encryptionTextFiled = new SimpleStringProperty("");
         this.isConfig = new SimpleBooleanProperty();
         this.isBruteForceProcess = new SimpleBooleanProperty(false);
+        this.afterProcess = new SimpleBooleanProperty(false);
+        this.processTime = new SimpleLongProperty();
+        this.averageMissionTime = new SimpleDoubleProperty();
+        this.SpinnerMissionSize = new Spinner<>();
         // TODO: 9/16/2022 make it property
-        missionSize = 1;
+        missionSize = 1.0;
         amountOfAgentsForProcess = 1;
     }
 
@@ -160,16 +165,18 @@ public class BruteForceController {
 
     public UIAdapterImpJavaFX createUIAdapter(){
         return new UIAdapterImpJavaFX(
-                agentCandidatesList ->{
+                agentCandidatesList -> {
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(agentCandidatesList.getAgentName()+"\n");
-                    System.out.println(agentCandidatesList.getCandidates());
-                    System.out.println("sizeee is !!!**********"+agentCandidatesList.getCandidates().size());
                     for (int i = 0; i < agentCandidatesList.getCandidates().size() ; i++) {
                         stringBuilder.append("\t"+agentCandidatesList.getCandidates().get(i)+" ->");
                         stringBuilder.append(agentCandidatesList.getConfigurationList().get(i));
                         stringBuilder.append("\n");
                     }
+                    String pattern = "###,###,###";
+                    DecimalFormat decimalFormat = new DecimalFormat(pattern);
+                    String Format = decimalFormat.format(agentCandidatesList.getDuration());
+                    stringBuilder.append("\t"+"Mission duration in nano seconds: "+ Format);
                     stringBuilder.append("\n");
                     TextAreaCandidates.appendText(stringBuilder.toString());
 
@@ -189,14 +196,14 @@ public class BruteForceController {
             operationButtons.setDisable(false);
         }
         else{
-            System.out.println("words not in dic");
+            mainPageController.alertShowException(new RuntimeException("The word you entered is not in the dictionary"));
         }
     }
     @FXML
     void selectLevelListener(ActionEvent event) {
         if(LevelComboBox.getItems().size()>0) {
             DM.DifficultyLevel level = DM.DifficultyLevel.valueOf(LevelComboBox.getSelectionModel().getSelectedItem());
-            int missionSizeValue = SpinnerMissionSize.getValue();
+            Integer missionSizeValue = SpinnerMissionSize.getValue();
             double amount = api.calculateAmountOfTasks(missionSizeValue, level);
             missionAmount.set(amount);
         }
@@ -213,7 +220,7 @@ public class BruteForceController {
             //Use ListView's getSelected Item
             String currentItemSelected = DictionaryListViewField.getSelectionModel()
                     .getSelectedItem();
-            encryptedMessage.appendText(" "+ currentItemSelected);
+            encryptedMessage.appendText(currentItemSelected+" ");
         }
     }
 
@@ -252,10 +259,7 @@ public class BruteForceController {
     }
     private void initProcessComponent()
     {
-        if(uiAdapter.getState()== UIAdapterImpJavaFX.RunningState.IN_PROCESS)
-        {
-            stopTask();
-        }
+
         TextAreaCandidates.setText("");
         encryptedMessage.setText("");
         encryptionResultProperty.set("");
@@ -265,7 +269,7 @@ public class BruteForceController {
 
     }
     public void setBruteForceComponent(){
-
+        afterProcess.setValue(false);
         initProcessComponent();
         fetchTrie();
         fillDictionary();
@@ -296,10 +300,13 @@ public class BruteForceController {
     // TODO: 9/17/2022 translate all this paremters to deciper message to dto object
     @FXML
     void decipherEncryptedMessage(ActionEvent event) {
-        uiAdapter.resumeTask();
+        afterProcess.setValue(false);
+        TextAreaCandidates.setText("");
+        uiAdapter.taskInProcess();
         isBruteForceProcess.set(true);
         DM.DifficultyLevel level = DM.DifficultyLevel.
                 valueOf(LevelComboBox.getSelectionModel().getSelectedItem());
+
         DecryptionManagerDTO decryptionManagerDTO = new DecryptionManagerDTO (encryptionResultProperty.getValue(),level, missionSize,
                 uiAdapter,amountOfAgentsForProcess, missionAmount.getValue());
 
@@ -307,6 +314,7 @@ public class BruteForceController {
                 decryptionManagerDTO,
                 () -> {
                    isBruteForceProcess.set(false);
+
                 }
         );
     }
@@ -317,8 +325,9 @@ public class BruteForceController {
     private void stopTask(){
         api.cancelCurrentTask();
         // TODO: 9/17/2022 fiugre out how to do that
-        onTaskFinished(Optional.ofNullable( () -> {
+        onTaskFinished(Optional.of( () -> {
                     isBruteForceProcess.set(false);
+
                 }
         ));
     }
@@ -329,7 +338,9 @@ public class BruteForceController {
     }
     @FXML
     void resumeTaskButtonAction(ActionEvent event) {
-        uiAdapter.resumeTask();
+        synchronized (uiAdapter) {
+            uiAdapter.resumeTask();
+        }
         api.resumeCurrentTask();
     }
 
@@ -337,9 +348,6 @@ public class BruteForceController {
     public void setEncryptionBinding(){
         EncryptDecryptResultLabel.textProperty().bind(Bindings.format("%s", encryptionResultProperty));
         codeConfigurationLabel.textProperty().bind(Bindings.format("%s", codeConfiguration));
-        /*resetCodeButton.disableProperty().bind(isConfig.not());
-        ProcessButton.disableProperty().bind(isConfig.not());
-        clearButton.disableProperty().bind(isConfig.not());*/
     }
     public void setDictionaryBinding(){
        /* DictionaryListViewField.disableProperty().bind(isConfig.not());
@@ -356,15 +364,20 @@ public class BruteForceController {
        // SpinnerMissionSize.disableProperty().bind(isConfig.not());
     }
     public void setBruteForceProcessBinding(){
-       /* taskProgressBar.disableProperty().bind(isConfig.not());
-        TextAreaCandidates.disableProperty().bind(isConfig.not());
-        clearCandidateButton.disableProperty().bind(isConfig.not());*/
         operationButtons.setDisable(true);
         ProcessButton.disableProperty().bind(Bindings.isEmpty(encryptedMessage.textProperty()));
         startButton.disableProperty().bind(isBruteForceProcess);
         stopButton.disableProperty().bind(isBruteForceProcess.not());
         PauseButton.disableProperty().bind(isBruteForceProcess.not());
         ResumeButton.disableProperty().bind(isBruteForceProcess.not());
+
+        averageTimeLabel.visibleProperty().bind(afterProcess);
+        averageTimeLabel.textProperty().bind(Bindings.format("%,.0f", averageMissionTime).concat(" (Nano seconds)"));
+        //averageTimeLabel.textProperty().bind(Bindings.concat("(Millis)"));
+        ProcessTimeLabel.visibleProperty().bind(afterProcess);
+        ProcessTimeLabel.textProperty().bind(Bindings.format("%,d",processTime).concat("(Millis seconds)"));
+        //ProcessButton.textProperty().bind(Bindings.format("%,.0f", processTime));
+
     }
     public void setListenerBruteForceButtons(){
         SliderAgentsAmount.valueProperty().addListener(new ChangeListener<Number>() {
@@ -374,19 +387,52 @@ public class BruteForceController {
             }
         });
 
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,1000);
+        SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,Integer.MAX_VALUE);
         valueFactory.setValue(1);
         SpinnerMissionSize.setValueFactory(valueFactory);
+        String str = new String();
         SpinnerMissionSize.valueProperty().addListener(new ChangeListener<Integer>() {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-                missionSize = newValue;
+
+                missionSize = newValue.doubleValue();
                 DM.DifficultyLevel level = DM.DifficultyLevel.valueOf(LevelComboBox.getSelectionModel().getSelectedItem());
                 double amount = api.calculateAmountOfTasks(newValue,level);
                 missionAmount.set(amount);
             }
         });
+
+
+        EventHandler<KeyEvent> enterKeyEventHandler;
+
+        enterKeyEventHandler = new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent event) {
+
+                // handle users "enter key event"
+                if (event.getCode() == KeyCode.ENTER) {
+
+                    try {
+                        // yes, using exception for control is a bad solution ;-)
+                        Integer.parseInt(SpinnerMissionSize.getEditor().textProperty().get());
+                    }
+                    catch (NumberFormatException e) {
+
+                        // show message to user: "only numbers allowed"
+
+                        // reset editor to INITAL_VALUE
+                        SpinnerMissionSize.getEditor().textProperty().set("1");
+                    }
+                }
+            }
+
+        };
+        SpinnerMissionSize.getEditor().addEventHandler(KeyEvent.KEY_PRESSED, enterKeyEventHandler);
+
+
     }
+
 
     public void bindTaskToUIComponents(TasksManager tasksManager, Runnable onFinish) {
         taskProgressBar.progressProperty().bind(tasksManager.progressProperty());
@@ -403,7 +449,24 @@ public class BruteForceController {
         });
     }
     private void onTaskFinished(Optional<Runnable> onFinish){
-        uiAdapter.stopTask();
+
+        TimeToCalc timeToCalc = api.getTimeToCalc();
+        synchronized (timeToCalc) {
+            while (timeToCalc.getTotalTimeTaskManager() == 0) {
+                try {
+                    System.out.println(timeToCalc.getTotalTimeTaskManager()+" time task manger");
+                    System.out.println("waiting in brute force control for update in time to calc ");
+
+                    timeToCalc.wait();
+                } catch (InterruptedException e) {
+                    System.out.println("interupt at wait in finish task");
+                }
+            }
+            afterProcess.set(true);
+            System.out.println("stop waiting ");
+        }
+        averageMissionTime.setValue(timeToCalc.getAverageMissionTime());
+        processTime.setValue(timeToCalc.getTotalTimeTaskManager());
         this.progressPercentLabel.textProperty().unbind();
         this.taskProgressBar.progressProperty().unbind();
         onFinish.ifPresent(Runnable::run);

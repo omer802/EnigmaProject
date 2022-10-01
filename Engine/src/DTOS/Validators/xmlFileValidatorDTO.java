@@ -16,6 +16,7 @@ public class xmlFileValidatorDTO {
     CTEMachine enigmaMachineFromFile;
     private String alphabet;
 
+
     public xmlFileValidatorDTO(String filePath) {
         listOfExceptions = new ArrayList<>();
         if (!filePath.endsWith(".xml")) {
@@ -59,8 +60,10 @@ public class xmlFileValidatorDTO {
     }
     public void validateRotorsNotch(List<CTERotor> rotorsInput){
         for (CTERotor rotor: rotorsInput) {
-            if(rotor.getNotch()>alphabet.length()|| rotor.getNotch()<1)
-                addException(new RuntimeException("Error: notch is is out of range at rotor: " +rotor.getId()));
+            if(rotor.getNotch()>alphabet.length()|| rotor.getNotch()<1) {
+                addException(new RuntimeException("Error: notch is is out of range at rotor: " + rotor.getId()));
+                return;
+            }
         }
     }
     public void validateAmountOfRotors(List<CTERotor> rotorsInput, int amountOfRotorsToUse){
@@ -100,8 +103,10 @@ public class xmlFileValidatorDTO {
     public void isRotorColumnInRange(List<String> positions,CTERotor rotor)
     {
         for (String str:positions) {
-            if(!alphabet.contains(str))
-                addException(new RuntimeException("Error: rotor "+ rotor.getId() + " contains a letter that is not in range"));
+            if (!alphabet.contains(str)) {
+                addException(new RuntimeException("Error: rotor " + rotor.getId() + " contains a letter that is not in range"));
+                return;
+            }
         }
         for (int i = 0; i <alphabet.length() ; i++){
             if(!positions.contains(Character.toString(alphabet.charAt(i)))) {
@@ -190,7 +195,7 @@ public class xmlFileValidatorDTO {
     }
     public void validateNumOfAgents(int amountOfAgents){
         if(amountOfAgents>50||amountOfAgents<2) {
-            addException(new RuntimeException("Error: The Amount of agents need to be" +
+            addException(new RuntimeException("Error: The amount of agents need to be " +
                     "in range of 2-55"));
         }
     }

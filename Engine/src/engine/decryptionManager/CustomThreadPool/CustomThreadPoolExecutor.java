@@ -22,7 +22,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
         if (t != null) {
-            System.out.println("Perform exception handler logic");
+            //System.out.println("Perform exception handler logic");
         }
         //System.out.println("Perform afterExecute() logic");
         MissionTask task = (MissionTask)r;

@@ -16,11 +16,11 @@ import javafx.concurrent.Task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-
+import java.util.concurrent.atomic.AtomicLong;
 
 
 public class TasksManager extends Task<Boolean> {
-    private int missionSize;
+    private Double missionSize;
 
     // TODO: 9/11/2022 change difficulty to enum
     private DM.DifficultyLevel difficulty;
@@ -32,14 +32,20 @@ public class TasksManager extends Task<Boolean> {
     private int agentsAmount;
     private int positionLength;
     UIAdapter uiAdapter;
-    double totalMissionAmount;
+    private double totalMissionAmount;
+    private AtomicLong totalMissionAmountToSend;
 
+    public TimeToCalc getTimeToCalc() {
+        return timeToCalc;
+    }
+
+    TimeToCalc timeToCalc;
     private final int[] missionCount;
-
 
     BlockingDeque<AgentCandidatesList> candidateBlockingQueue;
     private Thread blockingConsumer;
-    public TasksManager(DecryptionManagerDTO decryptionManagerDTO, EnigmaMachine machine){
+
+    public TasksManager(DecryptionManagerDTO decryptionManagerDTO, EnigmaMachine machine, TimeToCalc timeToCalc) {
         this.missionSize = decryptionManagerDTO.getMissionSize();
         this.difficulty = decryptionManagerDTO.getLevel();
         this.agentsAmount = decryptionManagerDTO.getAmountOfAgentsForProcess();
@@ -52,44 +58,58 @@ public class TasksManager extends Task<Boolean> {
         candidateBlockingQueue = new LinkedBlockingDeque<>();
         setThreadPool(agentsAmount);
         this.machine = machine;
+        this.timeToCalc = timeToCalc;
+        this.totalMissionAmountToSend = new AtomicLong((long) totalMissionAmount);
 
     }
+
     @Override
     protected Boolean call() throws Exception {
-
-
-        updateProgress(0,totalMissionAmount);
-        System.out.println("---------------------------"+totalMissionAmount);
+        //wait(1000 );
+        updateProgress(0, totalMissionAmount);
         CodeGenerator codeGenerator = new CodeGenerator(positionLength);
         executor.prestartAllCoreThreads();
-        blockingConsumer  = new Thread(new UpdateCandidateConsumer(
-                candidateBlockingQueue, uiAdapter), "AgentCandidatesList consumer thread");
+        UpdateCandidateConsumer candidateConsumer = new UpdateCandidateConsumer(candidateBlockingQueue, uiAdapter);
+        blockingConsumer = new Thread(candidateConsumer, "AgentCandidatesList consumer thread");
         blockingConsumer.start();
         try {
-            switch (difficulty) {
-                case EASY:
-                    easyDifficultyLevel(codeGenerator);
-                    break;
-                case MEDIUM:
-                    mediumDifficultyLevel(codeGenerator);
-                    break;
-                case HARD:
-                    hardDifficultyLevel(codeGenerator);
-                    break;
-                case IMPOSSIBLE:
-                    impossible(codeGenerator);
-                    break;
+            generateMissionByLevel(difficulty, codeGenerator);
+
+        } catch (InterruptedException e) {
+        } finally {
+            synchronized (uiAdapter) {
+                timeToCalc.updateTotalTasksTime();
+                uiAdapter.notifyAll();
             }
             executor.shutdown();
             executor.awaitTermination(15, TimeUnit.MINUTES);
 
 
-        } catch (InterruptedException e) {
-            if(uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.STOP){
-                return Boolean.FALSE;
+            candidateConsumer.finish();
+            synchronized (timeToCalc) {
+                timeToCalc.notifyAll();
+                return Boolean.TRUE;
             }
         }
-        return Boolean.TRUE;
+    }
+
+
+
+    private void generateMissionByLevel(DM.DifficultyLevel difficulty, CodeGenerator codeGenerator) throws InterruptedException {
+        switch (difficulty) {
+            case EASY:
+                easyDifficultyLevel(codeGenerator);
+                break;
+            case MEDIUM:
+                mediumDifficultyLevel(codeGenerator);
+                break;
+            case HARD:
+                hardDifficultyLevel(codeGenerator);
+                break;
+            case IMPOSSIBLE:
+                impossible(codeGenerator);
+                break;
+        }
     }
 
 
@@ -102,7 +122,7 @@ public class TasksManager extends Task<Boolean> {
 
         ThreadFactory customThreadFactory = new ThreadFactoryBuilder()
                 .setNamePrefix("Agent")
-                .setPriority(Thread.MAX_PRIORITY)
+                .setPriority(Thread.NORM_PRIORITY)
                 //set Uncaught exception to get the thread how throw UncaughtException
                 .setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                     @Override
@@ -136,7 +156,6 @@ public class TasksManager extends Task<Boolean> {
         int[] indexList = permuter.getNext();
         while (indexList!=null){
             List<String> chosenRotorsNewOrder = getRotorsByIndexList(indexList,chosenRotors);
-            System.out.println(chosenRotorsNewOrder);
             machine.setChosenRotors(chosenRotorsNewOrder);
             indexList = permuter.getNext();
             mediumDifficultyLevel(codeGenerator);
@@ -162,10 +181,11 @@ public class TasksManager extends Task<Boolean> {
     //in this level we dont have the positions
     private void easyDifficultyLevel(CodeGenerator codeGenerator) throws InterruptedException {
         double numOfTasks = calculateAmountOfCodes()/missionSize;
-        int leakageSizeTask = ((int)calculateAmountOfCodes())  % missionSize;
-
+        double leakageSizeTask = ((int)calculateAmountOfCodes())  % missionSize;
+        //System.out.println(numOfTasks);
+        //System.out.println(leakageSizeTask);
         if(leakageSizeTask>0) {
-            System.out.println("leak!!!!" + leakageSizeTask);
+            //System.out.println(leakageSizeTask);
             generateTaskAndPushToBlockingQueue(codeGenerator,leakageSizeTask);
             numOfTasks--;
         }
@@ -176,46 +196,47 @@ public class TasksManager extends Task<Boolean> {
 
     }
 
-    private void generateTaskAndPushToBlockingQueue(CodeGenerator codeGenerator, int missionSize) throws InterruptedException {
+    private void generateTaskAndPushToBlockingQueue(CodeGenerator codeGenerator, Double missionSize) throws InterruptedException {
         List<String> positionsList = codeGenerator.generateNextPositionsListForTask(missionSize);
-        MissionTask task = new MissionTask(machine.clone(),positionsList,messageToDecode,candidateBlockingQueue,uiAdapter);
-        //System.out.println("push to blocking queqe "+ task.positions.toString());
+        MissionTask task = new MissionTask(machine.clone(),positionsList,messageToDecode,
+                candidateBlockingQueue,uiAdapter,totalMissionAmount, timeToCalc,totalMissionAmountToSend,()-> updateProgress(missionCount[0]++, totalMissionAmount)
+                );
+
+
         pushTaskToBlockingQueue(task);
     }
     private void pushTaskToBlockingQueue(MissionTask task) throws InterruptedException {
-        isWaiting();
-        isResume();
-        updateProgress(missionCount[0]++,totalMissionAmount);
-        blockingQueue.put(task);
+        if(uiAdapter.getState() != UIAdapterImpJavaFX.RunningState.STOP) {
+           // updateProgress(missionCount[0]++, totalMissionAmount);
+            blockingQueue.put(task);
+        }
     }
-    public void isWaiting() throws InterruptedException {
+    public void pauseCurrentTask()  {
         while (uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.PAUSE) {
-            synchronized (this) {
-                    this.wait();
+            synchronized (uiAdapter) {
+                try {
+                    uiAdapter.wait();
+                } catch (InterruptedException e) {
+                    System.out.println("interupt while pausing");
                 }
             }
         }
-
-    public void isResume(){
-        while (uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.TO_RESUME) {
-            synchronized (this) {
-                this.notifyAll();
-                uiAdapter.taskInProcess();
-            }
         }
-    }
+
+
 
     public double calculateAmountOfCodes(){
         int alphabetSize = Keyboard.alphabet.length();
         int exponent = machine.getRotorsAmountInUse();
         double amountOfCodes = Math.pow(alphabetSize,exponent);
+
         return amountOfCodes;
     }
 
 
-    public void pauseCurrentTask() {
+   /* public void pauseCurrentTask() {
 
-          /*  while (uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.PAUSE) {
+          *//*  while (uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.PAUSE) {
                 synchronized (this) {
                 try {
                     this.wait();
@@ -229,16 +250,15 @@ public class TasksManager extends Task<Boolean> {
                     }
                 }
             }
-        }*/
-    }
+        }*//*
+    }*/
 
 
     public void resumeCurrentTask() {
-        while (uiAdapter.getState() == UIAdapterImpJavaFX.RunningState.TO_RESUME) {
-            synchronized (this) {
-                this.notifyAll();
+            synchronized (uiAdapter) {
+               // System.out.println("resume");
                 uiAdapter.taskInProcess();
+                uiAdapter.notifyAll();
             }
         }
-    }
 }

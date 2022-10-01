@@ -8,9 +8,9 @@ import DTOS.StatisticsDTO.MachineStatisticsDTO;
 import DTOS.Validators.xmlFileValidatorDTO;
 import DTOS.decryptionManager.DecryptionManagerDTO;
 import JavaFX.mainPage.MainPageController;
-import UIAdapter.UIAdapter;
 import engine.decryptionManager.DM;
 import engine.decryptionManager.dictionary.Trie;
+import engine.decryptionManager.task.TimeToCalc;
 import engine.enigma.Enigma;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.Machine.NotchAndLetterAtPeekPane;
@@ -117,8 +117,8 @@ public class ApiEnigmaImp implements ApiEnigma {
         UserConfigurationDTO config = getCurrentConfiguration();
         UpdateCode(config);
         updateStatisticsProperty();
-        System.out.println("-----------------");
-        System.out.println(statistics.getValue());
+        //System.out.println("-----------------");
+        //System.out.println(statistics.getValue());
         return encodeInformation;
 
     }
@@ -337,7 +337,7 @@ public class ApiEnigmaImp implements ApiEnigma {
     public int getAmountOfAgents(){
         return enigma.getDecipher().getAmountOfAgents();
     }
-    public double calculateAmountOfTasks(int missionSize, DM.DifficultyLevel level){
+    public double calculateAmountOfTasks(Integer missionSize, DM.DifficultyLevel level){
         return enigma.getDecipher().calculateAmountOfTasks(missionSize,level);
     }
     public void cancelCurrentTask(){
@@ -350,6 +350,10 @@ public class ApiEnigmaImp implements ApiEnigma {
         enigma.getDecipher().resumeCurrentTask();
     }
 
+    @Override
+    public TimeToCalc getTimeToCalc() {
+       return enigma.getDecipher().getTimeToCalc();
+    }
 
 
 }

@@ -27,6 +27,7 @@ public class UIJavaFx extends Application {
         mainController.setPrimaryStage(primaryStage);
        //Parent load = FXMLLoader.load(getClass().getResource("anigmaWithSplitPaneAnd tabs.fxml"));
         Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add(getClass().getResource("/JavaFX/mainPage/mainPage.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
     }

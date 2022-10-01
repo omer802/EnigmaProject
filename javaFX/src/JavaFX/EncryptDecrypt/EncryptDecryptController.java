@@ -1,6 +1,5 @@
 package JavaFX.EncryptDecrypt;
 
-import DTOS.ConfigrationsPropertyAdapter.UserConfigurationDTOAdapter;
 import JavaFX.codeConfiguration.codeConfigurationController;
 import JavaFX.mainPage.MainPageController;
 import engine.api.ApiEnigma;
@@ -13,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
-import sun.applet.Main;
 
 public class EncryptDecryptController {
     @FXML
@@ -80,7 +78,6 @@ public class EncryptDecryptController {
         HistoryAndStatistics.textProperty().bind(statistics);
         automaticModeButton.disableProperty().bind(haveCodeConfiguration.not());
         ManuelModeButton.disableProperty().bind(haveCodeConfiguration.not());
-        buttonsEncryptionFlowPane.disableProperty().bind(haveCodeConfiguration.not());
         encryptedMessege.disableProperty().bind(haveCodeConfiguration.not());
 
     }
@@ -113,6 +110,7 @@ public class EncryptDecryptController {
         //isAutomaticMode.set(false);
     }
 
+
     @FXML
     public void EncrypteFullMessage(ActionEvent event) {
         String toEncrypt = encryptedMessege.getText();
@@ -126,7 +124,8 @@ public class EncryptDecryptController {
         toEncrypt = toEncrypt.toUpperCase();
         boolean isStringValid = api.validateStringToEncrypt(toEncrypt);
         if (!isStringValid) {
-            System.out.println("Some of the letters you entered are not from the alphabet");
+            mainPageController.alertShowException(new RuntimeException("Some of the letters you entered are not from the alphabet"));
+            //System.out.println("Some of the letters you entered are not from the alphabet");
             return null;
         }
         else {
@@ -136,7 +135,6 @@ public class EncryptDecryptController {
             }
         }
         return null;
-
     }
 
     @FXML
@@ -163,8 +161,13 @@ public class EncryptDecryptController {
             String toEncrypt = event.getCharacter();
             toEncrypt = toEncrypt.toUpperCase();
             boolean isCharacterValid = api.validateStringToEncrypt(toEncrypt);
-            if (!isCharacterValid)
-                System.out.println("Not valid arugemnt");
+            if (!isCharacterValid) {
+                mainPageController.alertShowException(new RuntimeException("The letter you entered is not in the alphabet"));
+                //System.out.println("Not valid arugemnt");
+                String currentText = encryptedMessege.getText();
+                encryptedMessege.setText(currentText.replace(event.getCharacter(),""));
+                //System.out.println(encryptedMessege.getText());
+            }
             else {
                 ManuelEncryptionString += api.encryptChar(toEncrypt.charAt(0));
                 EncryptDecryptResultLabel.setText(ManuelEncryptionString);

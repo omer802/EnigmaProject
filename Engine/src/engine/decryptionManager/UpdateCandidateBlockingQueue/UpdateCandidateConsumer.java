@@ -3,19 +3,24 @@ package engine.decryptionManager.UpdateCandidateBlockingQueue;
 import UIAdapter.UIAdapter;
 import engine.decryptionManager.task.AgentCandidatesList;
 
-import java.util.List;
 import java.util.concurrent.BlockingDeque;
 
 public class UpdateCandidateConsumer implements Runnable {
 
 
+
     BlockingDeque<AgentCandidatesList> blockingDeque;
     UIAdapter uiAdapter;
-    static boolean isRunning;
+
+    public static void setRunning(boolean running) {
+        UpdateCandidateConsumer.Running = running;
+    }
+
+    static boolean Running;
     public UpdateCandidateConsumer(BlockingDeque<AgentCandidatesList> blockingDeque, UIAdapter uiAdapter){
         this.blockingDeque = blockingDeque;
         this.uiAdapter = uiAdapter;
-        this.isRunning = true;
+        this.Running = true;
 
     }
 
@@ -23,16 +28,18 @@ public class UpdateCandidateConsumer implements Runnable {
     public void run() {
         try {
             final String threadName = Thread.currentThread().getName();
-            AgentCandidatesList AgentCandidateList;
-            while (isRunning) {
+            AgentCandidatesList agentCandidateList;
+            //System.out.println("***************starting working queque candidate***********"+ threadName);
+            while (Running) {
                 //System.out.println("Thread " + threadName + " is about to consume item");
-                AgentCandidateList = blockingDeque.take();
-
-                synchronized (uiAdapter) {
-
-                    uiAdapter.AddCandidateStringForDecoding(AgentCandidateList);
+                agentCandidateList = blockingDeque.take();
+                if(agentCandidateList.isPoisonPill()){
+                    break;
                 }
-                System.out.println("Thread " + threadName + " consumed item: " + AgentCandidateList.getCandidates()+":"+ AgentCandidateList.getAgentName());
+                synchronized (uiAdapter) {
+                    uiAdapter.AddCandidateStringForDecoding(agentCandidateList);
+                }
+                //System.out.println("Thread " + threadName + " consumed item: " + agentCandidateList.getCandidates()+":"+ agentCandidateList.getAgentName());
             }
                 //System.out.println("consumer done********************************************");
 
@@ -41,7 +48,14 @@ public class UpdateCandidateConsumer implements Runnable {
         }
     }
     public void finish() {
-        isRunning = false;
+        AgentCandidatesList agentCandidatesList = new AgentCandidatesList();
+        agentCandidatesList.setPoisonPill();
+        try {
+            blockingDeque.put(agentCandidatesList);
+        } catch (InterruptedException e) {
+            System.out.println("problem at poison pill");
+        }
+        Running = false;
 
     }
 }

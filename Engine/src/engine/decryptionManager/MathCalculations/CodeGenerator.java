@@ -23,7 +23,7 @@ public class CodeGenerator {
 
         }
     }
-    public List<String> generateNextPositionsListForTask(int taskSize){
+    public List<String> generateNextPositionsListForTask(Double taskSize){
         List<String> positionsList = new ArrayList<>();
 
         for (int i = 0; i < taskSize ; i++) {
@@ -33,7 +33,7 @@ public class CodeGenerator {
     }
     private String getAdvancedPosition(){
         String advancedPosition = new String();
-        for (int i =0; i <positionLength; i++) {
+        for (int i = 0; i <positionLength; i++) {
             int indexInKeyBoard = positionsIndex.get(i)%Keyboard.keyboardSize();
             advancedPosition+= Keyboard.getCharFromAlphabet(indexInKeyBoard);
         }

@@ -41,6 +41,7 @@ public class UIAdapterImpJavaFX implements UIAdapter{
     public void pauseTask(){
         runningState = PAUSE;
     }
+
     public void taskInProcess(){
         runningState = IN_PROCESS;
     }

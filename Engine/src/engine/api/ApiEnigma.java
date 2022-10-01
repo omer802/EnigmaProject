@@ -10,6 +10,7 @@ import DTOS.decryptionManager.DecryptionManagerDTO;
 import JavaFX.mainPage.MainPageController;
 import engine.decryptionManager.DM;
 import engine.decryptionManager.dictionary.Trie;
+import engine.decryptionManager.task.TimeToCalc;
 import javafx.beans.property.StringProperty;
 
 import java.io.IOException;
@@ -95,7 +96,7 @@ public interface ApiEnigma {
 
     public int getAmountOfAgents();
 
-    public double calculateAmountOfTasks(int missionSize, DM.DifficultyLevel level);
+    public double calculateAmountOfTasks(Integer missionSize, DM.DifficultyLevel level);
 
     public void setMainController(MainPageController mainController);
 
@@ -103,7 +104,9 @@ public interface ApiEnigma {
 
     public void pauseCurrentTask();
 
-    void resumeCurrentTask();
+    public void resumeCurrentTask();
+    public TimeToCalc getTimeToCalc();
+
 }
 
 

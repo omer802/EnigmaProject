@@ -6,12 +6,12 @@ import engine.decryptionManager.DM;
 public class DecryptionManagerDTO {
     private String messageToDecipher;
     private DM.DifficultyLevel level;
-    private int missionSize;
+    private Double missionSize;
     private UIAdapter uiAdapter;
     private int amountOfAgentsForProcess;
     private double missionAmount;
 
-    public DecryptionManagerDTO(String messageToDecipher, DM.DifficultyLevel difficulty, int missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess, Double missionAmount){
+    public DecryptionManagerDTO(String messageToDecipher, DM.DifficultyLevel difficulty, Double missionSize, UIAdapter uiAdapter, int amountOfAgentsForProcess, Double missionAmount){
        this.messageToDecipher = messageToDecipher;
        this.level = difficulty;
        this.missionSize = missionSize;
@@ -27,7 +27,7 @@ public class DecryptionManagerDTO {
         return level;
     }
 
-    public int getMissionSize() {
+    public Double getMissionSize() {
         return missionSize;
     }
 

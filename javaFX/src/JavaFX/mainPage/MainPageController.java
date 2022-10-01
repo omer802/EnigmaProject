@@ -8,10 +8,7 @@ import JavaFX.BruteForce.BruteForceController;
 import JavaFX.EncryptDecrypt.EncryptDecryptController;
 import JavaFX.UIComponent.PlugBoardUI;
 import JavaFX.codeConfiguration.codeConfigurationController;
-import UIAdapter.UIAdapter;
-import UIAdapter.UIAdapterImpJavaFX;
 import engine.api.ApiEnigma;
-import engine.decryptionManager.task.TasksManager;
 import engine.enigma.keyboard.Keyboard;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -94,6 +91,7 @@ public class MainPageController {
 
     @FXML
     private BorderPane BruteForce;
+    Alert alert;
 
     public JavaFX.BruteForce.BruteForceController getBruteForceController() {
         return BruteForceController;
@@ -119,10 +117,7 @@ public class MainPageController {
     private SimpleIntegerProperty rotorsInUseAmount;
     private SimpleIntegerProperty reflectorsAmount;
     private SimpleIntegerProperty encryptedMessagesAmount;
-
-
-
-
+    private final int MAX_AMOUNT_ERROR_TO_SHOW = 3;
 
     private SimpleBooleanProperty isConfig;
     private SimpleBooleanProperty isFileSelected;
@@ -184,10 +179,7 @@ public class MainPageController {
         String path = selectedFile.getAbsolutePath();
         xmlFileValidatorDTO validator = api.readDataJavaFx(path);
         if (validator.getListOfExceptions().size() > 0) {
-            System.out.println("The following errors occurred while reading the file:\n");
-            for (Exception e : validator.getListOfExceptions()) {
-                System.out.println(e.getMessage());
-            }
+            showListOfExceptions(validator.getListOfExceptions());
         } else {
 
             initOriginalConfiguration();
@@ -199,6 +191,26 @@ public class MainPageController {
             encryptDecryptController.setStatistics();
             BruteForceController.setBruteForceComponent();
         }
+    }
+     public void alertShowException(Exception e){
+        List<Exception> exceptionList = new ArrayList<>();
+        exceptionList.add(e);
+        showListOfExceptions(exceptionList);
+    }
+    private void showListOfExceptions(List<Exception> exceptionList) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        String errorMessage = "";
+        int amountOfMessageShowed = 0;
+        for (Exception message : exceptionList) {
+            errorMessage = errorMessage + message.getMessage() + "\n";
+            amountOfMessageShowed++;
+            if (amountOfMessageShowed > MAX_AMOUNT_ERROR_TO_SHOW)
+                break;
+        }
+        alert.setContentText(errorMessage + "\n");
+        alert.setTitle("Error!");
+        alert.getDialogPane().setExpanded(true);
+        alert.showAndWait();
     }
     public void initOriginalConfiguration(){
         chosenReflectorLabel.setText("");
@@ -438,7 +450,8 @@ public class MainPageController {
         List<String> chosenRotors = chosenRotorsList.stream().map(p -> p.getValue()).collect(Collectors.toList());
         Collections.reverse(chosenRotors);
         if (api.isIdenticalRotors(chosenRotors)) {
-            System.out.println("error accoured");
+            alertShowException(new RuntimeException("Error: You have chose more than one identical rotor"));
+            //System.out.println("error accoured");
             return null;
         }
         String chosenPositions = getChosenPosition();
@@ -449,7 +462,8 @@ public class MainPageController {
     public boolean setPlugBoard(UserConfigurationDTO Specification){
         String connections = PlugBoardUI.getConnections();
         if (PlugBoardUI.amountOfCharacterSelected % 2 != 0) {
-            System.out.println("problem at plugboard");
+            alertShowException(new RuntimeException("One of the plugs doesn't have a pair"));
+            //System.out.println("One of the plugs doesn't have a pair\n");
             return false;
         }
         else{
@@ -470,13 +484,7 @@ public class MainPageController {
 
 
 
-       /* List<Node> rotorsList = HBoxlistOfRotorsButtons.getChildren();
-        System.out.println(FlowPaneAlphabet.getChildren().get(1));
-        //the first node in the hbox is label so we skip on him
-       for (int i = 1; i < rotorsList.size() ; i++) {
-            String str = (String)HBoxlistOfRotorsButtons.getChildren().get(1).
-        }
-        String plugBoardConnection = new String();*/
+
 
 
     // TODO: 9/1/2022 move some functions to plugBoardUI
@@ -493,7 +501,6 @@ public class MainPageController {
                         setColors(alphabetChar);
                     else
                         removeColorPairs(alphabetChar);
-                    System.out.println(PlugBoardUI.amountOfCharacterSelected);
                 });
 
                 FlowPaneAlphabet.getChildren().add(alphabetChar);

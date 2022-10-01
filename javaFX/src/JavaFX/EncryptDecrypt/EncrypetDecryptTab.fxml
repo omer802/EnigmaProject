@@ -9,9 +9,9 @@
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <ScrollPane prefHeight="366.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaFX.EncryptDecrypt.EncryptDecryptController">
    <content>
@@ -53,60 +53,56 @@
                                     <Insets left="120.0" />
                                  </padding>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="800.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="800.0" spacing="10.0">
                                  <children>
                                     <Label text="Encrypt/Decrypt ">
                                        <padding>
                                           <Insets right="5.0" />
                                        </padding>
                                     </Label>
-                                    <TextField fx:id="encryptedMessege" onKeyTyped="#EncryptCharacter" prefHeight="25.0" prefWidth="245.0" />
-                                    <FlowPane fx:id="buttonsEncryptionFlowPane" alignment="TOP_CENTER" prefHeight="50.0" prefWidth="86.0">
-                                       <padding>
-                                          <Insets right="20.0" />
-                                       </padding>
+                                    <TextField fx:id="encryptedMessege" onKeyTyped="#EncryptCharacter" prefHeight="31.0" prefWidth="209.0" />
+                                    <VBox prefHeight="50.0" prefWidth="109.0">
                                        <children>
-                                          <VBox prefHeight="50.0" prefWidth="109.0">
+                                          <HBox prefHeight="31.0" prefWidth="489.0">
                                              <children>
-                                                <HBox prefHeight="31.0" prefWidth="489.0">
-                                                   <children>
-                                                      <Button fx:id="ProcessButton" mnemonicParsing="false" onAction="#EncrypteFullMessage" text="process" />
-                                                      <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearTextAndProcessNewMessage" prefHeight="25.0" prefWidth="48.0" text="clear" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox prefHeight="61.0" prefWidth="489.0">
-                                                   <children>
-                                                      <Button fx:id="doneButton" mnemonicParsing="false" onAction="#updateStatisticsAndClearText" prefHeight="25.0" prefWidth="58.0" text="done" />
-                                                      <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetPositions" prefHeight="25.0" prefWidth="48.0" text="reset" />
-                                                   </children>
-                                                </HBox>
+                                                <Button fx:id="ProcessButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#EncrypteFullMessage" prefHeight="31.0" prefWidth="71.0" text="process" />
+                                                <Button fx:id="clearButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#clearTextAndProcessNewMessage" prefHeight="31.0" prefWidth="60.0" text="clear" />
                                              </children>
-                                          </VBox>
+                                          </HBox>
+                                          <HBox prefHeight="61.0" prefWidth="489.0">
+                                             <children>
+                                                <Button fx:id="doneButton" mnemonicParsing="false" onAction="#updateStatisticsAndClearText" prefHeight="31.0" prefWidth="68.0" text="done" />
+                                                <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetPositions" prefHeight="31.0" prefWidth="67.0" text="reset" />
+                                             </children>
+                                          </HBox>
                                        </children>
-                                    </FlowPane>
+                                    </VBox>
                                  </children>
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </HBox>
-                              <HBox alignment="CENTER" prefHeight="32.0" prefWidth="445.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="445.0">
                                  <children>
-                                    <Label prefHeight="32.0" prefWidth="134.0" text="Encrypt/Decrypt Result: " />
+                                    <Label minWidth="-Infinity" prefHeight="23.0" prefWidth="164.0" text="Encrypt/Decrypt Result: " />
                                     <Label fx:id="EncryptDecryptResultLabel" minWidth="-Infinity" prefHeight="17.0" />
                                  </children>
                                  <padding>
-                                    <Insets right="120.0" />
+                                    <Insets left="10.0" right="10.0" />
                                  </padding>
                               </HBox>
                            </children>
                         </VBox>
                      </content>
                   </ScrollPane>
-                  <ScrollPane prefHeight="150.0" prefWidth="330.0">
+                  <ScrollPane prefHeight="150.0" prefWidth="299.0">
                     <content>
-                      <AnchorPane prefHeight="147.0" prefWidth="315.0">
+                      <AnchorPane prefHeight="147.0" prefWidth="295.0">
                            <children>
-                              <Label layoutX="130.0" layoutY="6.0" text="Statistics:" />
+                              <Label layoutX="130.0" layoutY="6.0" text="Statistics:">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font></Label>
                               <Label fx:id="HistoryAndStatistics" layoutX="21.0" layoutY="29.0" />
                            </children>
                         </AnchorPane>

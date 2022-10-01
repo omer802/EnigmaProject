@@ -7,6 +7,7 @@ import engine.decryptionManager.Agents.Agents;
 import engine.decryptionManager.dictionary.Dictionary;
 import engine.decryptionManager.dictionary.Trie;
 import engine.decryptionManager.task.TasksManager;
+import engine.decryptionManager.task.TimeToCalc;
 import engine.enigma.Machine.EnigmaMachine;
 import engine.enigma.keyboard.Keyboard;
 
@@ -24,12 +25,12 @@ public class DM {
     private Agents agents;
     private int maxAgentAmount;
     private Dictionary dictionary;
-    private int possibleAmountOfCodes;
 
-    private int missionSize;
+    private TimeToCalc timeToCalc;
+    private Double missionSize;
     private EnigmaMachine machine;
-    private int difficulty;
     private TasksManager tasksCreator;
+    private UIAdapter uiAdapter;
     public DM(Dictionary dictionary, Agents agents, int maxAgentsAmount, EnigmaMachine machine){
         this.dictionary = dictionary;
         this.agents = agents;
@@ -37,30 +38,37 @@ public class DM {
         this.machine = machine;
 
     }
+
     public void pauseCurrentTask() {
-        tasksCreator.pauseCurrentTask();
+
+        //tasksCreator.pauseCurrentTask();
     }
     public void resumeCurrentTask() {
-        tasksCreator.resumeCurrentTask();
+        new Thread(()-> tasksCreator.resumeCurrentTask()).start();
+        //tasksCreator.resumeCurrentTask();
     }
     public void DecipherMessage(DecryptionManagerDTO decryptionManagerDTO, BruteForceController bruteForceController, Runnable onFinish){
 
         this.missionSize = decryptionManagerDTO.getMissionSize();
+        this.uiAdapter = decryptionManagerDTO.getUiAdapter();
         // TODO: 9/16/2022 add check if agents amount ok
         if(decryptionManagerDTO.getAmountOfAgentsForProcess()>maxAgentAmount)
             throw new RuntimeException();
-        this.tasksCreator = new TasksManager(decryptionManagerDTO,machine.clone());
+            this.timeToCalc = new TimeToCalc(System.currentTimeMillis());
+            this.tasksCreator = new TasksManager(decryptionManagerDTO,machine.clone(),timeToCalc);
+
         bruteForceController.bindTaskToUIComponents(tasksCreator, onFinish);
         new Thread(tasksCreator,"Manager tasks thread ").start();
     }
     public boolean isDictionaryContainString(String str){
         return dictionary.isDictionaryContainString(str);
-
-
+    }
+    public TimeToCalc getTimeToCalc(){
+        return tasksCreator.getTimeToCalc();
     }
     public void cancelCurrentTask(){
-        System.out.println("cancal!");
-
+        //System.out.println("cancal!");
+        uiAdapter.stopTask();
         tasksCreator.cancel();
     }
     public String cleanStringFromExcludeChars(String words){
@@ -79,17 +87,6 @@ public class DM {
         this.dictionary = dictionary;
     }
 
-    public long getPossibleAmountOfCodes() {
-        return possibleAmountOfCodes;
-    }
-
-
-
-
-    public void setPossibleAmountOfCodes(int possibleAmountOfCodes) {
-        this.possibleAmountOfCodes = possibleAmountOfCodes;
-    }
-
     public EnigmaMachine getMachine() {
         return machine;
     }
@@ -98,26 +95,12 @@ public class DM {
         this.machine = machine;
     }
 
-    public int getDifficulty() {
-        return difficulty;
-    }
 
-    public void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public int getMissionSize() {
-        return missionSize;
-    }
-
-    public void setMissionSize(int missionSize) {
-        this.missionSize = missionSize;
-    }
 
     public int getAmountOfAgents() {
         return maxAgentAmount;
     }
-    public  double calculateAmountOfTasks(int missionSize, DifficultyLevel level) {
+    public  double calculateAmountOfTasks(Integer missionSize, DifficultyLevel level) {
         double amountOfMission = 0;
         switch (level) {
             case EASY:
@@ -136,7 +119,7 @@ public class DM {
         return amountOfMission;
     }
     //calculate the amount of options to choose k rotors from n rotors in machine
-    private double calculateAmountOfTasksImpossibleLevel(int missionSize){
+    private double calculateAmountOfTasksImpossibleLevel(Integer missionSize){
         BigInteger ret = BigInteger.ONE;
         int amountOfRotors = machine.getAmountOfRotors();
         int chosenAmount = machine.getRotorsAmountInUse();
@@ -148,27 +131,22 @@ public class DM {
     }
 
     //calculate amountOfRotors factorial
-    private double calculateAmountOfTasksHardLevel(int missionSize) {
+    private double calculateAmountOfTasksHardLevel(Integer missionSize) {
         int factorial =1;
         for (int i = 1; i <= machine.getRotorsAmountInUse() ; i++) {
             factorial *=i;
         }
-        return factorial* calculateAmountOfTasksMediumLevel(missionSize);
+        return factorial * calculateAmountOfTasksMediumLevel(missionSize);
     }
 
-    private double calculateAmountOfTasksMediumLevel(int missionSize){
-        return calculateAmountOfTasksEasyLevel(missionSize)* machine.getReflectorsAmount();
+    private double calculateAmountOfTasksMediumLevel(Integer missionSize){
+        return calculateAmountOfTasksEasyLevel(missionSize) * machine.getReflectorsAmount();
     }
-    private double calculateAmountOfTasksEasyLevel(int missionSize){
+    private double calculateAmountOfTasksEasyLevel(Integer missionSize){
         int amountOfTasks = Keyboard.alphabet.length();
         int exponent = machine.getRotorsAmountInUse();
         double numOfTask = Math.pow(amountOfTasks,exponent);
         return numOfTask/missionSize;
-    }
-
-
-    public void setAgents(Agents agents) {
-        this.agents = agents;
     }
 
 }
